@@ -31,7 +31,7 @@ ONE = 1.0
 
 
 def neutral_mass(mz, z, charge_carrier=PROTON):
-    return (mz * z) - (z * charge_carrier)
+    return (mz * abs(z)) - (z * charge_carrier)
 
 
 def mass_charge_ratio(neutral_mass, z, charge_carrier=PROTON):
@@ -514,7 +514,7 @@ class IsotopicDistribution(object):
                 adjusted_mz = center_mass_vector[i]
             peak = Peak(adjusted_mz, probability_vector[i] / total, charge)
             if peak.intensity < 0:
-                peak.intensity = MACHINE_EPSILON
+                continue
             peak_set.append(peak)
             average_mass += adjusted_mz * probability_vector[i]
 
@@ -550,7 +550,7 @@ def isotopic_variants(composition, n_peaks=None, charge=0):
     '''
     if n_peaks is None:
         max_n_variants = max_variants(composition)
-        n_peaks = int(sqrt(max_n_variants))
+        n_peaks = int(sqrt(max_n_variants) - 2)
     else:
         # Monoisotopic Peak is not included
         n_peaks -= 1
