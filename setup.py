@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='brainpy',
-    version='1.0.6',
+    version='1.0.8',
     packages=find_packages(),
     description="Fast and efficient theoretical isotopic profile generation",
     long_description='''

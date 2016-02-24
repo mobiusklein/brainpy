@@ -40,7 +40,7 @@ def mass_charge_ratio(neutral_mass, z, charge_carrier=PROTON):
 
 def give_repr(cls):
     r"""Patch a class to give it a generic __repr__ method
-    that works by inspecting the instance dictionary. This
+    that works by inspecting the instance dictionary.
 
     Parameters
     ----------
@@ -256,7 +256,7 @@ def _isotopes_of(element):
 
 
 periodic_table = {k: Element(k) for k in nist_mass}
-periodic_table = {k: e for k, e in periodic_table.items() if e.max_neutron_shift() != 0 and e.min_neutron_shift() >= 0}
+# periodic_table = {k: e for k, e in periodic_table.items() if e.max_neutron_shift() != 0 and e.min_neutron_shift() >= 0}
 periodic_table["H+"] = Element("H+")
 
 
@@ -381,6 +381,19 @@ class Peak(object):
         self.mz = mz
         self.intensity = intensity
         self.charge = charge
+
+    def __eq__(self, other):
+        equal = all(
+            abs(self.mz - other.mz) < 1e-10,
+            abs(self.intensity - other.intensity) < 1e-10,
+            self.charge == other.charge)
+        return equal
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __hash__(self):
+        return hash(self.mz)
 
 
 @give_repr
@@ -521,7 +534,7 @@ class IsotopicDistribution(object):
         average_mass /= total
         self.average_mass = average_mass
         peak_set.sort(key=mz_getter)
-        return peak_set
+        return tuple(peak_set)
 
 
 def isotopic_variants(composition, n_peaks=None, charge=0):
