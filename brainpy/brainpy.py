@@ -395,6 +395,9 @@ class Peak(object):
     def __hash__(self):
         return hash(self.mz)
 
+    def clone(self):
+        return self.__class__(self.mz, self.intensity, self.charge)
+
 
 @give_repr
 class IsotopicDistribution(object):
@@ -568,3 +571,11 @@ def isotopic_variants(composition, n_peaks=None, charge=0):
         # Monoisotopic Peak is not included
         n_peaks -= 1
     return IsotopicDistribution(composition, n_peaks).aggregated_isotopic_variants(charge)
+
+
+try:
+    _p_update_elementary_symmetric_polynomial = _update_elementary_symmetric_polynomial
+    from ._speedup import _update_elementary_symmetric_polynomial
+
+except ImportError:
+    pass

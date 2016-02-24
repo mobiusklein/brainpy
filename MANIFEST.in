@@ -1,0 +1,4 @@
+recursive-include brainpy *.pyx
+recursive-include brainpy *.pxd
+recursive-include brainpy *.c
+recursive-include brainpy *.h
