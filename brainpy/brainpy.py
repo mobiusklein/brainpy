@@ -575,7 +575,9 @@ def isotopic_variants(composition, n_peaks=None, charge=0):
 
 try:
     _p_update_elementary_symmetric_polynomial = _update_elementary_symmetric_polynomial
-    from ._speedup import _update_elementary_symmetric_polynomial
+    _IsotopicConstants = IsotopicConstants
+    _IsotopicDistribution = IsotopicDistribution
+    from ._speedup import _update_elementary_symmetric_polynomial, IsotopicConstants, IsotopicDistribution
 
 except ImportError:
     pass
