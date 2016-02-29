@@ -378,7 +378,7 @@ cdef class IsotopicDistribution(object):
         public Peak monoisotopic_peak
 
     def __init__(self, composition, order=-1):
-        self.composition = composition
+        self.composition = dict(composition)
         self._isotopic_constants = IsotopicConstants(order)
         self._order = 0
         self.order = order

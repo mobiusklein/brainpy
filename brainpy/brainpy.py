@@ -567,6 +567,7 @@ def isotopic_variants(composition, n_peaks=None, charge=0, charge_carrier=PROTON
     if n_peaks is None:
         max_n_variants = max_variants(composition)
         n_peaks = int(sqrt(max_n_variants) - 2)
+        n_peaks = max(n_peaks, 3)
     else:
         # Monoisotopic Peak is not included
         n_peaks -= 1
@@ -575,10 +576,9 @@ def isotopic_variants(composition, n_peaks=None, charge=0, charge_carrier=PROTON
 
 
 try:
-    _p_update_elementary_symmetric_polynomial = _update_elementary_symmetric_polynomial
-    _IsotopicConstants = IsotopicConstants
+    _has_c = True
     _IsotopicDistribution = IsotopicDistribution
-    from ._speedup import _update_elementary_symmetric_polynomial, IsotopicConstants, IsotopicDistribution
+    from ._speedup import IsotopicDistribution
 
 except ImportError:
-    pass
+    _has_c = False
