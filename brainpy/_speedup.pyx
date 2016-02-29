@@ -99,68 +99,6 @@ cpdef list vietes(list coefficients):
     return elementary_symmetric_polynomial
 
 
-cpdef parray[double] array_vietes(parray[double] coefficients):
-    cdef:
-        array.array[double] elementary_symmetric_polynomial
-
-        double tail, el
-        size_t size, i
-        int sign
-
-    elementary_symmetric_polynomial = array.array('d')
-    tail = float(coefficients[-1])
-    size = len(coefficients)
-
-    for i in range(size):
-        sign = 1 if (i % 2) == 0 else -1
-        el = sign * coefficients[size - i - 1] / tail
-        elementary_symmetric_polynomial.append(el)
-    return elementary_symmetric_polynomial
-
-cpdef void _update_elementary_symmetric_polynomial_array(array.array[double] power_sum, array.array[double] elementary_symmetric_polynomial, size_t order):
-    cdef:
-        size_t begin, end, k, j
-        double el
-        int sign
-    begin = len(elementary_symmetric_polynomial)
-    end = len(power_sum)
-    for k in range(begin, end):
-        if k == 0:
-            elementary_symmetric_polynomial.append(1.0)
-        elif k > order:
-            elementary_symmetric_polynomial.append(0.)
-        else:
-            el = 0.
-            for j in range(1, k + 1):
-                sign = 1 if (j % 2) == 1 else -1
-                el += sign * power_sum[j] * elementary_symmetric_polynomial[k - j]
-            el /= <double>(k)
-            elementary_symmetric_polynomial.append(el)
-
-cpdef void _update_power_sum_array(array.array[double] ps_vec, array.array[double] esp_vec, size_t order):
-    cdef:
-        size_t begin, end, k, j
-        int sign
-        double temp_ps
-
-    begin = len(ps_vec)
-    end = len(esp_vec)
-    for k in range(begin, end):
-        if k == 0:
-            ps_vec.append(0.)
-            continue
-        temp_ps = 0.
-        sign = -1
-        for j in range(1, k):
-            sign *= -1
-            temp_ps += sign * esp_vec[j] * ps_vec[k - j]
-        sign *= -1
-        temp_ps += sign * esp_vec[k] * k
-        ps_vec.append(temp_ps)
-
-
-
-
 cdef class PolynomialParameters(object):
     cdef:
         public list elementary_symmetric_polynomial
@@ -267,9 +205,9 @@ cdef class Element(object):
         list _mass_elementary_symmetric_polynomial_cache
         list _mass_power_sum_cache
 
-    def __init__(self, str symbol, object isotopes=None):
+    def __init__(self, str symbol):
         self.symbol = symbol
-        self.isotopes = isotopes or _isotopes_of(symbol)
+        self.isotopes = _isotopes_of(symbol)
         min_shift = 1000
         max_shift = 0
         for shift in self.isotopes:

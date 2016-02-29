@@ -510,7 +510,7 @@ class IsotopicDistribution(object):
             mass_vector.append(center / probability_vector[i])
         return mass_vector
 
-    def aggregated_isotopic_variants(self, charge=0):
+    def aggregated_isotopic_variants(self, charge=0, charge_carrier=PROTON):
         '''
         Compute the m/z (or neutral mass when `charge` == 0) for each
         aggregated isotopic peak and their intensity relative to
@@ -525,7 +525,7 @@ class IsotopicDistribution(object):
 
         for i in range(self.order + 1):
             if charge != 0:
-                adjusted_mz = mass_charge_ratio(center_mass_vector[i], charge)
+                adjusted_mz = mass_charge_ratio(center_mass_vector[i], charge, charge_carrier)
             else:
                 adjusted_mz = center_mass_vector[i]
             peak = Peak(adjusted_mz, probability_vector[i] / total, charge)
@@ -540,7 +540,7 @@ class IsotopicDistribution(object):
         return tuple(peak_set)
 
 
-def isotopic_variants(composition, n_peaks=None, charge=0):
+def isotopic_variants(composition, n_peaks=None, charge=0, charge_carrier=PROTON):
     '''
     Compute a peak list representing the theoretical isotopic cluster for `composition`.
 
@@ -570,7 +570,8 @@ def isotopic_variants(composition, n_peaks=None, charge=0):
     else:
         # Monoisotopic Peak is not included
         n_peaks -= 1
-    return IsotopicDistribution(composition, n_peaks).aggregated_isotopic_variants(charge)
+    return IsotopicDistribution(composition, n_peaks).aggregated_isotopic_variants(
+        charge, charge_carrier=charge_carrier)
 
 
 try:
