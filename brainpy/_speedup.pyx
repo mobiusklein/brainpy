@@ -553,7 +553,7 @@ cdef class IsotopicDistribution(object):
             mass_vector.append(center / probability_vector[i])
         return mass_vector
 
-    def aggregated_isotopic_variants(self, int charge=0):
+    def aggregated_isotopic_variants(self, int charge=0, charge_carrier=PROTON):
         '''
         Compute the m/z (or neutral mass when `charge` == 0) for each
         aggregated isotopic peak and their intensity relative to
@@ -578,7 +578,7 @@ cdef class IsotopicDistribution(object):
         for i in range(self.order + 1):
             center_mass_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(center_mass_vector, i))
             if charge != 0:
-                adjusted_mz = mass_charge_ratio(center_mass_i, charge)
+                adjusted_mz = mass_charge_ratio(center_mass_i, charge, charge_carrier)
             else:
                 adjusted_mz = center_mass_i
 
