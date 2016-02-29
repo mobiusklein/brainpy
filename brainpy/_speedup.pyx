@@ -1,5 +1,4 @@
 # cython: profile=True
-from cpython cimport array
 
 from cpython.list cimport PyList_GET_ITEM, PyList_GET_SIZE, PyList_Append
 from cpython.int cimport PyInt_FromLong
@@ -22,9 +21,6 @@ cdef double PROTON
 PROTON = nist_mass["H+"][0][0]
 
 cdef dict periodic_table
-
-
-ctypedef array.array parray
 
 
 cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON):
