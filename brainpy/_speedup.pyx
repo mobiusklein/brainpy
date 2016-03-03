@@ -104,8 +104,8 @@ cdef class PolynomialParameters(object):
         self.power_sum = power_sum
 
     def __iter__(self):
-        yield self.elementary_symmetric_polynomial
         yield self.power_sum
+        yield self.elementary_symmetric_polynomial
 
 
 cdef class PhiConstants(object):

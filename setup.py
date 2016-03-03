@@ -88,13 +88,14 @@ def run_setup(include_cext=True):
                 'Topic :: Scientific/Engineering :: Bio-Informatics']
     )
 
-try:
-    run_setup(True)
-except Exception as exc:
-    run_setup(False)
+if __name__ == '__main__':
+    try:
+        run_setup(True)
+    except Exception as exc:
+        run_setup(False)
 
-    status_msgs(
-        "WARNING: The C extension could not be compiled, " +
-        "speedups are not enabled.",
-        "Plain-Python build succeeded."
-    )
+        status_msgs(
+            "WARNING: The C extension could not be compiled, " +
+            "speedups are not enabled.",
+            "Plain-Python build succeeded."
+        )

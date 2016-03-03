@@ -640,8 +640,8 @@ struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution {
  *         self.power_sum = power_sum
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
- *         yield self.elementary_symmetric_polynomial
  *         yield self.power_sum
+ *         yield self.elementary_symmetric_polynomial
  */
 struct __pyx_obj_7brainpy_8_speedup___pyx_scope_struct____iter__ {
   PyObject_HEAD
@@ -3126,8 +3126,8 @@ static PyObject *__pyx_gb_7brainpy_8_speedup_20PolynomialParameters_4generator(_
  *         self.power_sum = power_sum
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
- *         yield self.elementary_symmetric_polynomial
  *         yield self.power_sum
+ *         yield self.elementary_symmetric_polynomial
  */
 
 /* Python wrapper */
@@ -3203,12 +3203,12 @@ static PyObject *__pyx_gb_7brainpy_8_speedup_20PolynomialParameters_4generator(_
   /* "brainpy\_speedup.pyx":107
  * 
  *     def __iter__(self):
- *         yield self.elementary_symmetric_polynomial             # <<<<<<<<<<<<<<
- *         yield self.power_sum
+ *         yield self.power_sum             # <<<<<<<<<<<<<<
+ *         yield self.elementary_symmetric_polynomial
  * 
  */
-  __Pyx_INCREF(__pyx_cur_scope->__pyx_v_self->elementary_symmetric_polynomial);
-  __pyx_r = __pyx_cur_scope->__pyx_v_self->elementary_symmetric_polynomial;
+  __Pyx_INCREF(__pyx_cur_scope->__pyx_v_self->power_sum);
+  __pyx_r = __pyx_cur_scope->__pyx_v_self->power_sum;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   /* return from generator, yielding value */
@@ -3219,13 +3219,13 @@ static PyObject *__pyx_gb_7brainpy_8_speedup_20PolynomialParameters_4generator(_
 
   /* "brainpy\_speedup.pyx":108
  *     def __iter__(self):
- *         yield self.elementary_symmetric_polynomial
- *         yield self.power_sum             # <<<<<<<<<<<<<<
+ *         yield self.power_sum
+ *         yield self.elementary_symmetric_polynomial             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __Pyx_INCREF(__pyx_cur_scope->__pyx_v_self->power_sum);
-  __pyx_r = __pyx_cur_scope->__pyx_v_self->power_sum;
+  __Pyx_INCREF(__pyx_cur_scope->__pyx_v_self->elementary_symmetric_polynomial);
+  __pyx_r = __pyx_cur_scope->__pyx_v_self->elementary_symmetric_polynomial;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   /* return from generator, yielding value */
@@ -3238,8 +3238,8 @@ static PyObject *__pyx_gb_7brainpy_8_speedup_20PolynomialParameters_4generator(_
  *         self.power_sum = power_sum
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
- *         yield self.elementary_symmetric_polynomial
  *         yield self.power_sum
+ *         yield self.elementary_symmetric_polynomial
  */
 
   /* function exit code */

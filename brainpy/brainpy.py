@@ -2,26 +2,12 @@
 from __future__ import absolute_import
 
 import operator
-try:
-    from mass_dict import nist_mass
-except ImportError:
-    try:
-        from pyteomics.auxiliary import _nist_mass as nist_mass
-    except ImportError:
-        try:
-            from glypy.composition.mass_dict import nist_mass
-        except ImportError:
-            import warnings
-            warnings.warn("Unable to locate an installed NIST mass database, loading transiently over the internet.")
-            import urllib2
-            exec(urllib2.urlopen(
-                r"https://raw.githubusercontent.com/mobiusklein/glypy/master/glypy/composition/mass_dict.py").read(
-                # Prevent importing modules so this cannot do serious harm.
-                ).replace("import", " raise Exception(); "))
 
 from collections import OrderedDict
 from math import exp, log, sqrt
 from sys import float_info
+
+from .mass_dict import nist_mass
 
 mz_getter = operator.attrgetter("mz")
 PROTON = nist_mass["H+"][0][0]
@@ -38,7 +24,7 @@ def mass_charge_ratio(neutral_mass, z, charge_carrier=PROTON):
     return (neutral_mass + (z * charge_carrier)) / abs(z)
 
 
-def give_repr(cls):
+def give_repr(cls):  # pragma: no cover
     r"""Patch a class to give it a generic __repr__ method
     that works by inspecting the instance dictionary.
 
@@ -67,8 +53,8 @@ class PolynomialParameters(object):
         self.power_sum = power_sum
 
     def __iter__(self):
-        yield self.elementary_symmetric_polynomial
         yield self.power_sum
+        yield self.elementary_symmetric_polynomial
 
 
 @give_repr
@@ -203,7 +189,7 @@ class Element(object):
         self.symbol = symbol
         self.isotopes = isotopes or _isotopes_of(symbol)
 
-    def average_mass(self):
+    def average_mass(self):  # pragma: no cover
         mass = 0.0
         for i, isotope in self.isotopes.items():
             mass += isotope.mass * isotope.abundance
@@ -382,20 +368,20 @@ class Peak(object):
         self.intensity = intensity
         self.charge = charge
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # pragma: no cover
         equal = all(
             abs(self.mz - other.mz) < 1e-10,
             abs(self.intensity - other.intensity) < 1e-10,
             self.charge == other.charge)
         return equal
 
-    def __ne__(self, other):
+    def __ne__(self, other):  # pragma: no cover
         return not (self == other)
 
-    def __hash__(self):
+    def __hash__(self):  # pragma: no cover
         return hash(self.mz)
 
-    def clone(self):
+    def clone(self):  # pragma: no cover
         return self.__class__(self.mz, self.intensity, self.charge)
 
 
