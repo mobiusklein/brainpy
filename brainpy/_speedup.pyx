@@ -31,7 +31,7 @@ cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=
     return (neutral_mass + (z * charge_carrier)) / abs(z)
 
 
-cpdef _update_elementary_symmetric_polynomial(list power_sum, list elementary_symmetric_polynomial, size_t order):
+cdef void _update_elementary_symmetric_polynomial(list power_sum, list elementary_symmetric_polynomial, size_t order):
     cdef:
         size_t begin, end, k, j
         double el
@@ -51,33 +51,33 @@ cpdef _update_elementary_symmetric_polynomial(list power_sum, list elementary_sy
             el /= <double>(k)
             PyList_Append(elementary_symmetric_polynomial, el)
 
-cpdef _update_power_sum(list ps_vec, list esp_vec, size_t order):
+cdef void _update_power_sum(list ps_vec, list esp_vec, size_t order):
     cdef:
         size_t begin, end, k, j
         int sign
         double temp_ps
-    begin = len(ps_vec)
-    end = len(esp_vec)
+    begin = PyList_GET_SIZE(ps_vec)
+    end = PyList_GET_SIZE(esp_vec)
     for k in range(begin, end):
         if k == 0:
-            ps_vec.append(0.)
+            PyList_Append(ps_vec, 0.)
             continue
         temp_ps = 0.
         sign = -1
         for j in range(1, k):
             sign *= -1
-            temp_ps += sign * esp_vec[j] * ps_vec[k - j]
+            temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, j)) * PyFloat_AsDouble(<object>PyList_GET_ITEM(ps_vec, k - j))
         sign *= -1
-        temp_ps += sign * esp_vec[k] * k
-        ps_vec.append(temp_ps)
+        temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, k)) * k
+        PyList_Append(ps_vec, temp_ps)
 
-cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):
-    if len(power_sum) > len(elementary_symmetric_polynomial):
+cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):
+    if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):
         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
-    elif len(power_sum) < len(elementary_symmetric_polynomial):
+    elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):
         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)
 
-cpdef list vietes(list coefficients):
+cdef list vietes(list coefficients):
     cdef:
         list elementary_symmetric_polynomial
         double tail, el
@@ -255,7 +255,7 @@ cdef class IsotopicConstants(dict):
             self._order = value
             self.update_coefficients()
 
-    cpdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):
+    cdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):
         cdef:
             int max_isotope_number, current_order
             list accumulator, isotope_keys
@@ -273,7 +273,6 @@ cdef class IsotopicConstants(dict):
                 return PolynomialParameters(
                     list(element._no_mass_elementary_symmetric_polynomial_cache),
                     list(element._no_mass_power_sum_cache))
-
 
         max_isotope_number = element._max_neutron_shift
         isotope_keys = sorted(element.isotopes, reverse=True)
@@ -306,10 +305,9 @@ cdef class IsotopicConstants(dict):
             if element._no_mass_elementary_symmetric_polynomial_cache is None:
                 element._no_mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)
                 element._no_mass_power_sum_cache = list(power_sum)
-
         return PolynomialParameters(elementary_symmetric_polynomial, power_sum)
 
-    def add_element(self, str symbol):
+    cdef void add_element(self, str symbol):
         cdef:
             Element element
             int order
@@ -323,7 +321,7 @@ cdef class IsotopicConstants(dict):
         mass_parameters = self.coefficients(element, True)
         self[symbol] = PhiConstants(order, element, element_parameters, mass_parameters)
 
-    def update_coefficients(self):
+    cdef void update_coefficients(self):
         cdef:
             str symbol
             PhiConstants phi_constants
@@ -338,8 +336,12 @@ cdef class IsotopicConstants(dict):
                 phi_constants.mass_coefficients.elementary_symmetric_polynomial.append(0.)
 
             phi_constants.order = len(phi_constants.element_coefficients.elementary_symmetric_polynomial)
-            newton(*phi_constants.element_coefficients, order=phi_constants.order)
-            newton(*phi_constants.mass_coefficients, order=phi_constants.order)
+            newton(phi_constants.element_coefficients.power_sum,
+                   phi_constants.element_coefficients.elementary_symmetric_polynomial,
+                   phi_constants.order)
+            newton(phi_constants.mass_coefficients.power_sum,
+                   phi_constants.mass_coefficients.elementary_symmetric_polynomial,
+                   phi_constants.order)
 
     cdef double nth_element_power_sum(self, str symbol, int order):
         cdef:
@@ -368,6 +370,27 @@ cdef class Peak(object):
     def __repr__(self):
         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
 
+    def _eq(self, other):
+        equal = all(
+            abs(self.mz - other.mz) < 1e-10,
+            abs(self.intensity - other.intensity) < 1e-10,
+            self.charge == other.charge)
+        return equal
+
+    def __richcmp__(self, other, int code):
+        if code == 2:
+            return self._eq(other)
+        elif code == 3:
+            return not self._eq(other)
+
+    def __hash__(self):
+        return hash(self.mz)
+
+    def clone(self):
+        return self.__class__(self.mz, self.intensity, self.charge)
+
+    def __reduce__(self):
+        return Peak, (self.mz, self.intensity, self.charge)
 
 cdef class IsotopicDistribution(object):
     cdef:

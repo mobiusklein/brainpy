@@ -1,7 +1,7 @@
-
 from __future__ import absolute_import
 
 import operator
+import re
 
 from collections import OrderedDict
 from math import exp, log, sqrt
@@ -334,7 +334,16 @@ def calculate_mass(composition, mass_data=None):
     if mass_data is None:
         mass_data = nist_mass
     for element in composition:
+        try:
             mass += (composition[element] * mass_data[element][0][0])
+        except KeyError:
+            match = re.search(r"(\S+)\[(\d+)\]", element)
+            if match:
+                element_ = match.group(1)
+                isotope = int(match.group(2))
+                mass += composition[element] * mass_data[element_][isotope][0]
+            else:
+                raise
     return mass
 
 

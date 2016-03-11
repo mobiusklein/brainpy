@@ -513,7 +513,7 @@ struct __pyx_opt_args_7brainpy_8_speedup_calculate_mass {
 /* "brainpy\_speedup.pyx":258
  *             self.update_coefficients()
  * 
- *     cpdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):             # <<<<<<<<<<<<<<
+ *     cdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):             # <<<<<<<<<<<<<<
  *         cdef:
  *             int max_isotope_number, current_order
  */
@@ -603,7 +603,7 @@ struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants {
 };
 
 
-/* "brainpy\_speedup.pyx":357
+/* "brainpy\_speedup.pyx":359
  * 
  * 
  * cdef class Peak(object):             # <<<<<<<<<<<<<<
@@ -618,8 +618,8 @@ struct __pyx_obj_7brainpy_8_speedup_Peak {
 };
 
 
-/* "brainpy\_speedup.pyx":372
- * 
+/* "brainpy\_speedup.pyx":395
+ *         return Peak, (self.mz, self.intensity, self.charge)
  * 
  * cdef class IsotopicDistribution(object):             # <<<<<<<<<<<<<<
  *     cdef:
@@ -689,15 +689,17 @@ static struct __pyx_vtabstruct_7brainpy_8_speedup_Element *__pyx_vtabptr_7brainp
  */
 
 struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants {
-  struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *(*coefficients)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, struct __pyx_obj_7brainpy_8_speedup_Element *, int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args);
+  struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *(*coefficients)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, struct __pyx_obj_7brainpy_8_speedup_Element *, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args);
+  void (*add_element)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, PyObject *);
+  void (*update_coefficients)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *);
   double (*nth_element_power_sum)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, PyObject *, int);
   double (*nth_modified_element_power_sum)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, PyObject *, int);
 };
 static struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *__pyx_vtabptr_7brainpy_8_speedup_IsotopicConstants;
 
 
-/* "brainpy\_speedup.pyx":372
- * 
+/* "brainpy\_speedup.pyx":395
+ *         return Peak, (self.mz, self.intensity, self.charge)
  * 
  * cdef class IsotopicDistribution(object):             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1006,32 +1008,16 @@ static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
 
-static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
-    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
-
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
-
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
-    const char* function_name);
-
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact);
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
-    PyListObject* L = (PyListObject*) list;
-    Py_ssize_t len = Py_SIZE(list);
-    if (likely(L->allocated > len) & likely(len > (L->allocated >> 1))) {
-        Py_INCREF(x);
-        PyList_SET_ITEM(list, len, x);
-        Py_SIZE(list) = len+1;
-        return 0;
-    }
-    return PyList_Append(list, x);
-}
+static double __Pyx__PyObject_AsDouble(PyObject* obj);
+#if CYTHON_COMPILING_IN_PYPY
+#define __Pyx_PyObject_AsDouble(obj)\
+(likely(PyFloat_CheckExact(obj)) ? PyFloat_AS_DOUBLE(obj) :\
+ likely(PyInt_CheckExact(obj)) ?\
+ PyFloat_AsDouble(obj) : __Pyx__PyObject_AsDouble(obj))
 #else
-#define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
+#define __Pyx_PyObject_AsDouble(obj)\
+((likely(PyFloat_CheckExact(obj))) ?\
+ PyFloat_AS_DOUBLE(obj) : __Pyx__PyObject_AsDouble(obj))
 #endif
 
 #define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
@@ -1055,17 +1041,30 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j
 static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
                                                      int is_list, int wraparound, int boundscheck);
 
-static double __Pyx__PyObject_AsDouble(PyObject* obj);
-#if CYTHON_COMPILING_IN_PYPY
-#define __Pyx_PyObject_AsDouble(obj)\
-(likely(PyFloat_CheckExact(obj)) ? PyFloat_AS_DOUBLE(obj) :\
- likely(PyInt_CheckExact(obj)) ?\
- PyFloat_AsDouble(obj) : __Pyx__PyObject_AsDouble(obj))
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
+    PyListObject* L = (PyListObject*) list;
+    Py_ssize_t len = Py_SIZE(list);
+    if (likely(L->allocated > len) & likely(len > (L->allocated >> 1))) {
+        Py_INCREF(x);
+        PyList_SET_ITEM(list, len, x);
+        Py_SIZE(list) = len+1;
+        return 0;
+    }
+    return PyList_Append(list, x);
+}
 #else
-#define __Pyx_PyObject_AsDouble(obj)\
-((likely(PyFloat_CheckExact(obj))) ?\
- PyFloat_AS_DOUBLE(obj) : __Pyx__PyObject_AsDouble(obj))
+#define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
 #endif
+
+static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
+    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
+
+static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
+
+static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
+    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
+    const char* function_name);
 
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
 
@@ -1241,6 +1240,9 @@ static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
 #define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
 #endif
 
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact);
+
 static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
 
 static CYTHON_INLINE void __Pyx_ExceptionSave(PyObject **type, PyObject **value, PyObject **tb);
@@ -1315,9 +1317,9 @@ static void __Pyx_AddTraceback(const char *funcname, int c_line,
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
-static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
-
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
+
+static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
@@ -1381,7 +1383,9 @@ static PyTypeObject *__Pyx_ImportType(const char *module_name, const char *class
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 static double __pyx_f_7brainpy_8_speedup_7Element_monoisotopic_mass(struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
-static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainpy_8_speedup_17IsotopicConstants_coefficients(CYTHON_UNUSED struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element, int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args); /* proto*/
+static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainpy_8_speedup_17IsotopicConstants_coefficients(CYTHON_UNUSED struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args); /* proto*/
+static void __pyx_f_7brainpy_8_speedup_17IsotopicConstants_add_element(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_symbol); /* proto*/
+static void __pyx_f_7brainpy_8_speedup_17IsotopicConstants_update_coefficients(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self); /* proto*/
 static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_element_power_sum(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_symbol, int __pyx_v_order); /* proto*/
 static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_modified_element_power_sum(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_symbol, int __pyx_v_order); /* proto*/
 static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isotopic_constants(struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
@@ -1430,10 +1434,10 @@ static PyObject *__pyx_v_7brainpy_8_speedup_nist_mass = 0;
 static double __pyx_v_7brainpy_8_speedup_PROTON;
 static PyObject *__pyx_v_7brainpy_8_speedup_periodic_table = 0;
 static double __pyx_f_7brainpy_8_speedup_mass_charge_ratio(double, int, struct __pyx_opt_args_7brainpy_8_speedup_mass_charge_ratio *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(PyObject *, PyObject *, size_t, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *, PyObject *, size_t, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup_newton(PyObject *, PyObject *, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup_vietes(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static void __pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(PyObject *, PyObject *, size_t); /*proto*/
+static void __pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *, PyObject *, size_t); /*proto*/
+static void __pyx_f_7brainpy_8_speedup_newton(PyObject *, PyObject *, int); /*proto*/
+static PyObject *__pyx_f_7brainpy_8_speedup_vietes(PyObject *); /*proto*/
 static int __pyx_f_7brainpy_8_speedup_max_variants(PyObject *); /*proto*/
 static double __pyx_f_7brainpy_8_speedup_calculate_mass(PyObject *, struct __pyx_opt_args_7brainpy_8_speedup_calculate_mass *__pyx_optional_args); /*proto*/
 #define __Pyx_MODULE_NAME "brainpy._speedup"
@@ -1444,12 +1448,15 @@ static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_max;
 static PyObject *__pyx_builtin_sorted;
 static PyObject *__pyx_builtin_Exception;
+static PyObject *__pyx_builtin_all;
 static PyObject *__pyx_builtin_sum;
 static char __pyx_k_H[] = "H+";
 static char __pyx_k_i[] = "i";
 static char __pyx_k_k[] = "k";
 static char __pyx_k_v[] = "v";
+static char __pyx_k_eq[] = "___eq__";
 static char __pyx_k_mz[] = "mz";
+static char __pyx_k_all[] = "all";
 static char __pyx_k_key[] = "key";
 static char __pyx_k_max[] = "max";
 static char __pyx_k_sum[] = "sum";
@@ -1461,6 +1468,7 @@ static char __pyx_k_mass[] = "mass";
 static char __pyx_k_send[] = "send";
 static char __pyx_k_sort[] = "sort";
 static char __pyx_k_test[] = "__test__";
+static char __pyx_k_class[] = "__class__";
 static char __pyx_k_close[] = "close";
 static char __pyx_k_freqs[] = "freqs";
 static char __pyx_k_items[] = "items";
@@ -1469,12 +1477,9 @@ static char __pyx_k_range[] = "range";
 static char __pyx_k_throw[] = "throw";
 static char __pyx_k_charge[] = "charge";
 static char __pyx_k_import[] = "__import__";
-static char __pyx_k_newton[] = "newton";
-static char __pyx_k_ps_vec[] = "ps_vec";
 static char __pyx_k_sorted[] = "sorted";
 static char __pyx_k_symbol[] = "symbol";
 static char __pyx_k_element[] = "element";
-static char __pyx_k_esp_vec[] = "esp_vec";
 static char __pyx_k_reverse[] = "reverse";
 static char __pyx_k_isotopes[] = "isotopes";
 static char __pyx_k_operator[] = "operator";
@@ -1485,18 +1490,15 @@ static char __pyx_k_mass_dict[] = "mass_dict";
 static char __pyx_k_mz_getter[] = "mz_getter";
 static char __pyx_k_nist_mass[] = "nist_mass";
 static char __pyx_k_power_sum[] = "power_sum";
-static char __pyx_k_with_mass[] = "with_mass";
 static char __pyx_k_attrgetter[] = "attrgetter";
 static char __pyx_k_mass_freqs[] = "mass_freqs";
 static char __pyx_k_phi_values[] = "phi_values";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
-static char __pyx_k_add_element[] = "add_element";
 static char __pyx_k_center_mass[] = "center_mass";
 static char __pyx_k_composition[] = "composition";
 static char __pyx_k_isotopes_of[] = "_isotopes_of";
 static char __pyx_k_nist_mass_2[] = "_nist_mass";
 static char __pyx_k_probability[] = "probability";
-static char __pyx_k_coefficients[] = "coefficients";
 static char __pyx_k_mono_neutrons[] = "mono_neutrons";
 static char __pyx_k_neutron_shift[] = "neutron_shift";
 static char __pyx_k_Element___iter[] = "Element.__iter__";
@@ -1506,7 +1508,6 @@ static char __pyx_k_mass_coefficients[] = "mass_coefficients";
 static char __pyx_k_max_neutron_shift[] = "max_neutron_shift";
 static char __pyx_k_monoisotopic_mass[] = "monoisotopic_mass";
 static char __pyx_k_modified_phi_values[] = "modified_phi_values";
-static char __pyx_k_update_coefficients[] = "update_coefficients";
 static char __pyx_k_element_coefficients[] = "element_coefficients";
 static char __pyx_k_isotopes_of_locals_lambda[] = "_isotopes_of.<locals>.<lambda>";
 static char __pyx_k_update_isotopic_constants[] = "_update_isotopic_constants";
@@ -1525,20 +1526,20 @@ static PyObject *__pyx_kp_s_Peak_mz_f_intensity_f_charge_d;
 static PyObject *__pyx_n_s_PolynomialParameters___iter;
 static PyObject *__pyx_kp_s_The_list_of_neutron_shifts_is_no;
 static PyObject *__pyx_n_s_abundance;
-static PyObject *__pyx_n_s_add_element;
+static PyObject *__pyx_n_s_all;
 static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_attrgetter;
 static PyObject *__pyx_n_s_brainpy__speedup;
 static PyObject *__pyx_n_s_center_mass;
 static PyObject *__pyx_n_s_charge;
 static PyObject *__pyx_n_s_charge_carrier;
+static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_close;
-static PyObject *__pyx_n_s_coefficients;
 static PyObject *__pyx_n_s_composition;
 static PyObject *__pyx_n_s_element;
 static PyObject *__pyx_n_s_element_coefficients;
 static PyObject *__pyx_n_s_elementary_symmetric_polynomial;
-static PyObject *__pyx_n_s_esp_vec;
+static PyObject *__pyx_n_s_eq;
 static PyObject *__pyx_n_s_freqs;
 static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_import;
@@ -1564,7 +1565,6 @@ static PyObject *__pyx_n_s_monoisotopic_mass;
 static PyObject *__pyx_n_s_mz;
 static PyObject *__pyx_n_s_mz_getter;
 static PyObject *__pyx_n_s_neutron_shift;
-static PyObject *__pyx_n_s_newton;
 static PyObject *__pyx_n_s_nist_mass;
 static PyObject *__pyx_n_s_nist_mass_2;
 static PyObject *__pyx_n_s_operator;
@@ -1572,7 +1572,6 @@ static PyObject *__pyx_n_s_order;
 static PyObject *__pyx_n_s_phi_values;
 static PyObject *__pyx_n_s_power_sum;
 static PyObject *__pyx_n_s_probability;
-static PyObject *__pyx_n_s_ps_vec;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_reverse;
@@ -1583,14 +1582,8 @@ static PyObject *__pyx_n_s_sum;
 static PyObject *__pyx_n_s_symbol;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_throw;
-static PyObject *__pyx_n_s_update_coefficients;
 static PyObject *__pyx_n_s_update_isotopic_constants;
 static PyObject *__pyx_n_s_v;
-static PyObject *__pyx_n_s_with_mass;
-static PyObject *__pyx_pf_7brainpy_8_speedup__update_elementary_symmetric_polynomial(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, size_t __pyx_v_order); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_2_update_power_sum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ps_vec, PyObject *__pyx_v_esp_vec, size_t __pyx_v_order); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_4newton(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, int __pyx_v_order); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_6vietes(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_coefficients); /* proto */
 static int __pyx_pf_7brainpy_8_speedup_20PolynomialParameters___init__(struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_v_self, PyObject *__pyx_v_elementary_symmetric_polynomial, PyObject *__pyx_v_power_sum); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_20PolynomialParameters_2__iter__(struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_20PolynomialParameters_31elementary_symmetric_polynomial___get__(struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_v_self); /* proto */
@@ -1621,7 +1614,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_7Isotope_13neutron_shift___get__(st
 static int __pyx_pf_7brainpy_8_speedup_7Isotope_13neutron_shift_2__set__(struct __pyx_obj_7brainpy_8_speedup_Isotope *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_lambda_funcdef_lambda(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_x); /* proto */
 static PyObject *__pyx_lambda_funcdef_lambda1(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_x); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_8_isotopes_of(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element); /* proto */
+static PyObject *__pyx_pf_7brainpy_8_speedup__isotopes_of(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element); /* proto */
 static int __pyx_pf_7brainpy_8_speedup_7Element___init__(struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_self, PyObject *__pyx_v_symbol); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_7Element_2__iter__(struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_7Element_5max_neutron_shift(struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_self); /* proto */
@@ -1636,13 +1629,15 @@ static int __pyx_pf_7brainpy_8_speedup_7Element_8isotopes_4__del__(struct __pyx_
 static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants___init__(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_order); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_5order___get__(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self); /* proto */
 static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_5order_2__set__(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_2coefficients(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element, int __pyx_v_with_mass); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_symbol); /* proto */
-static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coefficients(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6_order___get__(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self); /* proto */
 static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6_order_2__set__(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_7brainpy_8_speedup_4Peak___init__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self, PyObject *__pyx_v_mz, PyObject *__pyx_v_intensity, PyObject *__pyx_v_charge); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_2__repr__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_4___eq__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self, PyObject *__pyx_v_other); /* proto */
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_6__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code); /* proto */
+static Py_hash_t __pyx_pf_7brainpy_8_speedup_4Peak_8__hash__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_10clone(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_12__reduce__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_2mz___get__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self); /* proto */
 static int __pyx_pf_7brainpy_8_speedup_4Peak_2mz_2__set__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_9intensity___get__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self); /* proto */
@@ -1684,6 +1679,7 @@ static __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_items = {0, &__pyx_n_s_it
 static __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_keys = {0, &__pyx_n_s_keys, 0, 0, 0};
 static PyObject *__pyx_float_0_;
 static PyObject *__pyx_float_1_0;
+static PyObject *__pyx_float_1eneg_10;
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_1000;
@@ -1813,20 +1809,18 @@ static double __pyx_f_7brainpy_8_speedup_mass_charge_ratio(double __pyx_v_neutra
 /* "brainpy\_speedup.pyx":34
  * 
  * 
- * cpdef _update_elementary_symmetric_polynomial(list power_sum, list elementary_symmetric_polynomial, size_t order):             # <<<<<<<<<<<<<<
+ * cdef void _update_elementary_symmetric_polynomial(list power_sum, list elementary_symmetric_polynomial, size_t order):             # <<<<<<<<<<<<<<
  *     cdef:
  *         size_t begin, end, k, j
  */
 
-static PyObject *__pyx_pw_7brainpy_8_speedup_1_update_elementary_symmetric_polynomial(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, size_t __pyx_v_order, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static void __pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, size_t __pyx_v_order) {
   size_t __pyx_v_begin;
   size_t __pyx_v_end;
   size_t __pyx_v_k;
   size_t __pyx_v_j;
   double __pyx_v_el;
   int __pyx_v_sign;
-  PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   size_t __pyx_t_1;
@@ -1999,7 +1993,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynom
  *             el /= <double>(k)
  *             PyList_Append(elementary_symmetric_polynomial, el)             # <<<<<<<<<<<<<<
  * 
- * cpdef _update_power_sum(list ps_vec, list esp_vec, size_t order):
+ * cdef void _update_power_sum(list ps_vec, list esp_vec, size_t order):
  */
       __pyx_t_10 = PyFloat_FromDouble(__pyx_v_el); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 52; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_10);
@@ -2012,162 +2006,48 @@ static PyObject *__pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynom
   /* "brainpy\_speedup.pyx":34
  * 
  * 
- * cpdef _update_elementary_symmetric_polynomial(list power_sum, list elementary_symmetric_polynomial, size_t order):             # <<<<<<<<<<<<<<
+ * cdef void _update_elementary_symmetric_polynomial(list power_sum, list elementary_symmetric_polynomial, size_t order):             # <<<<<<<<<<<<<<
  *     cdef:
  *         size_t begin, end, k, j
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_AddTraceback("brainpy._speedup._update_elementary_symmetric_polynomial", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
+  __Pyx_WriteUnraisable("brainpy._speedup._update_elementary_symmetric_polynomial", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
   __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_1_update_elementary_symmetric_polynomial(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_1_update_elementary_symmetric_polynomial(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_power_sum = 0;
-  PyObject *__pyx_v_elementary_symmetric_polynomial = 0;
-  size_t __pyx_v_order;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("_update_elementary_symmetric_polynomial (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_power_sum,&__pyx_n_s_elementary_symmetric_polynomial,&__pyx_n_s_order,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_power_sum)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_elementary_symmetric_polynomial)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("_update_elementary_symmetric_polynomial", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-        case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_order)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("_update_elementary_symmetric_polynomial", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_update_elementary_symmetric_polynomial") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-    }
-    __pyx_v_power_sum = ((PyObject*)values[0]);
-    __pyx_v_elementary_symmetric_polynomial = ((PyObject*)values[1]);
-    __pyx_v_order = __Pyx_PyInt_As_size_t(values[2]); if (unlikely((__pyx_v_order == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_update_elementary_symmetric_polynomial", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("brainpy._speedup._update_elementary_symmetric_polynomial", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_power_sum), (&PyList_Type), 1, "power_sum", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_elementary_symmetric_polynomial), (&PyList_Type), 1, "elementary_symmetric_polynomial", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_7brainpy_8_speedup__update_elementary_symmetric_polynomial(__pyx_self, __pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order);
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup__update_elementary_symmetric_polynomial(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, size_t __pyx_v_order) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_TraceDeclarations
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("_update_elementary_symmetric_polynomial", 0);
-  __Pyx_TraceCall("_update_elementary_symmetric_polynomial", __pyx_f[0], 34, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("brainpy._speedup._update_elementary_symmetric_polynomial", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
 /* "brainpy\_speedup.pyx":54
  *             PyList_Append(elementary_symmetric_polynomial, el)
  * 
- * cpdef _update_power_sum(list ps_vec, list esp_vec, size_t order):             # <<<<<<<<<<<<<<
+ * cdef void _update_power_sum(list ps_vec, list esp_vec, size_t order):             # <<<<<<<<<<<<<<
  *     cdef:
  *         size_t begin, end, k, j
  */
 
-static PyObject *__pyx_pw_7brainpy_8_speedup_3_update_power_sum(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *__pyx_v_ps_vec, PyObject *__pyx_v_esp_vec, CYTHON_UNUSED size_t __pyx_v_order, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static void __pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *__pyx_v_ps_vec, PyObject *__pyx_v_esp_vec, CYTHON_UNUSED size_t __pyx_v_order) {
   size_t __pyx_v_begin;
   size_t __pyx_v_end;
   size_t __pyx_v_k;
   size_t __pyx_v_j;
   int __pyx_v_sign;
   double __pyx_v_temp_ps;
-  PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
-  Py_ssize_t __pyx_t_1;
+  size_t __pyx_t_1;
   size_t __pyx_t_2;
-  size_t __pyx_t_3;
+  int __pyx_t_3;
   int __pyx_t_4;
-  int __pyx_t_5;
+  size_t __pyx_t_5;
   size_t __pyx_t_6;
-  size_t __pyx_t_7;
-  PyObject *__pyx_t_8 = NULL;
-  PyObject *__pyx_t_9 = NULL;
+  PyObject *__pyx_t_7;
+  double __pyx_t_8;
+  double __pyx_t_9;
   PyObject *__pyx_t_10 = NULL;
-  PyObject *__pyx_t_11 = NULL;
-  size_t __pyx_t_12;
-  double __pyx_t_13;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2177,68 +2057,54 @@ static PyObject *__pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *__pyx_v_
   /* "brainpy\_speedup.pyx":59
  *         int sign
  *         double temp_ps
- *     begin = len(ps_vec)             # <<<<<<<<<<<<<<
- *     end = len(esp_vec)
+ *     begin = PyList_GET_SIZE(ps_vec)             # <<<<<<<<<<<<<<
+ *     end = PyList_GET_SIZE(esp_vec)
  *     for k in range(begin, end):
  */
-  if (unlikely(__pyx_v_ps_vec == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 59; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_1 = PyList_GET_SIZE(__pyx_v_ps_vec); if (unlikely(__pyx_t_1 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 59; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_begin = __pyx_t_1;
+  __pyx_v_begin = PyList_GET_SIZE(__pyx_v_ps_vec);
 
   /* "brainpy\_speedup.pyx":60
  *         double temp_ps
- *     begin = len(ps_vec)
- *     end = len(esp_vec)             # <<<<<<<<<<<<<<
+ *     begin = PyList_GET_SIZE(ps_vec)
+ *     end = PyList_GET_SIZE(esp_vec)             # <<<<<<<<<<<<<<
  *     for k in range(begin, end):
  *         if k == 0:
  */
-  if (unlikely(__pyx_v_esp_vec == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_1 = PyList_GET_SIZE(__pyx_v_esp_vec); if (unlikely(__pyx_t_1 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_end = __pyx_t_1;
+  __pyx_v_end = PyList_GET_SIZE(__pyx_v_esp_vec);
 
   /* "brainpy\_speedup.pyx":61
- *     begin = len(ps_vec)
- *     end = len(esp_vec)
+ *     begin = PyList_GET_SIZE(ps_vec)
+ *     end = PyList_GET_SIZE(esp_vec)
  *     for k in range(begin, end):             # <<<<<<<<<<<<<<
  *         if k == 0:
- *             ps_vec.append(0.)
+ *             PyList_Append(ps_vec, 0.)
  */
-  __pyx_t_2 = __pyx_v_end;
-  for (__pyx_t_3 = __pyx_v_begin; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_k = __pyx_t_3;
+  __pyx_t_1 = __pyx_v_end;
+  for (__pyx_t_2 = __pyx_v_begin; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+    __pyx_v_k = __pyx_t_2;
 
     /* "brainpy\_speedup.pyx":62
- *     end = len(esp_vec)
+ *     end = PyList_GET_SIZE(esp_vec)
  *     for k in range(begin, end):
  *         if k == 0:             # <<<<<<<<<<<<<<
- *             ps_vec.append(0.)
+ *             PyList_Append(ps_vec, 0.)
  *             continue
  */
-    __pyx_t_4 = ((__pyx_v_k == 0) != 0);
-    if (__pyx_t_4) {
+    __pyx_t_3 = ((__pyx_v_k == 0) != 0);
+    if (__pyx_t_3) {
 
       /* "brainpy\_speedup.pyx":63
  *     for k in range(begin, end):
  *         if k == 0:
- *             ps_vec.append(0.)             # <<<<<<<<<<<<<<
+ *             PyList_Append(ps_vec, 0.)             # <<<<<<<<<<<<<<
  *             continue
  *         temp_ps = 0.
  */
-      if (unlikely(__pyx_v_ps_vec == Py_None)) {
-        PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "append");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      }
-      __pyx_t_5 = __Pyx_PyList_Append(__pyx_v_ps_vec, __pyx_float_0_); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyList_Append(__pyx_v_ps_vec, __pyx_float_0_); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
       /* "brainpy\_speedup.pyx":64
  *         if k == 0:
- *             ps_vec.append(0.)
+ *             PyList_Append(ps_vec, 0.)
  *             continue             # <<<<<<<<<<<<<<
  *         temp_ps = 0.
  *         sign = -1
@@ -2246,16 +2112,16 @@ static PyObject *__pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *__pyx_v_
       goto __pyx_L3_continue;
 
       /* "brainpy\_speedup.pyx":62
- *     end = len(esp_vec)
+ *     end = PyList_GET_SIZE(esp_vec)
  *     for k in range(begin, end):
  *         if k == 0:             # <<<<<<<<<<<<<<
- *             ps_vec.append(0.)
+ *             PyList_Append(ps_vec, 0.)
  *             continue
  */
     }
 
     /* "brainpy\_speedup.pyx":65
- *             ps_vec.append(0.)
+ *             PyList_Append(ps_vec, 0.)
  *             continue
  *         temp_ps = 0.             # <<<<<<<<<<<<<<
  *         sign = -1
@@ -2277,17 +2143,17 @@ static PyObject *__pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *__pyx_v_
  *         sign = -1
  *         for j in range(1, k):             # <<<<<<<<<<<<<<
  *             sign *= -1
- *             temp_ps += sign * esp_vec[j] * ps_vec[k - j]
+ *             temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, j)) * PyFloat_AsDouble(<object>PyList_GET_ITEM(ps_vec, k - j))
  */
-    __pyx_t_6 = __pyx_v_k;
-    for (__pyx_t_7 = 1; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
-      __pyx_v_j = __pyx_t_7;
+    __pyx_t_5 = __pyx_v_k;
+    for (__pyx_t_6 = 1; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_j = __pyx_t_6;
 
       /* "brainpy\_speedup.pyx":68
  *         sign = -1
  *         for j in range(1, k):
  *             sign *= -1             # <<<<<<<<<<<<<<
- *             temp_ps += sign * esp_vec[j] * ps_vec[k - j]
+ *             temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, j)) * PyFloat_AsDouble(<object>PyList_GET_ITEM(ps_vec, k - j))
  *         sign *= -1
  */
       __pyx_v_sign = (__pyx_v_sign * -1L);
@@ -2295,253 +2161,81 @@ static PyObject *__pyx_f_7brainpy_8_speedup__update_power_sum(PyObject *__pyx_v_
       /* "brainpy\_speedup.pyx":69
  *         for j in range(1, k):
  *             sign *= -1
- *             temp_ps += sign * esp_vec[j] * ps_vec[k - j]             # <<<<<<<<<<<<<<
+ *             temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, j)) * PyFloat_AsDouble(<object>PyList_GET_ITEM(ps_vec, k - j))             # <<<<<<<<<<<<<<
  *         sign *= -1
- *         temp_ps += sign * esp_vec[k] * k
+ *         temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, k)) * k
  */
-      __pyx_t_8 = PyFloat_FromDouble(__pyx_v_temp_ps); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_sign); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_9);
-      if (unlikely(__pyx_v_esp_vec == Py_None)) {
-        PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      }
-      __pyx_t_10 = __Pyx_GetItemInt_List(__pyx_v_esp_vec, __pyx_v_j, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_10 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
-      __Pyx_GOTREF(__pyx_t_10);
-      __pyx_t_11 = PyNumber_Multiply(__pyx_t_9, __pyx_t_10); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_11);
-      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-      if (unlikely(__pyx_v_ps_vec == Py_None)) {
-        PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      }
-      __pyx_t_12 = (__pyx_v_k - __pyx_v_j);
-      __pyx_t_10 = __Pyx_GetItemInt_List(__pyx_v_ps_vec, __pyx_t_12, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_10 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
-      __Pyx_GOTREF(__pyx_t_10);
-      __pyx_t_9 = PyNumber_Multiply(__pyx_t_11, __pyx_t_10); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_9);
-      __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-      __pyx_t_10 = PyNumber_InPlaceAdd(__pyx_t_8, __pyx_t_9); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_10);
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      __pyx_t_13 = __pyx_PyFloat_AsDouble(__pyx_t_10); if (unlikely((__pyx_t_13 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-      __pyx_v_temp_ps = __pyx_t_13;
+      __pyx_t_7 = PyList_GET_ITEM(__pyx_v_esp_vec, __pyx_v_j);
+      __pyx_t_8 = PyFloat_AsDouble(((PyObject *)__pyx_t_7)); if (unlikely(__pyx_t_8 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyList_GET_ITEM(__pyx_v_ps_vec, (__pyx_v_k - __pyx_v_j));
+      __pyx_t_9 = PyFloat_AsDouble(((PyObject *)__pyx_t_7)); if (unlikely(__pyx_t_9 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_v_temp_ps = (__pyx_v_temp_ps + ((__pyx_v_sign * __pyx_t_8) * __pyx_t_9));
     }
 
     /* "brainpy\_speedup.pyx":70
  *             sign *= -1
- *             temp_ps += sign * esp_vec[j] * ps_vec[k - j]
+ *             temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, j)) * PyFloat_AsDouble(<object>PyList_GET_ITEM(ps_vec, k - j))
  *         sign *= -1             # <<<<<<<<<<<<<<
- *         temp_ps += sign * esp_vec[k] * k
- *         ps_vec.append(temp_ps)
+ *         temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, k)) * k
+ *         PyList_Append(ps_vec, temp_ps)
  */
     __pyx_v_sign = (__pyx_v_sign * -1L);
 
     /* "brainpy\_speedup.pyx":71
- *             temp_ps += sign * esp_vec[j] * ps_vec[k - j]
+ *             temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, j)) * PyFloat_AsDouble(<object>PyList_GET_ITEM(ps_vec, k - j))
  *         sign *= -1
- *         temp_ps += sign * esp_vec[k] * k             # <<<<<<<<<<<<<<
- *         ps_vec.append(temp_ps)
+ *         temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, k)) * k             # <<<<<<<<<<<<<<
+ *         PyList_Append(ps_vec, temp_ps)
  * 
  */
-    __pyx_t_10 = PyFloat_FromDouble(__pyx_v_temp_ps); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_sign); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_9);
-    if (unlikely(__pyx_v_esp_vec == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_8 = __Pyx_GetItemInt_List(__pyx_v_esp_vec, __pyx_v_k, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_11 = PyNumber_Multiply(__pyx_t_9, __pyx_t_8); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_11);
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyInt_FromSize_t(__pyx_v_k); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_9 = PyNumber_Multiply(__pyx_t_11, __pyx_t_8); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_9);
-    __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyNumber_InPlaceAdd(__pyx_t_10, __pyx_t_9); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_13 = __pyx_PyFloat_AsDouble(__pyx_t_8); if (unlikely((__pyx_t_13 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_v_temp_ps = __pyx_t_13;
+    __pyx_t_7 = PyList_GET_ITEM(__pyx_v_esp_vec, __pyx_v_k);
+    __pyx_t_9 = PyFloat_AsDouble(((PyObject *)__pyx_t_7)); if (unlikely(__pyx_t_9 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_v_temp_ps = (__pyx_v_temp_ps + ((__pyx_v_sign * __pyx_t_9) * __pyx_v_k));
 
     /* "brainpy\_speedup.pyx":72
  *         sign *= -1
- *         temp_ps += sign * esp_vec[k] * k
- *         ps_vec.append(temp_ps)             # <<<<<<<<<<<<<<
+ *         temp_ps += sign * PyFloat_AsDouble(<object>PyList_GET_ITEM(esp_vec, k)) * k
+ *         PyList_Append(ps_vec, temp_ps)             # <<<<<<<<<<<<<<
  * 
- * cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):
+ * cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):
  */
-    if (unlikely(__pyx_v_ps_vec == Py_None)) {
-      PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "append");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_8 = PyFloat_FromDouble(__pyx_v_temp_ps); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_5 = __Pyx_PyList_Append(__pyx_v_ps_vec, __pyx_t_8); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __pyx_t_10 = PyFloat_FromDouble(__pyx_v_temp_ps); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_4 = PyList_Append(__pyx_v_ps_vec, __pyx_t_10); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __pyx_L3_continue:;
   }
 
   /* "brainpy\_speedup.pyx":54
  *             PyList_Append(elementary_symmetric_polynomial, el)
  * 
- * cpdef _update_power_sum(list ps_vec, list esp_vec, size_t order):             # <<<<<<<<<<<<<<
+ * cdef void _update_power_sum(list ps_vec, list esp_vec, size_t order):             # <<<<<<<<<<<<<<
  *     cdef:
  *         size_t begin, end, k, j
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_AddTraceback("brainpy._speedup._update_power_sum", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
+  __Pyx_WriteUnraisable("brainpy._speedup._update_power_sum", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
   __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_3_update_power_sum(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_3_update_power_sum(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_ps_vec = 0;
-  PyObject *__pyx_v_esp_vec = 0;
-  size_t __pyx_v_order;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("_update_power_sum (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_ps_vec,&__pyx_n_s_esp_vec,&__pyx_n_s_order,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_ps_vec)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_esp_vec)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("_update_power_sum", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-        case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_order)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("_update_power_sum", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_update_power_sum") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-    }
-    __pyx_v_ps_vec = ((PyObject*)values[0]);
-    __pyx_v_esp_vec = ((PyObject*)values[1]);
-    __pyx_v_order = __Pyx_PyInt_As_size_t(values[2]); if (unlikely((__pyx_v_order == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_update_power_sum", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("brainpy._speedup._update_power_sum", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ps_vec), (&PyList_Type), 1, "ps_vec", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_esp_vec), (&PyList_Type), 1, "esp_vec", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_2_update_power_sum(__pyx_self, __pyx_v_ps_vec, __pyx_v_esp_vec, __pyx_v_order);
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup_2_update_power_sum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ps_vec, PyObject *__pyx_v_esp_vec, size_t __pyx_v_order) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_TraceDeclarations
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("_update_power_sum", 0);
-  __Pyx_TraceCall("_update_power_sum", __pyx_f[0], 54, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup__update_power_sum(__pyx_v_ps_vec, __pyx_v_esp_vec, __pyx_v_order, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("brainpy._speedup._update_power_sum", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
 /* "brainpy\_speedup.pyx":74
- *         ps_vec.append(temp_ps)
+ *         PyList_Append(ps_vec, temp_ps)
  * 
- * cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):             # <<<<<<<<<<<<<<
- *     if len(power_sum) > len(elementary_symmetric_polynomial):
+ * cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):             # <<<<<<<<<<<<<<
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
  */
 
-static PyObject *__pyx_pw_7brainpy_8_speedup_5newton(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup_newton(PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, int __pyx_v_order, CYTHON_UNUSED int __pyx_skip_dispatch) {
-  PyObject *__pyx_r = NULL;
+static void __pyx_f_7brainpy_8_speedup_newton(PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, int __pyx_v_order) {
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
-  Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  int __pyx_t_3;
-  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_1;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2550,80 +2244,56 @@ static PyObject *__pyx_f_7brainpy_8_speedup_newton(PyObject *__pyx_v_power_sum, 
 
   /* "brainpy\_speedup.pyx":75
  * 
- * cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):
- *     if len(power_sum) > len(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
+ * cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
- *     elif len(power_sum) < len(elementary_symmetric_polynomial):
+ *     elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):
  */
-  if (unlikely(__pyx_v_power_sum == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_1 = PyList_GET_SIZE(__pyx_v_power_sum); if (unlikely(__pyx_t_1 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(__pyx_v_elementary_symmetric_polynomial == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_2 = PyList_GET_SIZE(__pyx_v_elementary_symmetric_polynomial); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_3 = ((__pyx_t_1 > __pyx_t_2) != 0);
-  if (__pyx_t_3) {
+  __pyx_t_1 = ((PyList_GET_SIZE(__pyx_v_power_sum) > PyList_GET_SIZE(__pyx_v_elementary_symmetric_polynomial)) != 0);
+  if (__pyx_t_1) {
 
     /* "brainpy\_speedup.pyx":76
- * cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):
- *     if len(power_sum) > len(elementary_symmetric_polynomial):
+ * cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)             # <<<<<<<<<<<<<<
- *     elif len(power_sum) < len(elementary_symmetric_polynomial):
+ *     elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)
  */
-    __pyx_t_4 = __pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_f_7brainpy_8_speedup__update_elementary_symmetric_polynomial(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order);
 
     /* "brainpy\_speedup.pyx":75
  * 
- * cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):
- *     if len(power_sum) > len(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
+ * cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
- *     elif len(power_sum) < len(elementary_symmetric_polynomial):
+ *     elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):
  */
     goto __pyx_L3;
   }
 
   /* "brainpy\_speedup.pyx":77
- *     if len(power_sum) > len(elementary_symmetric_polynomial):
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
- *     elif len(power_sum) < len(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
+ *     elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
  *         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)
  * 
  */
-  if (unlikely(__pyx_v_power_sum == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_2 = PyList_GET_SIZE(__pyx_v_power_sum); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(__pyx_v_elementary_symmetric_polynomial == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_1 = PyList_GET_SIZE(__pyx_v_elementary_symmetric_polynomial); if (unlikely(__pyx_t_1 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_3 = ((__pyx_t_2 < __pyx_t_1) != 0);
-  if (__pyx_t_3) {
+  __pyx_t_1 = ((PyList_GET_SIZE(__pyx_v_power_sum) < PyList_GET_SIZE(__pyx_v_elementary_symmetric_polynomial)) != 0);
+  if (__pyx_t_1) {
 
     /* "brainpy\_speedup.pyx":78
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
- *     elif len(power_sum) < len(elementary_symmetric_polynomial):
+ *     elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)             # <<<<<<<<<<<<<<
  * 
- * cpdef list vietes(list coefficients):
+ * cdef list vietes(list coefficients):
  */
-    __pyx_t_4 = __pyx_f_7brainpy_8_speedup__update_power_sum(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_f_7brainpy_8_speedup__update_power_sum(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order);
 
     /* "brainpy\_speedup.pyx":77
- *     if len(power_sum) > len(elementary_symmetric_polynomial):
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
- *     elif len(power_sum) < len(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
+ *     elif PyList_GET_SIZE(power_sum) < PyList_GET_SIZE(elementary_symmetric_polynomial):             # <<<<<<<<<<<<<<
  *         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)
  * 
  */
@@ -2631,142 +2301,31 @@ static PyObject *__pyx_f_7brainpy_8_speedup_newton(PyObject *__pyx_v_power_sum, 
   __pyx_L3:;
 
   /* "brainpy\_speedup.pyx":74
- *         ps_vec.append(temp_ps)
+ *         PyList_Append(ps_vec, temp_ps)
  * 
- * cpdef newton(list power_sum, list elementary_symmetric_polynomial, int order):             # <<<<<<<<<<<<<<
- *     if len(power_sum) > len(elementary_symmetric_polynomial):
+ * cdef void newton(list power_sum, list elementary_symmetric_polynomial, int order):             # <<<<<<<<<<<<<<
+ *     if PyList_GET_SIZE(power_sum) > PyList_GET_SIZE(elementary_symmetric_polynomial):
  *         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("brainpy._speedup.newton", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
+  __Pyx_WriteUnraisable("brainpy._speedup.newton", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
   __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_5newton(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_5newton(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_power_sum = 0;
-  PyObject *__pyx_v_elementary_symmetric_polynomial = 0;
-  int __pyx_v_order;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("newton (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_power_sum,&__pyx_n_s_elementary_symmetric_polynomial,&__pyx_n_s_order,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_power_sum)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_elementary_symmetric_polynomial)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("newton", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-        case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_order)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("newton", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "newton") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-    }
-    __pyx_v_power_sum = ((PyObject*)values[0]);
-    __pyx_v_elementary_symmetric_polynomial = ((PyObject*)values[1]);
-    __pyx_v_order = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_order == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("newton", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("brainpy._speedup.newton", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_power_sum), (&PyList_Type), 1, "power_sum", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_elementary_symmetric_polynomial), (&PyList_Type), 1, "elementary_symmetric_polynomial", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_4newton(__pyx_self, __pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order);
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup_4newton(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_power_sum, PyObject *__pyx_v_elementary_symmetric_polynomial, int __pyx_v_order) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_TraceDeclarations
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("newton", 0);
-  __Pyx_TraceCall("newton", __pyx_f[0], 74, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_newton(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, __pyx_v_order, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("brainpy._speedup.newton", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
 /* "brainpy\_speedup.pyx":80
  *         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)
  * 
- * cpdef list vietes(list coefficients):             # <<<<<<<<<<<<<<
+ * cdef list vietes(list coefficients):             # <<<<<<<<<<<<<<
  *     cdef:
  *         list elementary_symmetric_polynomial
  */
 
-static PyObject *__pyx_pw_7brainpy_8_speedup_7vietes(PyObject *__pyx_self, PyObject *__pyx_v_coefficients); /*proto*/
-static PyObject *__pyx_f_7brainpy_8_speedup_vietes(PyObject *__pyx_v_coefficients, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_7brainpy_8_speedup_vietes(PyObject *__pyx_v_coefficients) {
   PyObject *__pyx_v_elementary_symmetric_polynomial = 0;
   double __pyx_v_tail;
   double __pyx_v_el;
@@ -2918,7 +2477,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_vietes(PyObject *__pyx_v_coefficient
   /* "brainpy\_speedup.pyx":80
  *         _update_power_sum(power_sum, elementary_symmetric_polynomial, order)
  * 
- * cpdef list vietes(list coefficients):             # <<<<<<<<<<<<<<
+ * cdef list vietes(list coefficients):             # <<<<<<<<<<<<<<
  *     cdef:
  *         list elementary_symmetric_polynomial
  */
@@ -2932,56 +2491,6 @@ static PyObject *__pyx_f_7brainpy_8_speedup_vietes(PyObject *__pyx_v_coefficient
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_elementary_symmetric_polynomial);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_7vietes(PyObject *__pyx_self, PyObject *__pyx_v_coefficients); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_7vietes(PyObject *__pyx_self, PyObject *__pyx_v_coefficients) {
-  CYTHON_UNUSED int __pyx_lineno = 0;
-  CYTHON_UNUSED const char *__pyx_filename = NULL;
-  CYTHON_UNUSED int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("vietes (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_coefficients), (&PyList_Type), 1, "coefficients", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_6vietes(__pyx_self, ((PyObject*)__pyx_v_coefficients));
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup_6vietes(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_coefficients) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_TraceDeclarations
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("vietes", 0);
-  __Pyx_TraceCall("vietes", __pyx_f[0], 80, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_vietes(__pyx_v_coefficients, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("brainpy._speedup.vietes", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
@@ -5126,13 +4635,13 @@ static double __pyx_f_7brainpy_8_speedup_calculate_mass(PyObject *__pyx_v_compos
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_9_isotopes_of(PyObject *__pyx_self, PyObject *__pyx_v_element); /*proto*/
-static PyMethodDef __pyx_mdef_7brainpy_8_speedup_9_isotopes_of = {"_isotopes_of", (PyCFunction)__pyx_pw_7brainpy_8_speedup_9_isotopes_of, METH_O, 0};
-static PyObject *__pyx_pw_7brainpy_8_speedup_9_isotopes_of(PyObject *__pyx_self, PyObject *__pyx_v_element) {
+static PyObject *__pyx_pw_7brainpy_8_speedup_1_isotopes_of(PyObject *__pyx_self, PyObject *__pyx_v_element); /*proto*/
+static PyMethodDef __pyx_mdef_7brainpy_8_speedup_1_isotopes_of = {"_isotopes_of", (PyCFunction)__pyx_pw_7brainpy_8_speedup_1_isotopes_of, METH_O, 0};
+static PyObject *__pyx_pw_7brainpy_8_speedup_1_isotopes_of(PyObject *__pyx_self, PyObject *__pyx_v_element) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_isotopes_of (wrapper)", 0);
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_8_isotopes_of(__pyx_self, ((PyObject *)__pyx_v_element));
+  __pyx_r = __pyx_pf_7brainpy_8_speedup__isotopes_of(__pyx_self, ((PyObject *)__pyx_v_element));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
@@ -5254,7 +4763,7 @@ static PyObject *__pyx_lambda_funcdef_lambda1(CYTHON_UNUSED PyObject *__pyx_self
  *     for i, mass_freqs in nist_mass[element].items():
  */
 
-static PyObject *__pyx_pf_7brainpy_8_speedup_8_isotopes_of(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element) {
+static PyObject *__pyx_pf_7brainpy_8_speedup__isotopes_of(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element) {
   PyObject *__pyx_v_freqs = NULL;
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_mass_freqs = NULL;
@@ -7211,9 +6720,6 @@ static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_5order_2__set__(struc
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   long __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -7235,29 +6741,9 @@ static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_5order_2__set__(struc
  *             self._order = value
  *             self.update_coefficients()             # <<<<<<<<<<<<<<
  * 
- *     cpdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):
+ *     cdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_coefficients); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_4);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-    }
-  }
-  if (__pyx_t_4) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  } else {
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->__pyx_vtab)->update_coefficients(__pyx_v_self);
 
   /* "brainpy\_speedup.pyx":254
  *             return self._order
@@ -7271,9 +6757,6 @@ static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_5order_2__set__(struc
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("brainpy._speedup.IsotopicConstants.order.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
@@ -7285,13 +6768,12 @@ static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_5order_2__set__(struc
 /* "brainpy\_speedup.pyx":258
  *             self.update_coefficients()
  * 
- *     cpdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):             # <<<<<<<<<<<<<<
+ *     cdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):             # <<<<<<<<<<<<<<
  *         cdef:
  *             int max_isotope_number, current_order
  */
 
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_3coefficients(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainpy_8_speedup_17IsotopicConstants_coefficients(CYTHON_UNUSED struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element, int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args) {
+static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainpy_8_speedup_17IsotopicConstants_coefficients(CYTHON_UNUSED struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args) {
   int __pyx_v_with_mass = ((int)0);
   int __pyx_v_max_isotope_number;
   int __pyx_v_current_order;
@@ -7306,22 +6788,19 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
   struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_1;
+  int __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
-  Py_ssize_t __pyx_t_6;
-  PyObject *__pyx_t_7 = NULL;
-  int __pyx_t_8;
-  int __pyx_t_9;
-  int __pyx_t_10;
-  size_t __pyx_t_11;
-  PyObject *__pyx_t_12;
-  PyObject *__pyx_t_13;
-  double __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  size_t __pyx_t_16;
+  int __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  size_t __pyx_t_8;
+  PyObject *__pyx_t_9;
+  PyObject *__pyx_t_10;
+  double __pyx_t_11;
+  Py_ssize_t __pyx_t_12;
+  size_t __pyx_t_13;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -7332,52 +6811,6 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
       __pyx_v_with_mass = __pyx_optional_args->with_mass;
     }
   }
-  /* Check if called by wrapper */
-  if (unlikely(__pyx_skip_dispatch)) ;
-  /* Check if overridden in Python */
-  else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_coefficients); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_3coefficients)) {
-      __Pyx_XDECREF(((PyObject *)__pyx_r));
-      __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_v_with_mass); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_1);
-      __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
-      __pyx_t_6 = 0;
-      if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
-        __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_4);
-        if (likely(__pyx_t_5)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-          __Pyx_INCREF(__pyx_t_5);
-          __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_4, function);
-          __pyx_t_6 = 1;
-        }
-      }
-      __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_7);
-      if (__pyx_t_5) {
-        __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
-      }
-      __Pyx_INCREF(((PyObject *)__pyx_v_element));
-      __Pyx_GIVEREF(((PyObject *)__pyx_v_element));
-      PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_6, ((PyObject *)__pyx_v_element));
-      __Pyx_GIVEREF(__pyx_t_3);
-      PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_3);
-      __pyx_t_3 = 0;
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_7, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_7brainpy_8_speedup_PolynomialParameters))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      goto __pyx_L0;
-    }
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  }
 
   /* "brainpy\_speedup.pyx":266
  *             size_t isotope_iter, i
@@ -7386,8 +6819,8 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *             if element._mass_elementary_symmetric_polynomial_cache is not None:
  *                 return PolynomialParameters(
  */
-  __pyx_t_8 = (__pyx_v_with_mass != 0);
-  if (__pyx_t_8) {
+  __pyx_t_1 = (__pyx_v_with_mass != 0);
+  if (__pyx_t_1) {
 
     /* "brainpy\_speedup.pyx":267
  * 
@@ -7396,9 +6829,9 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                 return PolynomialParameters(
  *                     list(element._mass_elementary_symmetric_polynomial_cache),
  */
-    __pyx_t_8 = (__pyx_v_element->_mass_elementary_symmetric_polynomial_cache != ((PyObject*)Py_None));
-    __pyx_t_9 = (__pyx_t_8 != 0);
-    if (__pyx_t_9) {
+    __pyx_t_1 = (__pyx_v_element->_mass_elementary_symmetric_polynomial_cache != ((PyObject*)Py_None));
+    __pyx_t_2 = (__pyx_t_1 != 0);
+    if (__pyx_t_2) {
 
       /* "brainpy\_speedup.pyx":268
  *         if with_mass:
@@ -7416,8 +6849,8 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                     list(element._mass_power_sum_cache))
  *         else:
  */
-      __pyx_t_1 = PySequence_List(__pyx_v_element->_mass_elementary_symmetric_polynomial_cache); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 269; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_3 = PySequence_List(__pyx_v_element->_mass_elementary_symmetric_polynomial_cache); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 269; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_3);
 
       /* "brainpy\_speedup.pyx":270
  *                 return PolynomialParameters(
@@ -7426,8 +6859,8 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *         else:
  *             if element._no_mass_elementary_symmetric_polynomial_cache is not None:
  */
-      __pyx_t_2 = PySequence_List(__pyx_v_element->_mass_power_sum_cache); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 270; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_4 = PySequence_List(__pyx_v_element->_mass_power_sum_cache); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 270; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
 
       /* "brainpy\_speedup.pyx":268
  *         if with_mass:
@@ -7436,19 +6869,19 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                     list(element._mass_elementary_symmetric_polynomial_cache),
  *                     list(element._mass_power_sum_cache))
  */
-      __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 268; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 268; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_GIVEREF(__pyx_t_3);
+      PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3);
+      __Pyx_GIVEREF(__pyx_t_4);
+      PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_4);
+      __pyx_t_3 = 0;
+      __pyx_t_4 = 0;
+      __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PolynomialParameters), __pyx_t_5, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 268; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_GIVEREF(__pyx_t_1);
-      PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_2);
-      __pyx_t_1 = 0;
-      __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PolynomialParameters), __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 268; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_2);
-      __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_4);
+      __pyx_t_4 = 0;
       goto __pyx_L0;
 
       /* "brainpy\_speedup.pyx":267
@@ -7478,9 +6911,9 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                     list(element._no_mass_elementary_symmetric_polynomial_cache),
  */
   /*else*/ {
-    __pyx_t_9 = (__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache != ((PyObject*)Py_None));
-    __pyx_t_8 = (__pyx_t_9 != 0);
-    if (__pyx_t_8) {
+    __pyx_t_2 = (__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache != ((PyObject*)Py_None));
+    __pyx_t_1 = (__pyx_t_2 != 0);
+    if (__pyx_t_1) {
 
       /* "brainpy\_speedup.pyx":273
  *         else:
@@ -7498,18 +6931,18 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                     list(element._no_mass_power_sum_cache))
  * 
  */
-      __pyx_t_2 = PySequence_List(__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 274; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_4 = PySequence_List(__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 274; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
 
       /* "brainpy\_speedup.pyx":275
  *                 return PolynomialParameters(
  *                     list(element._no_mass_elementary_symmetric_polynomial_cache),
  *                     list(element._no_mass_power_sum_cache))             # <<<<<<<<<<<<<<
  * 
- * 
+ *         max_isotope_number = element._max_neutron_shift
  */
-      __pyx_t_4 = PySequence_List(__pyx_v_element->_no_mass_power_sum_cache); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 275; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_5 = PySequence_List(__pyx_v_element->_no_mass_power_sum_cache); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 275; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
 
       /* "brainpy\_speedup.pyx":273
  *         else:
@@ -7518,19 +6951,19 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                     list(element._no_mass_elementary_symmetric_polynomial_cache),
  *                     list(element._no_mass_power_sum_cache))
  */
-      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 273; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
+      __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 273; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GIVEREF(__pyx_t_4);
-      PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_4);
-      __pyx_t_2 = 0;
+      PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_5);
+      PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_5);
       __pyx_t_4 = 0;
-      __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PolynomialParameters), __pyx_t_1, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 273; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_4);
-      __pyx_t_4 = 0;
+      __pyx_t_5 = 0;
+      __pyx_t_5 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PolynomialParameters), __pyx_t_3, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 273; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_5);
+      __pyx_t_5 = 0;
       goto __pyx_L0;
 
       /* "brainpy\_speedup.pyx":272
@@ -7544,80 +6977,80 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
   }
   __pyx_L3:;
 
-  /* "brainpy\_speedup.pyx":278
- * 
+  /* "brainpy\_speedup.pyx":277
+ *                     list(element._no_mass_power_sum_cache))
  * 
  *         max_isotope_number = element._max_neutron_shift             # <<<<<<<<<<<<<<
  *         isotope_keys = sorted(element.isotopes, reverse=True)
  *         accumulator = []
  */
-  __pyx_t_10 = __pyx_v_element->_max_neutron_shift;
-  __pyx_v_max_isotope_number = __pyx_t_10;
+  __pyx_t_6 = __pyx_v_element->_max_neutron_shift;
+  __pyx_v_max_isotope_number = __pyx_t_6;
 
-  /* "brainpy\_speedup.pyx":279
+  /* "brainpy\_speedup.pyx":278
  * 
  *         max_isotope_number = element._max_neutron_shift
  *         isotope_keys = sorted(element.isotopes, reverse=True)             # <<<<<<<<<<<<<<
  *         accumulator = []
  *         for isotope_iter in range(PyList_GET_SIZE(isotope_keys)):
  */
-  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_v_element->isotopes);
   __Pyx_GIVEREF(__pyx_v_element->isotopes);
-  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_element->isotopes);
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_reverse, Py_True) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_sorted, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_isotope_keys = ((PyObject*)__pyx_t_2);
-  __pyx_t_2 = 0;
+  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_v_element->isotopes);
+  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_reverse, Py_True) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_sorted, __pyx_t_5, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (!(likely(PyList_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_4)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_isotope_keys = ((PyObject*)__pyx_t_4);
+  __pyx_t_4 = 0;
 
-  /* "brainpy\_speedup.pyx":280
+  /* "brainpy\_speedup.pyx":279
  *         max_isotope_number = element._max_neutron_shift
  *         isotope_keys = sorted(element.isotopes, reverse=True)
  *         accumulator = []             # <<<<<<<<<<<<<<
  *         for isotope_iter in range(PyList_GET_SIZE(isotope_keys)):
  *             isotope = <Isotope>PyDict_GetItem(element.isotopes, <object>PyList_GET_ITEM(isotope_keys, isotope_iter))
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 280; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_v_accumulator = ((PyObject*)__pyx_t_2);
-  __pyx_t_2 = 0;
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 279; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_v_accumulator = ((PyObject*)__pyx_t_4);
+  __pyx_t_4 = 0;
 
-  /* "brainpy\_speedup.pyx":281
+  /* "brainpy\_speedup.pyx":280
  *         isotope_keys = sorted(element.isotopes, reverse=True)
  *         accumulator = []
  *         for isotope_iter in range(PyList_GET_SIZE(isotope_keys)):             # <<<<<<<<<<<<<<
  *             isotope = <Isotope>PyDict_GetItem(element.isotopes, <object>PyList_GET_ITEM(isotope_keys, isotope_iter))
  *             current_order = max_isotope_number - isotope.neutron_shift
  */
-  __pyx_t_6 = PyList_GET_SIZE(__pyx_v_isotope_keys);
-  for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_6; __pyx_t_11+=1) {
-    __pyx_v_isotope_iter = __pyx_t_11;
+  __pyx_t_7 = PyList_GET_SIZE(__pyx_v_isotope_keys);
+  for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
+    __pyx_v_isotope_iter = __pyx_t_8;
 
-    /* "brainpy\_speedup.pyx":282
+    /* "brainpy\_speedup.pyx":281
  *         accumulator = []
  *         for isotope_iter in range(PyList_GET_SIZE(isotope_keys)):
  *             isotope = <Isotope>PyDict_GetItem(element.isotopes, <object>PyList_GET_ITEM(isotope_keys, isotope_iter))             # <<<<<<<<<<<<<<
  *             current_order = max_isotope_number - isotope.neutron_shift
  *             if with_mass:
  */
-    __pyx_t_2 = __pyx_v_element->isotopes;
-    __Pyx_INCREF(__pyx_t_2);
-    __pyx_t_12 = PyList_GET_ITEM(__pyx_v_isotope_keys, __pyx_v_isotope_iter);
-    __pyx_t_13 = PyDict_GetItem(__pyx_t_2, ((PyObject *)__pyx_t_12));
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = ((PyObject *)__pyx_t_13);
-    __Pyx_INCREF(__pyx_t_2);
-    __Pyx_XDECREF_SET(__pyx_v_isotope, ((struct __pyx_obj_7brainpy_8_speedup_Isotope *)__pyx_t_2));
-    __pyx_t_2 = 0;
+    __pyx_t_4 = __pyx_v_element->isotopes;
+    __Pyx_INCREF(__pyx_t_4);
+    __pyx_t_9 = PyList_GET_ITEM(__pyx_v_isotope_keys, __pyx_v_isotope_iter);
+    __pyx_t_10 = PyDict_GetItem(__pyx_t_4, ((PyObject *)__pyx_t_9));
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = ((PyObject *)__pyx_t_10);
+    __Pyx_INCREF(__pyx_t_4);
+    __Pyx_XDECREF_SET(__pyx_v_isotope, ((struct __pyx_obj_7brainpy_8_speedup_Isotope *)__pyx_t_4));
+    __pyx_t_4 = 0;
 
-    /* "brainpy\_speedup.pyx":283
+    /* "brainpy\_speedup.pyx":282
  *         for isotope_iter in range(PyList_GET_SIZE(isotope_keys)):
  *             isotope = <Isotope>PyDict_GetItem(element.isotopes, <object>PyList_GET_ITEM(isotope_keys, isotope_iter))
  *             current_order = max_isotope_number - isotope.neutron_shift             # <<<<<<<<<<<<<<
@@ -7626,27 +7059,27 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  */
     __pyx_v_current_order = (__pyx_v_max_isotope_number - __pyx_v_isotope->neutron_shift);
 
-    /* "brainpy\_speedup.pyx":284
+    /* "brainpy\_speedup.pyx":283
  *             isotope = <Isotope>PyDict_GetItem(element.isotopes, <object>PyList_GET_ITEM(isotope_keys, isotope_iter))
  *             current_order = max_isotope_number - isotope.neutron_shift
  *             if with_mass:             # <<<<<<<<<<<<<<
  *                 coef = isotope.mass
  *             else:
  */
-    __pyx_t_8 = (__pyx_v_with_mass != 0);
-    if (__pyx_t_8) {
+    __pyx_t_1 = (__pyx_v_with_mass != 0);
+    if (__pyx_t_1) {
 
-      /* "brainpy\_speedup.pyx":285
+      /* "brainpy\_speedup.pyx":284
  *             current_order = max_isotope_number - isotope.neutron_shift
  *             if with_mass:
  *                 coef = isotope.mass             # <<<<<<<<<<<<<<
  *             else:
  *                 coef = 1.
  */
-      __pyx_t_14 = __pyx_v_isotope->mass;
-      __pyx_v_coef = __pyx_t_14;
+      __pyx_t_11 = __pyx_v_isotope->mass;
+      __pyx_v_coef = __pyx_t_11;
 
-      /* "brainpy\_speedup.pyx":284
+      /* "brainpy\_speedup.pyx":283
  *             isotope = <Isotope>PyDict_GetItem(element.isotopes, <object>PyList_GET_ITEM(isotope_keys, isotope_iter))
  *             current_order = max_isotope_number - isotope.neutron_shift
  *             if with_mass:             # <<<<<<<<<<<<<<
@@ -7656,7 +7089,7 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
       goto __pyx_L8;
     }
 
-    /* "brainpy\_speedup.pyx":287
+    /* "brainpy\_speedup.pyx":286
  *                 coef = isotope.mass
  *             else:
  *                 coef = 1.             # <<<<<<<<<<<<<<
@@ -7668,51 +7101,51 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
     }
     __pyx_L8:;
 
-    /* "brainpy\_speedup.pyx":289
+    /* "brainpy\_speedup.pyx":288
  *                 coef = 1.
  * 
  *             if current_order > len(accumulator):             # <<<<<<<<<<<<<<
  *                 for i in range(len(accumulator)):
  *                     PyList_Append(accumulator, 0.)
  */
-    __pyx_t_15 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_15 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 289; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_8 = ((__pyx_v_current_order > __pyx_t_15) != 0);
-    if (__pyx_t_8) {
+    __pyx_t_12 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 288; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = ((__pyx_v_current_order > __pyx_t_12) != 0);
+    if (__pyx_t_1) {
 
-      /* "brainpy\_speedup.pyx":290
+      /* "brainpy\_speedup.pyx":289
  * 
  *             if current_order > len(accumulator):
  *                 for i in range(len(accumulator)):             # <<<<<<<<<<<<<<
  *                     PyList_Append(accumulator, 0.)
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  */
-      __pyx_t_15 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_15 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 290; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
-        __pyx_v_i = __pyx_t_16;
+      __pyx_t_12 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 289; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
+        __pyx_v_i = __pyx_t_13;
 
-        /* "brainpy\_speedup.pyx":291
+        /* "brainpy\_speedup.pyx":290
  *             if current_order > len(accumulator):
  *                 for i in range(len(accumulator)):
  *                     PyList_Append(accumulator, 0.)             # <<<<<<<<<<<<<<
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             elif current_order == len(accumulator):
  */
-        __pyx_t_10 = PyList_Append(__pyx_v_accumulator, __pyx_float_0_); if (unlikely(__pyx_t_10 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 291; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = PyList_Append(__pyx_v_accumulator, __pyx_float_0_); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 290; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
 
-      /* "brainpy\_speedup.pyx":292
+      /* "brainpy\_speedup.pyx":291
  *                 for i in range(len(accumulator)):
  *                     PyList_Append(accumulator, 0.)
  *                 PyList_Append(accumulator, isotope.abundance * coef)             # <<<<<<<<<<<<<<
  *             elif current_order == len(accumulator):
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  */
-      __pyx_t_2 = PyFloat_FromDouble((__pyx_v_isotope->abundance * __pyx_v_coef)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 292; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_10 = PyList_Append(__pyx_v_accumulator, __pyx_t_2); if (unlikely(__pyx_t_10 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 292; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_4 = PyFloat_FromDouble((__pyx_v_isotope->abundance * __pyx_v_coef)); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 291; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_6 = PyList_Append(__pyx_v_accumulator, __pyx_t_4); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 291; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "brainpy\_speedup.pyx":289
+      /* "brainpy\_speedup.pyx":288
  *                 coef = 1.
  * 
  *             if current_order > len(accumulator):             # <<<<<<<<<<<<<<
@@ -7722,30 +7155,30 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
       goto __pyx_L9;
     }
 
-    /* "brainpy\_speedup.pyx":293
+    /* "brainpy\_speedup.pyx":292
  *                     PyList_Append(accumulator, 0.)
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             elif current_order == len(accumulator):             # <<<<<<<<<<<<<<
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             else:
  */
-    __pyx_t_15 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_15 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 293; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_8 = ((__pyx_v_current_order == __pyx_t_15) != 0);
-    if (__pyx_t_8) {
+    __pyx_t_12 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 292; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = ((__pyx_v_current_order == __pyx_t_12) != 0);
+    if (__pyx_t_1) {
 
-      /* "brainpy\_speedup.pyx":294
+      /* "brainpy\_speedup.pyx":293
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             elif current_order == len(accumulator):
  *                 PyList_Append(accumulator, isotope.abundance * coef)             # <<<<<<<<<<<<<<
  *             else:
  *                 raise Exception("The list of neutron shifts is not ordered.")
  */
-      __pyx_t_2 = PyFloat_FromDouble((__pyx_v_isotope->abundance * __pyx_v_coef)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 294; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_10 = PyList_Append(__pyx_v_accumulator, __pyx_t_2); if (unlikely(__pyx_t_10 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 294; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_4 = PyFloat_FromDouble((__pyx_v_isotope->abundance * __pyx_v_coef)); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 293; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_6 = PyList_Append(__pyx_v_accumulator, __pyx_t_4); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 293; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "brainpy\_speedup.pyx":293
+      /* "brainpy\_speedup.pyx":292
  *                     PyList_Append(accumulator, 0.)
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             elif current_order == len(accumulator):             # <<<<<<<<<<<<<<
@@ -7755,7 +7188,7 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
       goto __pyx_L9;
     }
 
-    /* "brainpy\_speedup.pyx":296
+    /* "brainpy\_speedup.pyx":295
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             else:
  *                 raise Exception("The list of neutron shifts is not ordered.")             # <<<<<<<<<<<<<<
@@ -7763,103 +7196,101 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *         elementary_symmetric_polynomial = vietes(accumulator)
  */
     /*else*/ {
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 296; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_Raise(__pyx_t_2, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 296; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 295; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_Raise(__pyx_t_4, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 295; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_L9:;
   }
 
-  /* "brainpy\_speedup.pyx":298
+  /* "brainpy\_speedup.pyx":297
  *                 raise Exception("The list of neutron shifts is not ordered.")
  * 
  *         elementary_symmetric_polynomial = vietes(accumulator)             # <<<<<<<<<<<<<<
  *         power_sum = []
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)
  */
-  __pyx_t_2 = __pyx_f_7brainpy_8_speedup_vietes(__pyx_v_accumulator, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 298; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_v_elementary_symmetric_polynomial = ((PyObject*)__pyx_t_2);
-  __pyx_t_2 = 0;
+  __pyx_t_4 = __pyx_f_7brainpy_8_speedup_vietes(__pyx_v_accumulator); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 297; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_v_elementary_symmetric_polynomial = ((PyObject*)__pyx_t_4);
+  __pyx_t_4 = 0;
 
-  /* "brainpy\_speedup.pyx":299
+  /* "brainpy\_speedup.pyx":298
  * 
  *         elementary_symmetric_polynomial = vietes(accumulator)
  *         power_sum = []             # <<<<<<<<<<<<<<
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)
  *         if with_mass:
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 299; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_v_power_sum = ((PyObject*)__pyx_t_2);
-  __pyx_t_2 = 0;
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 298; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_v_power_sum = ((PyObject*)__pyx_t_4);
+  __pyx_t_4 = 0;
 
-  /* "brainpy\_speedup.pyx":300
+  /* "brainpy\_speedup.pyx":299
  *         elementary_symmetric_polynomial = vietes(accumulator)
  *         power_sum = []
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)             # <<<<<<<<<<<<<<
  *         if with_mass:
  *             if element._mass_elementary_symmetric_polynomial_cache is None:
  */
-  __pyx_t_6 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_2 = __pyx_f_7brainpy_8_speedup_newton(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, (__pyx_t_6 - 1), 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = PyList_GET_SIZE(__pyx_v_accumulator); if (unlikely(__pyx_t_7 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 299; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_f_7brainpy_8_speedup_newton(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, (__pyx_t_7 - 1));
 
-  /* "brainpy\_speedup.pyx":301
+  /* "brainpy\_speedup.pyx":300
  *         power_sum = []
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)
  *         if with_mass:             # <<<<<<<<<<<<<<
  *             if element._mass_elementary_symmetric_polynomial_cache is None:
  *                 element._mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)
  */
-  __pyx_t_8 = (__pyx_v_with_mass != 0);
-  if (__pyx_t_8) {
+  __pyx_t_1 = (__pyx_v_with_mass != 0);
+  if (__pyx_t_1) {
 
-    /* "brainpy\_speedup.pyx":302
+    /* "brainpy\_speedup.pyx":301
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)
  *         if with_mass:
  *             if element._mass_elementary_symmetric_polynomial_cache is None:             # <<<<<<<<<<<<<<
  *                 element._mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)
  *                 element._mass_power_sum_cache = list(power_sum)
  */
-    __pyx_t_8 = (__pyx_v_element->_mass_elementary_symmetric_polynomial_cache == ((PyObject*)Py_None));
-    __pyx_t_9 = (__pyx_t_8 != 0);
-    if (__pyx_t_9) {
+    __pyx_t_1 = (__pyx_v_element->_mass_elementary_symmetric_polynomial_cache == ((PyObject*)Py_None));
+    __pyx_t_2 = (__pyx_t_1 != 0);
+    if (__pyx_t_2) {
 
-      /* "brainpy\_speedup.pyx":303
+      /* "brainpy\_speedup.pyx":302
  *         if with_mass:
  *             if element._mass_elementary_symmetric_polynomial_cache is None:
  *                 element._mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)             # <<<<<<<<<<<<<<
  *                 element._mass_power_sum_cache = list(power_sum)
  *         else:
  */
-      __pyx_t_2 = PySequence_List(__pyx_v_elementary_symmetric_polynomial); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 303; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
+      __pyx_t_4 = PySequence_List(__pyx_v_elementary_symmetric_polynomial); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 302; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_4);
       __Pyx_GOTREF(__pyx_v_element->_mass_elementary_symmetric_polynomial_cache);
       __Pyx_DECREF(__pyx_v_element->_mass_elementary_symmetric_polynomial_cache);
-      __pyx_v_element->_mass_elementary_symmetric_polynomial_cache = ((PyObject*)__pyx_t_2);
-      __pyx_t_2 = 0;
+      __pyx_v_element->_mass_elementary_symmetric_polynomial_cache = ((PyObject*)__pyx_t_4);
+      __pyx_t_4 = 0;
 
-      /* "brainpy\_speedup.pyx":304
+      /* "brainpy\_speedup.pyx":303
  *             if element._mass_elementary_symmetric_polynomial_cache is None:
  *                 element._mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)
  *                 element._mass_power_sum_cache = list(power_sum)             # <<<<<<<<<<<<<<
  *         else:
  *             if element._no_mass_elementary_symmetric_polynomial_cache is None:
  */
-      __pyx_t_2 = PySequence_List(__pyx_v_power_sum); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 304; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
+      __pyx_t_4 = PySequence_List(__pyx_v_power_sum); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 303; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_4);
       __Pyx_GOTREF(__pyx_v_element->_mass_power_sum_cache);
       __Pyx_DECREF(__pyx_v_element->_mass_power_sum_cache);
-      __pyx_v_element->_mass_power_sum_cache = ((PyObject*)__pyx_t_2);
-      __pyx_t_2 = 0;
+      __pyx_v_element->_mass_power_sum_cache = ((PyObject*)__pyx_t_4);
+      __pyx_t_4 = 0;
 
-      /* "brainpy\_speedup.pyx":302
+      /* "brainpy\_speedup.pyx":301
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)
  *         if with_mass:
  *             if element._mass_elementary_symmetric_polynomial_cache is None:             # <<<<<<<<<<<<<<
@@ -7868,7 +7299,7 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  */
     }
 
-    /* "brainpy\_speedup.pyx":301
+    /* "brainpy\_speedup.pyx":300
  *         power_sum = []
  *         newton(power_sum, elementary_symmetric_polynomial, len(accumulator) - 1)
  *         if with_mass:             # <<<<<<<<<<<<<<
@@ -7878,7 +7309,7 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
     goto __pyx_L12;
   }
 
-  /* "brainpy\_speedup.pyx":306
+  /* "brainpy\_speedup.pyx":305
  *                 element._mass_power_sum_cache = list(power_sum)
  *         else:
  *             if element._no_mass_elementary_symmetric_polynomial_cache is None:             # <<<<<<<<<<<<<<
@@ -7886,41 +7317,41 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
  *                 element._no_mass_power_sum_cache = list(power_sum)
  */
   /*else*/ {
-    __pyx_t_9 = (__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache == ((PyObject*)Py_None));
-    __pyx_t_8 = (__pyx_t_9 != 0);
-    if (__pyx_t_8) {
+    __pyx_t_2 = (__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache == ((PyObject*)Py_None));
+    __pyx_t_1 = (__pyx_t_2 != 0);
+    if (__pyx_t_1) {
 
-      /* "brainpy\_speedup.pyx":307
+      /* "brainpy\_speedup.pyx":306
  *         else:
  *             if element._no_mass_elementary_symmetric_polynomial_cache is None:
  *                 element._no_mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)             # <<<<<<<<<<<<<<
  *                 element._no_mass_power_sum_cache = list(power_sum)
- * 
+ *         return PolynomialParameters(elementary_symmetric_polynomial, power_sum)
  */
-      __pyx_t_2 = PySequence_List(__pyx_v_elementary_symmetric_polynomial); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 307; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
+      __pyx_t_4 = PySequence_List(__pyx_v_elementary_symmetric_polynomial); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 306; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_4);
       __Pyx_GOTREF(__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache);
       __Pyx_DECREF(__pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache);
-      __pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache = ((PyObject*)__pyx_t_2);
-      __pyx_t_2 = 0;
+      __pyx_v_element->_no_mass_elementary_symmetric_polynomial_cache = ((PyObject*)__pyx_t_4);
+      __pyx_t_4 = 0;
 
-      /* "brainpy\_speedup.pyx":308
+      /* "brainpy\_speedup.pyx":307
  *             if element._no_mass_elementary_symmetric_polynomial_cache is None:
  *                 element._no_mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)
  *                 element._no_mass_power_sum_cache = list(power_sum)             # <<<<<<<<<<<<<<
- * 
  *         return PolynomialParameters(elementary_symmetric_polynomial, power_sum)
+ * 
  */
-      __pyx_t_2 = PySequence_List(__pyx_v_power_sum); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
+      __pyx_t_4 = PySequence_List(__pyx_v_power_sum); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 307; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_4);
       __Pyx_GOTREF(__pyx_v_element->_no_mass_power_sum_cache);
       __Pyx_DECREF(__pyx_v_element->_no_mass_power_sum_cache);
-      __pyx_v_element->_no_mass_power_sum_cache = ((PyObject*)__pyx_t_2);
-      __pyx_t_2 = 0;
+      __pyx_v_element->_no_mass_power_sum_cache = ((PyObject*)__pyx_t_4);
+      __pyx_t_4 = 0;
 
-      /* "brainpy\_speedup.pyx":306
+      /* "brainpy\_speedup.pyx":305
  *                 element._mass_power_sum_cache = list(power_sum)
  *         else:
  *             if element._no_mass_elementary_symmetric_polynomial_cache is None:             # <<<<<<<<<<<<<<
@@ -7931,45 +7362,42 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
   }
   __pyx_L12:;
 
-  /* "brainpy\_speedup.pyx":310
+  /* "brainpy\_speedup.pyx":308
+ *                 element._no_mass_elementary_symmetric_polynomial_cache = list(elementary_symmetric_polynomial)
  *                 element._no_mass_power_sum_cache = list(power_sum)
- * 
  *         return PolynomialParameters(elementary_symmetric_polynomial, power_sum)             # <<<<<<<<<<<<<<
  * 
- *     def add_element(self, str symbol):
+ *     cdef void add_element(self, str symbol):
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_v_elementary_symmetric_polynomial);
   __Pyx_GIVEREF(__pyx_v_elementary_symmetric_polynomial);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_elementary_symmetric_polynomial);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_elementary_symmetric_polynomial);
   __Pyx_INCREF(__pyx_v_power_sum);
   __Pyx_GIVEREF(__pyx_v_power_sum);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_power_sum);
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PolynomialParameters), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_1);
-  __pyx_t_1 = 0;
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_v_power_sum);
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PolynomialParameters), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_3);
+  __pyx_t_3 = 0;
   goto __pyx_L0;
 
   /* "brainpy\_speedup.pyx":258
  *             self.update_coefficients()
  * 
- *     cpdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):             # <<<<<<<<<<<<<<
+ *     cdef PolynomialParameters coefficients(self, Element element, bint with_mass=False):             # <<<<<<<<<<<<<<
  *         cdef:
  *             int max_isotope_number, current_order
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_AddTraceback("brainpy._speedup.IsotopicConstants.coefficients", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -7984,145 +7412,19 @@ static struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_f_7brainp
   return __pyx_r;
 }
 
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_3coefficients(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_3coefficients(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element = 0;
-  int __pyx_v_with_mass;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("coefficients (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_element,&__pyx_n_s_with_mass,0};
-    PyObject* values[2] = {0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_element)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_with_mass);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "coefficients") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_element = ((struct __pyx_obj_7brainpy_8_speedup_Element *)values[0]);
-    if (values[1]) {
-      __pyx_v_with_mass = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_with_mass == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    } else {
-      __pyx_v_with_mass = ((int)0);
-    }
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("coefficients", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("brainpy._speedup.IsotopicConstants.coefficients", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_element), __pyx_ptype_7brainpy_8_speedup_Element, 1, "element", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_2coefficients(((struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self), __pyx_v_element, __pyx_v_with_mass);
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_2coefficients(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element, int __pyx_v_with_mass) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_TraceDeclarations
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients __pyx_t_2;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("coefficients", 0);
-  __Pyx_TraceCall("coefficients", __pyx_f[0], 258, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2.__pyx_n = 1;
-  __pyx_t_2.with_mass = __pyx_v_with_mass;
-  __pyx_t_1 = ((PyObject *)__pyx_vtabptr_7brainpy_8_speedup_IsotopicConstants->coefficients(__pyx_v_self, __pyx_v_element, 1, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 258; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("brainpy._speedup.IsotopicConstants.coefficients", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "brainpy\_speedup.pyx":312
+/* "brainpy\_speedup.pyx":310
  *         return PolynomialParameters(elementary_symmetric_polynomial, power_sum)
  * 
- *     def add_element(self, str symbol):             # <<<<<<<<<<<<<<
+ *     cdef void add_element(self, str symbol):             # <<<<<<<<<<<<<<
  *         cdef:
  *             Element element
  */
 
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_5add_element(PyObject *__pyx_v_self, PyObject *__pyx_v_symbol); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_5add_element(PyObject *__pyx_v_self, PyObject *__pyx_v_symbol) {
-  CYTHON_UNUSED int __pyx_lineno = 0;
-  CYTHON_UNUSED const char *__pyx_filename = NULL;
-  CYTHON_UNUSED int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("add_element (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symbol), (&PyString_Type), 1, "symbol", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 312; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(((struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self), ((PyObject*)__pyx_v_symbol));
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_symbol) {
+static void __pyx_f_7brainpy_8_speedup_17IsotopicConstants_add_element(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self, PyObject *__pyx_v_symbol) {
   struct __pyx_obj_7brainpy_8_speedup_Element *__pyx_v_element = 0;
   int __pyx_v_order;
   struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_v_element_parameters = 0;
   struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *__pyx_v_mass_parameters = 0;
-  PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8136,31 +7438,29 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(st
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_element", 0);
-  __Pyx_TraceCall("add_element", __pyx_f[0], 312, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 312; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("add_element", __pyx_f[0], 310, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":318
+  /* "brainpy\_speedup.pyx":316
  *             PolynomialParameters element_parameters, mass_parameters
  * 
  *         if symbol in self:             # <<<<<<<<<<<<<<
  *             return
  *         element = periodic_table[symbol]
  */
-  __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_v_symbol, ((PyObject *)__pyx_v_self), Py_EQ)); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 318; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_v_symbol, ((PyObject *)__pyx_v_self), Py_EQ)); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 316; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "brainpy\_speedup.pyx":319
+    /* "brainpy\_speedup.pyx":317
  * 
  *         if symbol in self:
  *             return             # <<<<<<<<<<<<<<
  *         element = periodic_table[symbol]
  *         order = element.max_neutron_shift()
  */
-    __Pyx_XDECREF(__pyx_r);
-    __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "brainpy\_speedup.pyx":318
+    /* "brainpy\_speedup.pyx":316
  *             PolynomialParameters element_parameters, mass_parameters
  * 
  *         if symbol in self:             # <<<<<<<<<<<<<<
@@ -8169,7 +7469,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(st
  */
   }
 
-  /* "brainpy\_speedup.pyx":320
+  /* "brainpy\_speedup.pyx":318
  *         if symbol in self:
  *             return
  *         element = periodic_table[symbol]             # <<<<<<<<<<<<<<
@@ -8178,22 +7478,22 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(st
  */
   if (unlikely(__pyx_v_7brainpy_8_speedup_periodic_table == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 318; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_3 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_8_speedup_periodic_table, __pyx_v_symbol); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_3 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_8_speedup_periodic_table, __pyx_v_symbol); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 318; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_3);
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_7brainpy_8_speedup_Element))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_7brainpy_8_speedup_Element))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 318; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_element = ((struct __pyx_obj_7brainpy_8_speedup_Element *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "brainpy\_speedup.pyx":321
+  /* "brainpy\_speedup.pyx":319
  *             return
  *         element = periodic_table[symbol]
  *         order = element.max_neutron_shift()             # <<<<<<<<<<<<<<
  *         element_parameters = self.coefficients(element)
  *         mass_parameters = self.coefficients(element, True)
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_element), __pyx_n_s_max_neutron_shift); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_element), __pyx_n_s_max_neutron_shift); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_4))) {
@@ -8206,30 +7506,30 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(st
     }
   }
   if (__pyx_t_5) {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   } else {
-    __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_order = __pyx_t_6;
 
-  /* "brainpy\_speedup.pyx":322
+  /* "brainpy\_speedup.pyx":320
  *         element = periodic_table[symbol]
  *         order = element.max_neutron_shift()
  *         element_parameters = self.coefficients(element)             # <<<<<<<<<<<<<<
  *         mass_parameters = self.coefficients(element, True)
  *         self[symbol] = PhiConstants(order, element, element_parameters, mass_parameters)
  */
-  __pyx_t_3 = ((PyObject *)((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->__pyx_vtab)->coefficients(__pyx_v_self, __pyx_v_element, 0, NULL)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 322; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = ((PyObject *)((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->__pyx_vtab)->coefficients(__pyx_v_self, __pyx_v_element, NULL)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v_element_parameters = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "brainpy\_speedup.pyx":323
+  /* "brainpy\_speedup.pyx":321
  *         order = element.max_neutron_shift()
  *         element_parameters = self.coefficients(element)
  *         mass_parameters = self.coefficients(element, True)             # <<<<<<<<<<<<<<
@@ -8238,21 +7538,21 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(st
  */
   __pyx_t_7.__pyx_n = 1;
   __pyx_t_7.with_mass = 1;
-  __pyx_t_3 = ((PyObject *)((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->__pyx_vtab)->coefficients(__pyx_v_self, __pyx_v_element, 0, &__pyx_t_7)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 323; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = ((PyObject *)((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->__pyx_vtab)->coefficients(__pyx_v_self, __pyx_v_element, &__pyx_t_7)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v_mass_parameters = ((struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "brainpy\_speedup.pyx":324
+  /* "brainpy\_speedup.pyx":322
  *         element_parameters = self.coefficients(element)
  *         mass_parameters = self.coefficients(element, True)
  *         self[symbol] = PhiConstants(order, element, element_parameters, mass_parameters)             # <<<<<<<<<<<<<<
  * 
- *     def update_coefficients(self):
+ *     cdef void update_coefficients(self):
  */
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_order); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 324; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_order); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 322; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 324; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 322; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3);
@@ -8266,65 +7566,47 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_4add_element(st
   __Pyx_GIVEREF(((PyObject *)__pyx_v_mass_parameters));
   PyTuple_SET_ITEM(__pyx_t_4, 3, ((PyObject *)__pyx_v_mass_parameters));
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PhiConstants), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 324; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_PhiConstants), __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 322; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_v_symbol, __pyx_t_3) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 324; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_v_symbol, __pyx_t_3) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 322; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "brainpy\_speedup.pyx":312
+  /* "brainpy\_speedup.pyx":310
  *         return PolynomialParameters(elementary_symmetric_polynomial, power_sum)
  * 
- *     def add_element(self, str symbol):             # <<<<<<<<<<<<<<
+ *     cdef void add_element(self, str symbol):             # <<<<<<<<<<<<<<
  *         cdef:
  *             Element element
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("brainpy._speedup.IsotopicConstants.add_element", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
+  __Pyx_WriteUnraisable("brainpy._speedup.IsotopicConstants.add_element", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_element);
   __Pyx_XDECREF((PyObject *)__pyx_v_element_parameters);
   __Pyx_XDECREF((PyObject *)__pyx_v_mass_parameters);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":326
+/* "brainpy\_speedup.pyx":324
  *         self[symbol] = PhiConstants(order, element, element_parameters, mass_parameters)
  * 
- *     def update_coefficients(self):             # <<<<<<<<<<<<<<
+ *     cdef void update_coefficients(self):             # <<<<<<<<<<<<<<
  *         cdef:
  *             str symbol
  */
 
-/* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_7update_coefficients(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_7update_coefficients(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("update_coefficients (wrapper)", 0);
-  __pyx_r = __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coefficients(((struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coefficients(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self) {
+static void __pyx_f_7brainpy_8_speedup_17IsotopicConstants_update_coefficients(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *__pyx_v_self) {
   CYTHON_UNUSED PyObject *__pyx_v_symbol = 0;
   struct __pyx_obj_7brainpy_8_speedup_PhiConstants *__pyx_v_phi_constants = 0;
   CYTHON_UNUSED size_t __pyx_v_i;
-  PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8344,16 +7626,16 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("update_coefficients", 0);
-  __Pyx_TraceCall("update_coefficients", __pyx_f[0], 326, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 326; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("update_coefficients", __pyx_f[0], 324, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 324; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":332
+  /* "brainpy\_speedup.pyx":330
  *             size_t i
  * 
  *         for symbol, phi_constants in self.items():             # <<<<<<<<<<<<<<
  *             if self.order < phi_constants.order:
  *                 continue
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -8366,10 +7648,10 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -8377,9 +7659,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
     __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_4 = 0;
     __pyx_t_5 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -8387,17 +7669,17 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -8407,7 +7689,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -8423,7 +7705,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -8436,15 +7718,15 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
       __Pyx_INCREF(__pyx_t_3);
       __Pyx_INCREF(__pyx_t_6);
       #else
-      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       #endif
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_t_8 = Py_TYPE(__pyx_t_7)->tp_iternext;
@@ -8452,7 +7734,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
       __Pyx_GOTREF(__pyx_t_3);
       index = 1; __pyx_t_6 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_6)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_6);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_8 = NULL;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L6_unpacking_done;
@@ -8460,35 +7742,35 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L6_unpacking_done:;
     }
-    if (!(likely(PyString_CheckExact(__pyx_t_3))||((__pyx_t_3) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_3)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_ptype_7brainpy_8_speedup_PhiConstants))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_t_3))||((__pyx_t_3) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_3)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_ptype_7brainpy_8_speedup_PhiConstants))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_XDECREF_SET(__pyx_v_symbol, ((PyObject*)__pyx_t_3));
     __pyx_t_3 = 0;
     __Pyx_XDECREF_SET(__pyx_v_phi_constants, ((struct __pyx_obj_7brainpy_8_speedup_PhiConstants *)__pyx_t_6));
     __pyx_t_6 = 0;
 
-    /* "brainpy\_speedup.pyx":333
+    /* "brainpy\_speedup.pyx":331
  * 
  *         for symbol, phi_constants in self.items():
  *             if self.order < phi_constants.order:             # <<<<<<<<<<<<<<
  *                 continue
  * 
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 333; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 331; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_phi_constants->order); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 333; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_phi_constants->order); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 331; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_6, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 333; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_6, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 331; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_9 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 333; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_9 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 331; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_9) {
 
-      /* "brainpy\_speedup.pyx":334
+      /* "brainpy\_speedup.pyx":332
  *         for symbol, phi_constants in self.items():
  *             if self.order < phi_constants.order:
  *                 continue             # <<<<<<<<<<<<<<
@@ -8497,7 +7779,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_speedup.pyx":333
+      /* "brainpy\_speedup.pyx":331
  * 
  *         for symbol, phi_constants in self.items():
  *             if self.order < phi_constants.order:             # <<<<<<<<<<<<<<
@@ -8506,24 +7788,24 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
  */
     }
 
-    /* "brainpy\_speedup.pyx":336
+    /* "brainpy\_speedup.pyx":334
  *                 continue
  * 
  *             for i in range(phi_constants.order, self.order + 1):             # <<<<<<<<<<<<<<
  *                 phi_constants.element_coefficients.elementary_symmetric_polynomial.append(0.)
  *                 phi_constants.mass_coefficients.elementary_symmetric_polynomial.append(0.)
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 336; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 334; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_6 = __Pyx_PyInt_AddObjC(__pyx_t_3, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 336; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyInt_AddObjC(__pyx_t_3, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 334; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_10 = __Pyx_PyInt_As_long(__pyx_t_6); if (unlikely((__pyx_t_10 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 336; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = __Pyx_PyInt_As_long(__pyx_t_6); if (unlikely((__pyx_t_10 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 334; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     for (__pyx_t_11 = __pyx_v_phi_constants->order; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_i = __pyx_t_11;
 
-      /* "brainpy\_speedup.pyx":337
+      /* "brainpy\_speedup.pyx":335
  * 
  *             for i in range(phi_constants.order, self.order + 1):
  *                 phi_constants.element_coefficients.elementary_symmetric_polynomial.append(0.)             # <<<<<<<<<<<<<<
@@ -8532,11 +7814,11 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
  */
       if (unlikely(__pyx_v_phi_constants->element_coefficients->elementary_symmetric_polynomial == Py_None)) {
         PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "append");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 337; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 335; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_phi_constants->element_coefficients->elementary_symmetric_polynomial, __pyx_float_0_); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 337; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_phi_constants->element_coefficients->elementary_symmetric_polynomial, __pyx_float_0_); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 335; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-      /* "brainpy\_speedup.pyx":338
+      /* "brainpy\_speedup.pyx":336
  *             for i in range(phi_constants.order, self.order + 1):
  *                 phi_constants.element_coefficients.elementary_symmetric_polynomial.append(0.)
  *                 phi_constants.mass_coefficients.elementary_symmetric_polynomial.append(0.)             # <<<<<<<<<<<<<<
@@ -8545,77 +7827,91 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
  */
       if (unlikely(__pyx_v_phi_constants->mass_coefficients->elementary_symmetric_polynomial == Py_None)) {
         PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "append");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 338; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 336; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_phi_constants->mass_coefficients->elementary_symmetric_polynomial, __pyx_float_0_); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 338; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_phi_constants->mass_coefficients->elementary_symmetric_polynomial, __pyx_float_0_); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 336; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
 
-    /* "brainpy\_speedup.pyx":340
+    /* "brainpy\_speedup.pyx":338
  *                 phi_constants.mass_coefficients.elementary_symmetric_polynomial.append(0.)
  * 
  *             phi_constants.order = len(phi_constants.element_coefficients.elementary_symmetric_polynomial)             # <<<<<<<<<<<<<<
- *             newton(*phi_constants.element_coefficients, order=phi_constants.order)
- *             newton(*phi_constants.mass_coefficients, order=phi_constants.order)
+ *             newton(phi_constants.element_coefficients.power_sum,
+ *                    phi_constants.element_coefficients.elementary_symmetric_polynomial,
  */
     __pyx_t_6 = __pyx_v_phi_constants->element_coefficients->elementary_symmetric_polynomial;
     __Pyx_INCREF(__pyx_t_6);
     if (unlikely(__pyx_t_6 == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 340; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 338; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_13 = PyList_GET_SIZE(__pyx_t_6); if (unlikely(__pyx_t_13 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 340; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_13 = PyList_GET_SIZE(__pyx_t_6); if (unlikely(__pyx_t_13 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 338; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_v_phi_constants->order = __pyx_t_13;
 
-    /* "brainpy\_speedup.pyx":341
+    /* "brainpy\_speedup.pyx":339
  * 
  *             phi_constants.order = len(phi_constants.element_coefficients.elementary_symmetric_polynomial)
- *             newton(*phi_constants.element_coefficients, order=phi_constants.order)             # <<<<<<<<<<<<<<
- *             newton(*phi_constants.mass_coefficients, order=phi_constants.order)
- * 
+ *             newton(phi_constants.element_coefficients.power_sum,             # <<<<<<<<<<<<<<
+ *                    phi_constants.element_coefficients.elementary_symmetric_polynomial,
+ *                    phi_constants.order)
  */
-    __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_newton); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 341; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_3 = PySequence_Tuple(((PyObject *)__pyx_v_phi_constants->element_coefficients)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 341; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 341; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_From_int(__pyx_v_phi_constants->order); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 341; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_order, __pyx_t_7) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 341; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 341; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_6 = __pyx_v_phi_constants->element_coefficients->power_sum;
+    __Pyx_INCREF(__pyx_t_6);
+
+    /* "brainpy\_speedup.pyx":340
+ *             phi_constants.order = len(phi_constants.element_coefficients.elementary_symmetric_polynomial)
+ *             newton(phi_constants.element_coefficients.power_sum,
+ *                    phi_constants.element_coefficients.elementary_symmetric_polynomial,             # <<<<<<<<<<<<<<
+ *                    phi_constants.order)
+ *             newton(phi_constants.mass_coefficients.power_sum,
+ */
+    __pyx_t_3 = __pyx_v_phi_constants->element_coefficients->elementary_symmetric_polynomial;
+    __Pyx_INCREF(__pyx_t_3);
+
+    /* "brainpy\_speedup.pyx":339
+ * 
+ *             phi_constants.order = len(phi_constants.element_coefficients.elementary_symmetric_polynomial)
+ *             newton(phi_constants.element_coefficients.power_sum,             # <<<<<<<<<<<<<<
+ *                    phi_constants.element_coefficients.elementary_symmetric_polynomial,
+ *                    phi_constants.order)
+ */
+    __pyx_f_7brainpy_8_speedup_newton(((PyObject*)__pyx_t_6), ((PyObject*)__pyx_t_3), __pyx_v_phi_constants->order);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
     /* "brainpy\_speedup.pyx":342
- *             phi_constants.order = len(phi_constants.element_coefficients.elementary_symmetric_polynomial)
- *             newton(*phi_constants.element_coefficients, order=phi_constants.order)
- *             newton(*phi_constants.mass_coefficients, order=phi_constants.order)             # <<<<<<<<<<<<<<
- * 
- *     cdef double nth_element_power_sum(self, str symbol, int order):
+ *                    phi_constants.element_coefficients.elementary_symmetric_polynomial,
+ *                    phi_constants.order)
+ *             newton(phi_constants.mass_coefficients.power_sum,             # <<<<<<<<<<<<<<
+ *                    phi_constants.mass_coefficients.elementary_symmetric_polynomial,
+ *                    phi_constants.order)
  */
-    __pyx_t_7 = __Pyx_GetModuleGlobalName(__pyx_n_s_newton); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 342; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = PySequence_Tuple(((PyObject *)__pyx_v_phi_constants->mass_coefficients)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 342; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 342; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_phi_constants->order); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 342; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_6);
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_order, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 342; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 342; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_3 = __pyx_v_phi_constants->mass_coefficients->power_sum;
+    __Pyx_INCREF(__pyx_t_3);
+
+    /* "brainpy\_speedup.pyx":343
+ *                    phi_constants.order)
+ *             newton(phi_constants.mass_coefficients.power_sum,
+ *                    phi_constants.mass_coefficients.elementary_symmetric_polynomial,             # <<<<<<<<<<<<<<
+ *                    phi_constants.order)
+ * 
+ */
+    __pyx_t_6 = __pyx_v_phi_constants->mass_coefficients->elementary_symmetric_polynomial;
+    __Pyx_INCREF(__pyx_t_6);
+
+    /* "brainpy\_speedup.pyx":342
+ *                    phi_constants.element_coefficients.elementary_symmetric_polynomial,
+ *                    phi_constants.order)
+ *             newton(phi_constants.mass_coefficients.power_sum,             # <<<<<<<<<<<<<<
+ *                    phi_constants.mass_coefficients.elementary_symmetric_polynomial,
+ *                    phi_constants.order)
+ */
+    __pyx_f_7brainpy_8_speedup_newton(((PyObject*)__pyx_t_3), ((PyObject*)__pyx_t_6), __pyx_v_phi_constants->order);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "brainpy\_speedup.pyx":332
+    /* "brainpy\_speedup.pyx":330
  *             size_t i
  * 
  *         for symbol, phi_constants in self.items():             # <<<<<<<<<<<<<<
@@ -8626,16 +7922,15 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":326
+  /* "brainpy\_speedup.pyx":324
  *         self[symbol] = PhiConstants(order, element, element_parameters, mass_parameters)
  * 
- *     def update_coefficients(self):             # <<<<<<<<<<<<<<
+ *     cdef void update_coefficients(self):             # <<<<<<<<<<<<<<
  *         cdef:
  *             str symbol
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
@@ -8643,19 +7938,16 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6update_coeffic
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("brainpy._speedup.IsotopicConstants.update_coefficients", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
+  __Pyx_WriteUnraisable("brainpy._speedup.IsotopicConstants.update_coefficients", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_symbol);
   __Pyx_XDECREF((PyObject *)__pyx_v_phi_constants);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":344
- *             newton(*phi_constants.mass_coefficients, order=phi_constants.order)
+/* "brainpy\_speedup.pyx":346
+ *                    phi_constants.order)
  * 
  *     cdef double nth_element_power_sum(self, str symbol, int order):             # <<<<<<<<<<<<<<
  *         cdef:
@@ -8674,16 +7966,16 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_element_power_s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("nth_element_power_sum", 0);
-  __Pyx_TraceCall("nth_element_power_sum", __pyx_f[0], 344, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 344; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("nth_element_power_sum", __pyx_f[0], 346, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 346; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":347
+  /* "brainpy\_speedup.pyx":349
  *         cdef:
  *             PhiConstants constants
  *         constants = <PhiConstants>self[symbol]             # <<<<<<<<<<<<<<
  *         return constants.element_coefficients.power_sum[order]
  * 
  */
-  __pyx_t_1 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_symbol); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 347; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_1 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_symbol); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 349; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __pyx_t_1;
   __Pyx_INCREF(__pyx_t_2);
@@ -8691,7 +7983,7 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_element_power_s
   __pyx_v_constants = ((struct __pyx_obj_7brainpy_8_speedup_PhiConstants *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":348
+  /* "brainpy\_speedup.pyx":350
  *             PhiConstants constants
  *         constants = <PhiConstants>self[symbol]
  *         return constants.element_coefficients.power_sum[order]             # <<<<<<<<<<<<<<
@@ -8700,17 +7992,17 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_element_power_s
  */
   if (unlikely(__pyx_v_constants->element_coefficients->power_sum == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 348; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 350; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_constants->element_coefficients->power_sum, __pyx_v_order, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 348; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_constants->element_coefficients->power_sum, __pyx_v_order, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 350; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 348; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 350; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_3;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":344
- *             newton(*phi_constants.mass_coefficients, order=phi_constants.order)
+  /* "brainpy\_speedup.pyx":346
+ *                    phi_constants.order)
  * 
  *     cdef double nth_element_power_sum(self, str symbol, int order):             # <<<<<<<<<<<<<<
  *         cdef:
@@ -8730,7 +8022,7 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_element_power_s
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":350
+/* "brainpy\_speedup.pyx":352
  *         return constants.element_coefficients.power_sum[order]
  * 
  *     cdef double nth_modified_element_power_sum(self, str symbol, int order):             # <<<<<<<<<<<<<<
@@ -8750,16 +8042,16 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_modified_elemen
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("nth_modified_element_power_sum", 0);
-  __Pyx_TraceCall("nth_modified_element_power_sum", __pyx_f[0], 350, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 350; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("nth_modified_element_power_sum", __pyx_f[0], 352, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 352; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":353
+  /* "brainpy\_speedup.pyx":355
  *         cdef:
  *             PhiConstants constants
  *         constants = <PhiConstants>self[symbol]             # <<<<<<<<<<<<<<
  *         return constants.mass_coefficients.power_sum[order]
  * 
  */
-  __pyx_t_1 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_symbol); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 353; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_1 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_symbol); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 355; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __pyx_t_1;
   __Pyx_INCREF(__pyx_t_2);
@@ -8767,7 +8059,7 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_modified_elemen
   __pyx_v_constants = ((struct __pyx_obj_7brainpy_8_speedup_PhiConstants *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":354
+  /* "brainpy\_speedup.pyx":356
  *             PhiConstants constants
  *         constants = <PhiConstants>self[symbol]
  *         return constants.mass_coefficients.power_sum[order]             # <<<<<<<<<<<<<<
@@ -8776,16 +8068,16 @@ static double __pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_modified_elemen
  */
   if (unlikely(__pyx_v_constants->mass_coefficients->power_sum == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 354; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 356; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_constants->mass_coefficients->power_sum, __pyx_v_order, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 354; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_constants->mass_coefficients->power_sum, __pyx_v_order, int, 1, __Pyx_PyInt_From_int, 1, 1, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 356; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 354; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 356; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_3;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":350
+  /* "brainpy\_speedup.pyx":352
  *         return constants.element_coefficients.power_sum[order]
  * 
  *     cdef double nth_modified_element_power_sum(self, str symbol, int order):             # <<<<<<<<<<<<<<
@@ -8894,7 +8186,7 @@ static int __pyx_pf_7brainpy_8_speedup_17IsotopicConstants_6_order_2__set__(stru
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":363
+/* "brainpy\_speedup.pyx":365
  *         public int charge
  * 
  *     def __init__(self, mz, intensity, charge):             # <<<<<<<<<<<<<<
@@ -8935,16 +8227,16 @@ static int __pyx_pw_7brainpy_8_speedup_4Peak_1__init__(PyObject *__pyx_v_self, P
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_intensity)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 365; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_charge)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 365; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 365; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -8959,7 +8251,7 @@ static int __pyx_pw_7brainpy_8_speedup_4Peak_1__init__(PyObject *__pyx_v_self, P
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 365; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("brainpy._speedup.Peak.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -8982,39 +8274,39 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak___init__(struct __pyx_obj_7brainpy_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
-  __Pyx_TraceCall("__init__", __pyx_f[0], 363, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__init__", __pyx_f[0], 365, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 365; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":364
+  /* "brainpy\_speedup.pyx":366
  * 
  *     def __init__(self, mz, intensity, charge):
  *         self.mz = mz             # <<<<<<<<<<<<<<
  *         self.intensity = intensity
  *         self.charge = charge
  */
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_mz); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 364; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_mz); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 366; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->mz = __pyx_t_1;
 
-  /* "brainpy\_speedup.pyx":365
+  /* "brainpy\_speedup.pyx":367
  *     def __init__(self, mz, intensity, charge):
  *         self.mz = mz
  *         self.intensity = intensity             # <<<<<<<<<<<<<<
  *         self.charge = charge
  * 
  */
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_intensity); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 365; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_intensity); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 367; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->intensity = __pyx_t_1;
 
-  /* "brainpy\_speedup.pyx":366
+  /* "brainpy\_speedup.pyx":368
  *         self.mz = mz
  *         self.intensity = intensity
  *         self.charge = charge             # <<<<<<<<<<<<<<
  * 
  *     def __repr__(self):
  */
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_charge); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 366; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_charge); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 368; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->charge = __pyx_t_2;
 
-  /* "brainpy\_speedup.pyx":363
+  /* "brainpy\_speedup.pyx":365
  *         public int charge
  * 
  *     def __init__(self, mz, intensity, charge):             # <<<<<<<<<<<<<<
@@ -9034,7 +8326,7 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak___init__(struct __pyx_obj_7brainpy_
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":368
+/* "brainpy\_speedup.pyx":370
  *         self.charge = charge
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -9067,23 +8359,23 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_2__repr__(struct __pyx_obj_7b
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
-  __Pyx_TraceCall("__repr__", __pyx_f[0], 368, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 368; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__repr__", __pyx_f[0], 370, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 370; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":369
+  /* "brainpy\_speedup.pyx":371
  * 
  *     def __repr__(self):
  *         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)             # <<<<<<<<<<<<<<
  * 
- * 
+ *     def ___eq__(self, other):  # pragma: no cover
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 369; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 369; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 369; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 369; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -9094,14 +8386,14 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_2__repr__(struct __pyx_obj_7b
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_Peak_mz_f_intensity_f_charge_d, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 369; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_Peak_mz_f_intensity_f_charge_d, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":368
+  /* "brainpy\_speedup.pyx":370
  *         self.charge = charge
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -9124,7 +8416,621 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_2__repr__(struct __pyx_obj_7b
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":359
+/* "brainpy\_speedup.pyx":373
+ *         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
+ * 
+ *     def ___eq__(self, other):  # pragma: no cover             # <<<<<<<<<<<<<<
+ *         equal = all(
+ *             abs(self.mz - other.mz) < 1e-10,
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_5___eq__(PyObject *__pyx_v_self, PyObject *__pyx_v_other); /*proto*/
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_5___eq__(PyObject *__pyx_v_self, PyObject *__pyx_v_other) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("___eq__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7brainpy_8_speedup_4Peak_4___eq__(((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_v_self), ((PyObject *)__pyx_v_other));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_4___eq__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self, PyObject *__pyx_v_other) {
+  PyObject *__pyx_v_equal = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("___eq__", 0);
+  __Pyx_TraceCall("___eq__", __pyx_f[0], 373, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+
+  /* "brainpy\_speedup.pyx":375
+ *     def ___eq__(self, other):  # pragma: no cover
+ *         equal = all(
+ *             abs(self.mz - other.mz) < 1e-10,             # <<<<<<<<<<<<<<
+ *             abs(self.intensity - other.intensity) < 1e-10,
+ *             self.charge == other.charge)
+ */
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = PyNumber_Subtract(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_float_1eneg_10, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "brainpy\_speedup.pyx":376
+ *         equal = all(
+ *             abs(self.mz - other.mz) < 1e-10,
+ *             abs(self.intensity - other.intensity) < 1e-10,             # <<<<<<<<<<<<<<
+ *             self.charge == other.charge)
+ *         return equal
+ */
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = PyNumber_Subtract(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyNumber_Absolute(__pyx_t_4); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_float_1eneg_10, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "brainpy\_speedup.pyx":377
+ *             abs(self.mz - other.mz) < 1e-10,
+ *             abs(self.intensity - other.intensity) < 1e-10,
+ *             self.charge == other.charge)             # <<<<<<<<<<<<<<
+ *         return equal
+ * 
+ */
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_charge); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "brainpy\_speedup.pyx":374
+ * 
+ *     def ___eq__(self, other):  # pragma: no cover
+ *         equal = all(             # <<<<<<<<<<<<<<
+ *             abs(self.mz - other.mz) < 1e-10,
+ *             abs(self.intensity - other.intensity) < 1e-10,
+ */
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_5);
+  __pyx_t_3 = 0;
+  __pyx_t_4 = 0;
+  __pyx_t_5 = 0;
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_all, __pyx_t_2, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_equal = __pyx_t_5;
+  __pyx_t_5 = 0;
+
+  /* "brainpy\_speedup.pyx":378
+ *             abs(self.intensity - other.intensity) < 1e-10,
+ *             self.charge == other.charge)
+ *         return equal             # <<<<<<<<<<<<<<
+ * 
+ *     def __richcmp__(self, other, int code):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_equal);
+  __pyx_r = __pyx_v_equal;
+  goto __pyx_L0;
+
+  /* "brainpy\_speedup.pyx":373
+ *         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
+ * 
+ *     def ___eq__(self, other):  # pragma: no cover             # <<<<<<<<<<<<<<
+ *         equal = all(
+ *             abs(self.mz - other.mz) < 1e-10,
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_AddTraceback("brainpy._speedup.Peak.___eq__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_equal);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_speedup.pyx":380
+ *         return equal
+ * 
+ *     def __richcmp__(self, other, int code):             # <<<<<<<<<<<<<<
+ *         if code == 2:
+ *             return self.___eq__(other)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_7__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code); /*proto*/
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_7__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__richcmp__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7brainpy_8_speedup_4Peak_6__richcmp__(((PyObject *)__pyx_v_self), ((PyObject *)__pyx_v_other), ((int)__pyx_v_code));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_6__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_5;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__richcmp__", 0);
+  __Pyx_TraceCall("__richcmp__", __pyx_f[0], 380, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+
+  /* "brainpy\_speedup.pyx":381
+ * 
+ *     def __richcmp__(self, other, int code):
+ *         if code == 2:             # <<<<<<<<<<<<<<
+ *             return self.___eq__(other)
+ *         elif code == 3:
+ */
+  switch (__pyx_v_code) {
+    case 2:
+
+    /* "brainpy\_speedup.pyx":382
+ *     def __richcmp__(self, other, int code):
+ *         if code == 2:
+ *             return self.___eq__(other)             # <<<<<<<<<<<<<<
+ *         elif code == 3:
+ *             return not self.___eq__(other)
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_eq); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    if (!__pyx_t_3) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_1);
+    } else {
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
+      __Pyx_INCREF(__pyx_v_other);
+      __Pyx_GIVEREF(__pyx_v_other);
+      PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_other);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_r = __pyx_t_1;
+    __pyx_t_1 = 0;
+    goto __pyx_L0;
+
+    /* "brainpy\_speedup.pyx":381
+ * 
+ *     def __richcmp__(self, other, int code):
+ *         if code == 2:             # <<<<<<<<<<<<<<
+ *             return self.___eq__(other)
+ *         elif code == 3:
+ */
+    break;
+
+    /* "brainpy\_speedup.pyx":383
+ *         if code == 2:
+ *             return self.___eq__(other)
+ *         elif code == 3:             # <<<<<<<<<<<<<<
+ *             return not self.___eq__(other)
+ * 
+ */
+    case 3:
+
+    /* "brainpy\_speedup.pyx":384
+ *             return self.___eq__(other)
+ *         elif code == 3:
+ *             return not self.___eq__(other)             # <<<<<<<<<<<<<<
+ * 
+ *     def __hash__(self):  # pragma: no cover
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_eq); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    if (!__pyx_t_4) {
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_1);
+    } else {
+      __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
+      __Pyx_INCREF(__pyx_v_other);
+      __Pyx_GIVEREF(__pyx_v_other);
+      PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_other);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyBool_FromLong((!__pyx_t_5)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_r = __pyx_t_1;
+    __pyx_t_1 = 0;
+    goto __pyx_L0;
+
+    /* "brainpy\_speedup.pyx":383
+ *         if code == 2:
+ *             return self.___eq__(other)
+ *         elif code == 3:             # <<<<<<<<<<<<<<
+ *             return not self.___eq__(other)
+ * 
+ */
+    break;
+    default: break;
+  }
+
+  /* "brainpy\_speedup.pyx":380
+ *         return equal
+ * 
+ *     def __richcmp__(self, other, int code):             # <<<<<<<<<<<<<<
+ *         if code == 2:
+ *             return self.___eq__(other)
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("brainpy._speedup.Peak.__richcmp__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_speedup.pyx":386
+ *             return not self.___eq__(other)
+ * 
+ *     def __hash__(self):  # pragma: no cover             # <<<<<<<<<<<<<<
+ *         return hash(self.mz)
+ * 
+ */
+
+/* Python wrapper */
+static Py_hash_t __pyx_pw_7brainpy_8_speedup_4Peak_9__hash__(PyObject *__pyx_v_self); /*proto*/
+static Py_hash_t __pyx_pw_7brainpy_8_speedup_4Peak_9__hash__(PyObject *__pyx_v_self) {
+  Py_hash_t __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__hash__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7brainpy_8_speedup_4Peak_8__hash__(((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static Py_hash_t __pyx_pf_7brainpy_8_speedup_4Peak_8__hash__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self) {
+  Py_hash_t __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  Py_hash_t __pyx_t_2;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__hash__", 0);
+  __Pyx_TraceCall("__hash__", __pyx_f[0], 386, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 386; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+
+  /* "brainpy\_speedup.pyx":387
+ * 
+ *     def __hash__(self):  # pragma: no cover
+ *         return hash(self.mz)             # <<<<<<<<<<<<<<
+ * 
+ *     def clone(self):  # pragma: no cover
+ */
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 387; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyObject_Hash(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 387; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_2;
+  goto __pyx_L0;
+
+  /* "brainpy\_speedup.pyx":386
+ *             return not self.___eq__(other)
+ * 
+ *     def __hash__(self):  # pragma: no cover             # <<<<<<<<<<<<<<
+ *         return hash(self.mz)
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("brainpy._speedup.Peak.__hash__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  if (unlikely(__pyx_r == -1) && !PyErr_Occurred()) __pyx_r = -2;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_speedup.pyx":389
+ *         return hash(self.mz)
+ * 
+ *     def clone(self):  # pragma: no cover             # <<<<<<<<<<<<<<
+ *         return self.__class__(self.mz, self.intensity, self.charge)
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_11clone(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_11clone(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("clone (wrapper)", 0);
+  __pyx_r = __pyx_pf_7brainpy_8_speedup_4Peak_10clone(((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_10clone(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  Py_ssize_t __pyx_t_7;
+  PyObject *__pyx_t_8 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("clone", 0);
+  __Pyx_TraceCall("clone", __pyx_f[0], 389, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 389; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+
+  /* "brainpy\_speedup.pyx":390
+ * 
+ *     def clone(self):  # pragma: no cover
+ *         return self.__class__(self.mz, self.intensity, self.charge)             # <<<<<<<<<<<<<<
+ * 
+ *     def __reduce__(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_6 = NULL;
+  __pyx_t_7 = 0;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_6)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_6);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_7 = 1;
+    }
+  }
+  __pyx_t_8 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_8);
+  if (__pyx_t_6) {
+    __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
+  }
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_8, 0+__pyx_t_7, __pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_7, __pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_8, 2+__pyx_t_7, __pyx_t_5);
+  __pyx_t_3 = 0;
+  __pyx_t_4 = 0;
+  __pyx_t_5 = 0;
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "brainpy\_speedup.pyx":389
+ *         return hash(self.mz)
+ * 
+ *     def clone(self):  # pragma: no cover             # <<<<<<<<<<<<<<
+ *         return self.__class__(self.mz, self.intensity, self.charge)
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_AddTraceback("brainpy._speedup.Peak.clone", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_speedup.pyx":392
+ *         return self.__class__(self.mz, self.intensity, self.charge)
+ * 
+ *     def __reduce__(self):             # <<<<<<<<<<<<<<
+ *         return Peak, (self.mz, self.intensity, self.charge)
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_13__reduce__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_7brainpy_8_speedup_4Peak_13__reduce__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__reduce__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7brainpy_8_speedup_4Peak_12__reduce__(((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_12__reduce__(struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__reduce__", 0);
+  __Pyx_TraceCall("__reduce__", __pyx_f[0], 392, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 392; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+
+  /* "brainpy\_speedup.pyx":393
+ * 
+ *     def __reduce__(self):
+ *         return Peak, (self.mz, self.intensity, self.charge)             # <<<<<<<<<<<<<<
+ * 
+ * cdef class IsotopicDistribution(object):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 393; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 393; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 393; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 393; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_t_3);
+  __pyx_t_1 = 0;
+  __pyx_t_2 = 0;
+  __pyx_t_3 = 0;
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 393; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_INCREF(((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak));
+  __Pyx_GIVEREF(((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak));
+  PyTuple_SET_ITEM(__pyx_t_3, 0, ((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak));
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_4);
+  __pyx_t_4 = 0;
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
+  goto __pyx_L0;
+
+  /* "brainpy\_speedup.pyx":392
+ *         return self.__class__(self.mz, self.intensity, self.charge)
+ * 
+ *     def __reduce__(self):             # <<<<<<<<<<<<<<
+ *         return Peak, (self.mz, self.intensity, self.charge)
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("brainpy._speedup.Peak.__reduce__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_speedup.pyx":361
  * cdef class Peak(object):
  *     cdef:
  *         public double mz             # <<<<<<<<<<<<<<
@@ -9154,9 +9060,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_2mz___get__(struct __pyx_obj_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 359, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 361, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9196,8 +9102,8 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak_2mz_2__set__(struct __pyx_obj_7brai
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 359, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 361, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->mz = __pyx_t_1;
 
   /* function exit code */
@@ -9212,7 +9118,7 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak_2mz_2__set__(struct __pyx_obj_7brai
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":360
+/* "brainpy\_speedup.pyx":362
  *     cdef:
  *         public double mz
  *         public double intensity             # <<<<<<<<<<<<<<
@@ -9242,9 +9148,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_9intensity___get__(struct __p
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 360, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 360; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 362, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 362; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 360; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 362; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9284,8 +9190,8 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak_9intensity_2__set__(struct __pyx_ob
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 360, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 360; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 360; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 362, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 362; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 362; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->intensity = __pyx_t_1;
 
   /* function exit code */
@@ -9300,7 +9206,7 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak_9intensity_2__set__(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":361
+/* "brainpy\_speedup.pyx":363
  *         public double mz
  *         public double intensity
  *         public int charge             # <<<<<<<<<<<<<<
@@ -9330,9 +9236,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_4Peak_6charge___get__(struct __pyx_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 361, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 363, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9372,8 +9278,8 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak_6charge_2__set__(struct __pyx_obj_7
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 361, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 361; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 363, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 363; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->charge = __pyx_t_1;
 
   /* function exit code */
@@ -9388,7 +9294,7 @@ static int __pyx_pf_7brainpy_8_speedup_4Peak_6charge_2__set__(struct __pyx_obj_7
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":380
+/* "brainpy\_speedup.pyx":403
  *         public Peak monoisotopic_peak
  * 
  *     def __init__(self, composition, order=-1):             # <<<<<<<<<<<<<<
@@ -9432,7 +9338,7 @@ static int __pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_1__init__(PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -9447,7 +9353,7 @@ static int __pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_1__init__(PyObject
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("brainpy._speedup.IsotopicDistribution.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -9470,21 +9376,21 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
-  __Pyx_TraceCall("__init__", __pyx_f[0], 380, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__init__", __pyx_f[0], 403, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":381
+  /* "brainpy\_speedup.pyx":404
  * 
  *     def __init__(self, composition, order=-1):
  *         self.composition = dict(composition)             # <<<<<<<<<<<<<<
  *         self._isotopic_constants = IsotopicConstants(order)
  *         self._order = 0
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 404; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_composition);
   __Pyx_GIVEREF(__pyx_v_composition);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_composition);
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 404; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_GIVEREF(__pyx_t_2);
@@ -9493,19 +9399,19 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
   __pyx_v_self->composition = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":382
+  /* "brainpy\_speedup.pyx":405
  *     def __init__(self, composition, order=-1):
  *         self.composition = dict(composition)
  *         self._isotopic_constants = IsotopicConstants(order)             # <<<<<<<<<<<<<<
  *         self._order = 0
  *         self.order = order
  */
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 405; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_order);
   __Pyx_GIVEREF(__pyx_v_order);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_order);
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_IsotopicConstants), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_IsotopicConstants), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 405; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_GIVEREF(__pyx_t_1);
@@ -9514,7 +9420,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
   __pyx_v_self->_isotopic_constants = ((struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":383
+  /* "brainpy\_speedup.pyx":406
  *         self.composition = dict(composition)
  *         self._isotopic_constants = IsotopicConstants(order)
  *         self._order = 0             # <<<<<<<<<<<<<<
@@ -9523,16 +9429,16 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
  */
   __pyx_v_self->_order = 0;
 
-  /* "brainpy\_speedup.pyx":384
+  /* "brainpy\_speedup.pyx":407
  *         self._isotopic_constants = IsotopicConstants(order)
  *         self._order = 0
  *         self.order = order             # <<<<<<<<<<<<<<
  *         self.average_mass = 0.
  *         self.monoisotopic_peak = self._create_monoisotopic_peak()
  */
-  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order, __pyx_v_order) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order, __pyx_v_order) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 407; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_speedup.pyx":385
+  /* "brainpy\_speedup.pyx":408
  *         self._order = 0
  *         self.order = order
  *         self.average_mass = 0.             # <<<<<<<<<<<<<<
@@ -9541,14 +9447,14 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
  */
   __pyx_v_self->average_mass = 0.;
 
-  /* "brainpy\_speedup.pyx":386
+  /* "brainpy\_speedup.pyx":409
  *         self.order = order
  *         self.average_mass = 0.
  *         self.monoisotopic_peak = self._create_monoisotopic_peak()             # <<<<<<<<<<<<<<
  * 
  *     property order:
  */
-  __pyx_t_1 = ((PyObject *)((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_create_monoisotopic_peak(__pyx_v_self)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 386; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((PyObject *)((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_create_monoisotopic_peak(__pyx_v_self)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 409; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->monoisotopic_peak);
@@ -9556,7 +9462,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
   __pyx_v_self->monoisotopic_peak = ((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":380
+  /* "brainpy\_speedup.pyx":403
  *         public Peak monoisotopic_peak
  * 
  *     def __init__(self, composition, order=-1):             # <<<<<<<<<<<<<<
@@ -9578,7 +9484,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution___init__(struct __
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":389
+/* "brainpy\_speedup.pyx":412
  * 
  *     property order:
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -9608,9 +9514,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order___get
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 389, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 389; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 412, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 412; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":390
+  /* "brainpy\_speedup.pyx":413
  *     property order:
  *         def __get__(self):
  *             return self._order             # <<<<<<<<<<<<<<
@@ -9618,13 +9524,13 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order___get
  *         def __set__(self, value):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 390; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":389
+  /* "brainpy\_speedup.pyx":412
  * 
  *     property order:
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -9644,7 +9550,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order___get
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":392
+/* "brainpy\_speedup.pyx":415
  *             return self._order
  * 
  *         def __set__(self, value):             # <<<<<<<<<<<<<<
@@ -9680,9 +9586,9 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 392, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 392; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__set__", __pyx_f[0], 415, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":393
+  /* "brainpy\_speedup.pyx":416
  * 
  *         def __set__(self, value):
  *             max_variant_count = max_variants(self.composition)             # <<<<<<<<<<<<<<
@@ -9694,20 +9600,20 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
   __pyx_v_max_variant_count = __pyx_f_7brainpy_8_speedup_max_variants(((PyObject*)__pyx_t_1));
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":394
+  /* "brainpy\_speedup.pyx":417
  *         def __set__(self, value):
  *             max_variant_count = max_variants(self.composition)
  *             if value == -1:             # <<<<<<<<<<<<<<
  *                 self._order = max_variant_count
  *             else:
  */
-  __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_v_value, __pyx_int_neg_1, -1L, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 394; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_v_value, __pyx_int_neg_1, -1L, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 417; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 394; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 417; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "brainpy\_speedup.pyx":395
+    /* "brainpy\_speedup.pyx":418
  *             max_variant_count = max_variants(self.composition)
  *             if value == -1:
  *                 self._order = max_variant_count             # <<<<<<<<<<<<<<
@@ -9716,7 +9622,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
  */
     __pyx_v_self->_order = __pyx_v_max_variant_count;
 
-    /* "brainpy\_speedup.pyx":394
+    /* "brainpy\_speedup.pyx":417
  *         def __set__(self, value):
  *             max_variant_count = max_variants(self.composition)
  *             if value == -1:             # <<<<<<<<<<<<<<
@@ -9726,7 +9632,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
     goto __pyx_L3;
   }
 
-  /* "brainpy\_speedup.pyx":397
+  /* "brainpy\_speedup.pyx":420
  *                 self._order = max_variant_count
  *             else:
  *                 self._order = min(value, max_variant_count)             # <<<<<<<<<<<<<<
@@ -9737,14 +9643,14 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
     __pyx_t_3 = __pyx_v_max_variant_count;
     __Pyx_INCREF(__pyx_v_value);
     __pyx_t_1 = __pyx_v_value;
-    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_t_3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_t_3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = PyObject_RichCompare(__pyx_t_5, __pyx_t_1, Py_LT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = PyObject_RichCompare(__pyx_t_5, __pyx_t_1, Py_LT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_2) {
-      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       __pyx_t_4 = __pyx_t_6;
       __pyx_t_6 = 0;
@@ -9753,24 +9659,24 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
       __pyx_t_4 = __pyx_t_1;
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->_order = __pyx_t_3;
   }
   __pyx_L3:;
 
-  /* "brainpy\_speedup.pyx":398
+  /* "brainpy\_speedup.pyx":421
  *             else:
  *                 self._order = min(value, max_variant_count)
  *             self._update_isotopic_constants()             # <<<<<<<<<<<<<<
  * 
  *     cpdef _update_isotopic_constants(self):
  */
-  __pyx_t_4 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_update_isotopic_constants(__pyx_v_self, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 398; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_update_isotopic_constants(__pyx_v_self, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 421; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "brainpy\_speedup.pyx":392
+  /* "brainpy\_speedup.pyx":415
  *             return self._order
  * 
  *         def __set__(self, value):             # <<<<<<<<<<<<<<
@@ -9794,7 +9700,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_5order_2__set__(st
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":400
+/* "brainpy\_speedup.pyx":423
  *             self._update_isotopic_constants()
  * 
  *     cpdef _update_isotopic_constants(self):             # <<<<<<<<<<<<<<
@@ -9816,17 +9722,16 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isoto
   Py_ssize_t __pyx_t_6;
   int __pyx_t_7;
   int __pyx_t_8;
-  PyObject *__pyx_t_9 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_update_isotopic_constants", 0);
-  __Pyx_TraceCall("_update_isotopic_constants", __pyx_f[0], 400, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("_update_isotopic_constants", __pyx_f[0], 423, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_isotopic_constants); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_isotopic_constants); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_3_update_isotopic_constants)) {
       __Pyx_XDECREF(__pyx_r);
@@ -9842,10 +9747,10 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isoto
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -9857,7 +9762,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isoto
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":403
+  /* "brainpy\_speedup.pyx":426
  *         cdef:
  *             str element
  *         for element in self.composition:             # <<<<<<<<<<<<<<
@@ -9867,9 +9772,9 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isoto
   __pyx_t_5 = 0;
   if (unlikely(__pyx_v_self->composition == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = __Pyx_dict_iterator(__pyx_v_self->composition, 1, ((PyObject *)NULL), (&__pyx_t_6), (&__pyx_t_7)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_dict_iterator(__pyx_v_self->composition, 1, ((PyObject *)NULL), (&__pyx_t_6), (&__pyx_t_7)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_1);
   __pyx_t_1 = __pyx_t_2;
@@ -9877,63 +9782,36 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isoto
   while (1) {
     __pyx_t_8 = __Pyx_dict_iter_next(__pyx_t_1, __pyx_t_6, &__pyx_t_5, &__pyx_t_2, NULL, NULL, __pyx_t_7);
     if (unlikely(__pyx_t_8 == 0)) break;
-    if (unlikely(__pyx_t_8 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_8 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 403; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_XDECREF_SET(__pyx_v_element, ((PyObject*)__pyx_t_2));
     __pyx_t_2 = 0;
 
-    /* "brainpy\_speedup.pyx":404
+    /* "brainpy\_speedup.pyx":427
  *             str element
  *         for element in self.composition:
  *             self._isotopic_constants.add_element(element)             # <<<<<<<<<<<<<<
  *         self._isotopic_constants.order = self._order
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self->_isotopic_constants), __pyx_n_s_add_element); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 404; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = NULL;
-    if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
-      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-      if (likely(__pyx_t_4)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-        __Pyx_INCREF(__pyx_t_4);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_3, function);
-      }
-    }
-    if (!__pyx_t_4) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_element); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 404; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-    } else {
-      __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 404; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_9);
-      __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_4); __pyx_t_4 = NULL;
-      __Pyx_INCREF(__pyx_v_element);
-      __Pyx_GIVEREF(__pyx_v_element);
-      PyTuple_SET_ITEM(__pyx_t_9, 0+1, __pyx_v_element);
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_9, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 404; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->_isotopic_constants->__pyx_vtab)->add_element(__pyx_v_self->_isotopic_constants, __pyx_v_element);
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":405
+  /* "brainpy\_speedup.pyx":428
  *         for element in self.composition:
  *             self._isotopic_constants.add_element(element)
  *         self._isotopic_constants.order = self._order             # <<<<<<<<<<<<<<
  * 
  *     cdef Peak _create_monoisotopic_peak(self):
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 405; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 428; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self->_isotopic_constants), __pyx_n_s_order, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 405; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self->_isotopic_constants), __pyx_n_s_order, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 428; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":400
+  /* "brainpy\_speedup.pyx":423
  *             self._update_isotopic_constants()
  * 
  *     cpdef _update_isotopic_constants(self):             # <<<<<<<<<<<<<<
@@ -9949,7 +9827,6 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isoto
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_AddTraceback("brainpy._speedup.IsotopicDistribution._update_isotopic_constants", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -9982,9 +9859,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_2_update_iso
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_update_isotopic_constants", 0);
-  __Pyx_TraceCall("_update_isotopic_constants", __pyx_f[0], 400, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("_update_isotopic_constants", __pyx_f[0], 423, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isotopic_constants(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isotopic_constants(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10002,7 +9879,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_2_update_iso
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":407
+/* "brainpy\_speedup.pyx":430
  *         self._isotopic_constants.order = self._order
  * 
  *     cdef Peak _create_monoisotopic_peak(self):             # <<<<<<<<<<<<<<
@@ -10030,9 +9907,9 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_create_monoisotopic_peak", 0);
-  __Pyx_TraceCall("_create_monoisotopic_peak", __pyx_f[0], 407, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 407; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("_create_monoisotopic_peak", __pyx_f[0], 430, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 430; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":408
+  /* "brainpy\_speedup.pyx":431
  * 
  *     cdef Peak _create_monoisotopic_peak(self):
  *         mass = calculate_mass(self.composition)             # <<<<<<<<<<<<<<
@@ -10044,7 +9921,7 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
   __pyx_v_mass = __pyx_f_7brainpy_8_speedup_calculate_mass(((PyObject*)__pyx_t_1), NULL);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":409
+  /* "brainpy\_speedup.pyx":432
  *     cdef Peak _create_monoisotopic_peak(self):
  *         mass = calculate_mass(self.composition)
  *         intensity = 0.             # <<<<<<<<<<<<<<
@@ -10053,7 +9930,7 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
  */
   __pyx_v_intensity = 0.;
 
-  /* "brainpy\_speedup.pyx":410
+  /* "brainpy\_speedup.pyx":433
  *         mass = calculate_mass(self.composition)
  *         intensity = 0.
  *         for element in self.composition:             # <<<<<<<<<<<<<<
@@ -10063,9 +9940,9 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
   __pyx_t_2 = 0;
   if (unlikely(__pyx_v_self->composition == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 410; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 433; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_5 = __Pyx_dict_iterator(__pyx_v_self->composition, 1, ((PyObject *)NULL), (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 410; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_dict_iterator(__pyx_v_self->composition, 1, ((PyObject *)NULL), (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 433; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_1);
   __pyx_t_1 = __pyx_t_5;
@@ -10073,22 +9950,22 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
   while (1) {
     __pyx_t_6 = __Pyx_dict_iter_next(__pyx_t_1, __pyx_t_3, &__pyx_t_2, &__pyx_t_5, NULL, NULL, __pyx_t_4);
     if (unlikely(__pyx_t_6 == 0)) break;
-    if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 410; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 433; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_XDECREF_SET(__pyx_v_element, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "brainpy\_speedup.pyx":411
+    /* "brainpy\_speedup.pyx":434
  *         intensity = 0.
  *         for element in self.composition:
  *             if element == "H+":             # <<<<<<<<<<<<<<
  *                 continue
  *             intensity += log(periodic_table[element].isotopes[0].abundance)
  */
-    __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 411; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 434; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (__pyx_t_7) {
 
-      /* "brainpy\_speedup.pyx":412
+      /* "brainpy\_speedup.pyx":435
  *         for element in self.composition:
  *             if element == "H+":
  *                 continue             # <<<<<<<<<<<<<<
@@ -10097,7 +9974,7 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_speedup.pyx":411
+      /* "brainpy\_speedup.pyx":434
  *         intensity = 0.
  *         for element in self.composition:
  *             if element == "H+":             # <<<<<<<<<<<<<<
@@ -10106,7 +9983,7 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
  */
     }
 
-    /* "brainpy\_speedup.pyx":413
+    /* "brainpy\_speedup.pyx":436
  *             if element == "H+":
  *                 continue
  *             intensity += log(periodic_table[element].isotopes[0].abundance)             # <<<<<<<<<<<<<<
@@ -10115,27 +9992,27 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
  */
     if (unlikely(__pyx_v_7brainpy_8_speedup_periodic_table == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_5 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_8_speedup_periodic_table, __pyx_v_element); if (unlikely(__pyx_t_5 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_5 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_8_speedup_periodic_table, __pyx_v_element); if (unlikely(__pyx_t_5 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_isotopes); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_isotopes); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_GetItemInt(__pyx_t_8, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_5 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_5 = __Pyx_GetItemInt(__pyx_t_8, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_5 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_abundance); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_abundance); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_8); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_8); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_intensity = (__pyx_v_intensity + log(__pyx_t_9));
     __pyx_L3_continue:;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":414
+  /* "brainpy\_speedup.pyx":437
  *                 continue
  *             intensity += log(periodic_table[element].isotopes[0].abundance)
  *         intensity = exp(intensity)             # <<<<<<<<<<<<<<
@@ -10144,7 +10021,7 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
  */
   __pyx_v_intensity = exp(__pyx_v_intensity);
 
-  /* "brainpy\_speedup.pyx":415
+  /* "brainpy\_speedup.pyx":438
  *             intensity += log(periodic_table[element].isotopes[0].abundance)
  *         intensity = exp(intensity)
  *         return Peak(mass, intensity, 0)             # <<<<<<<<<<<<<<
@@ -10152,11 +10029,11 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
  *     cdef double _phi_value(self, int order):
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 438; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_8 = PyFloat_FromDouble(__pyx_v_intensity); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = PyFloat_FromDouble(__pyx_v_intensity); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 438; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 438; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
@@ -10167,14 +10044,14 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
   PyTuple_SET_ITEM(__pyx_t_5, 2, __pyx_int_0);
   __pyx_t_1 = 0;
   __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak), __pyx_t_5, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak), __pyx_t_5, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 438; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_r = ((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_t_8);
   __pyx_t_8 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":407
+  /* "brainpy\_speedup.pyx":430
  *         self._isotopic_constants.order = self._order
  * 
  *     cdef Peak _create_monoisotopic_peak(self):             # <<<<<<<<<<<<<<
@@ -10197,7 +10074,7 @@ static struct __pyx_obj_7brainpy_8_speedup_Peak *__pyx_f_7brainpy_8_speedup_20Is
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":417
+/* "brainpy\_speedup.pyx":440
  *         return Peak(mass, intensity, 0)
  * 
  *     cdef double _phi_value(self, int order):             # <<<<<<<<<<<<<<
@@ -10227,9 +10104,9 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_phi_value", 0);
-  __Pyx_TraceCall("_phi_value", __pyx_f[0], 417, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 417; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("_phi_value", __pyx_f[0], 440, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 440; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":422
+  /* "brainpy\_speedup.pyx":445
  *             str element
  *             double count
  *         phi = 0.             # <<<<<<<<<<<<<<
@@ -10238,7 +10115,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
  */
   __pyx_v_phi = 0.;
 
-  /* "brainpy\_speedup.pyx":423
+  /* "brainpy\_speedup.pyx":446
  *             double count
  *         phi = 0.
  *         for element, count in self.composition.items():             # <<<<<<<<<<<<<<
@@ -10247,17 +10124,17 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
  */
   if (unlikely(__pyx_v_self->composition == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "items");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_1 = __Pyx_PyDict_Items(__pyx_v_self->composition); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyDict_Items(__pyx_v_self->composition); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
     __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -10265,17 +10142,17 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -10285,7 +10162,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -10301,7 +10178,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -10314,15 +10191,15 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
       __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(__pyx_t_6);
       #else
-      __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       #endif
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_t_8 = Py_TYPE(__pyx_t_7)->tp_iternext;
@@ -10330,7 +10207,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
       __Pyx_GOTREF(__pyx_t_5);
       index = 1; __pyx_t_6 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_6)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_6);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_8 = NULL;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L6_unpacking_done;
@@ -10338,28 +10215,28 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L6_unpacking_done:;
     }
-    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 423; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF_SET(__pyx_v_element, ((PyObject*)__pyx_t_5));
     __pyx_t_5 = 0;
     __pyx_v_count = __pyx_t_9;
 
-    /* "brainpy\_speedup.pyx":424
+    /* "brainpy\_speedup.pyx":447
  *         phi = 0.
  *         for element, count in self.composition.items():
  *             if element == "H+":             # <<<<<<<<<<<<<<
  *                 continue
  *             phi += self._isotopic_constants.nth_element_power_sum(element, order) * count
  */
-    __pyx_t_10 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 424; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 447; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_11 = (__pyx_t_10 != 0);
     if (__pyx_t_11) {
 
-      /* "brainpy\_speedup.pyx":425
+      /* "brainpy\_speedup.pyx":448
  *         for element, count in self.composition.items():
  *             if element == "H+":
  *                 continue             # <<<<<<<<<<<<<<
@@ -10368,7 +10245,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_speedup.pyx":424
+      /* "brainpy\_speedup.pyx":447
  *         phi = 0.
  *         for element, count in self.composition.items():
  *             if element == "H+":             # <<<<<<<<<<<<<<
@@ -10377,7 +10254,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
  */
     }
 
-    /* "brainpy\_speedup.pyx":426
+    /* "brainpy\_speedup.pyx":449
  *             if element == "H+":
  *                 continue
  *             phi += self._isotopic_constants.nth_element_power_sum(element, order) * count             # <<<<<<<<<<<<<<
@@ -10386,7 +10263,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
  */
     __pyx_v_phi = (__pyx_v_phi + (((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->_isotopic_constants->__pyx_vtab)->nth_element_power_sum(__pyx_v_self->_isotopic_constants, __pyx_v_element, __pyx_v_order) * __pyx_v_count));
 
-    /* "brainpy\_speedup.pyx":423
+    /* "brainpy\_speedup.pyx":446
  *             double count
  *         phi = 0.
  *         for element, count in self.composition.items():             # <<<<<<<<<<<<<<
@@ -10397,7 +10274,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":427
+  /* "brainpy\_speedup.pyx":450
  *                 continue
  *             phi += self._isotopic_constants.nth_element_power_sum(element, order) * count
  *         return phi             # <<<<<<<<<<<<<<
@@ -10407,7 +10284,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
   __pyx_r = __pyx_v_phi;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":417
+  /* "brainpy\_speedup.pyx":440
  *         return Peak(mass, intensity, 0)
  * 
  *     cdef double _phi_value(self, int order):             # <<<<<<<<<<<<<<
@@ -10431,7 +10308,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__phi_value(struc
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":429
+/* "brainpy\_speedup.pyx":452
  *         return phi
  * 
  *     cdef double _modified_phi_value(self, str symbol, int order):             # <<<<<<<<<<<<<<
@@ -10458,9 +10335,9 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_modified_phi_value", 0);
-  __Pyx_TraceCall("_modified_phi_value", __pyx_f[0], 429, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 429; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("_modified_phi_value", __pyx_f[0], 452, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":439
+  /* "brainpy\_speedup.pyx":462
  *             PyObject* pv
  * 
  *         phi = 0.             # <<<<<<<<<<<<<<
@@ -10469,7 +10346,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
  */
   __pyx_v_phi = 0.;
 
-  /* "brainpy\_speedup.pyx":440
+  /* "brainpy\_speedup.pyx":463
  * 
  *         phi = 0.
  *         pos = 0             # <<<<<<<<<<<<<<
@@ -10478,7 +10355,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
  */
   __pyx_v_pos = 0;
 
-  /* "brainpy\_speedup.pyx":442
+  /* "brainpy\_speedup.pyx":465
  *         pos = 0
  *         #for element, count in self.composition.items():
  *         while PyDict_Next(self.composition, &pos, &pk, &pv):             # <<<<<<<<<<<<<<
@@ -10492,7 +10369,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_speedup.pyx":443
+    /* "brainpy\_speedup.pyx":466
  *         #for element, count in self.composition.items():
  *         while PyDict_Next(self.composition, &pos, &pk, &pv):
  *             element = <str>pk             # <<<<<<<<<<<<<<
@@ -10504,28 +10381,28 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
     __Pyx_XDECREF_SET(__pyx_v_element, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "brainpy\_speedup.pyx":444
+    /* "brainpy\_speedup.pyx":467
  *         while PyDict_Next(self.composition, &pos, &pk, &pv):
  *             element = <str>pk
  *             count = PyFloat_AsDouble(<object>pv)             # <<<<<<<<<<<<<<
  *             if element == "H+":
  *                 continue
  */
-    __pyx_t_3 = PyFloat_AsDouble(((PyObject *)__pyx_v_pv)); if (unlikely(__pyx_t_3 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 444; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyFloat_AsDouble(((PyObject *)__pyx_v_pv)); if (unlikely(__pyx_t_3 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 467; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_count = __pyx_t_3;
 
-    /* "brainpy\_speedup.pyx":445
+    /* "brainpy\_speedup.pyx":468
  *             element = <str>pk
  *             count = PyFloat_AsDouble(<object>pv)
  *             if element == "H+":             # <<<<<<<<<<<<<<
  *                 continue
  *             # Count is one lower for this symbol because an isotope is present
  */
-    __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 468; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_4 = (__pyx_t_2 != 0);
     if (__pyx_t_4) {
 
-      /* "brainpy\_speedup.pyx":446
+      /* "brainpy\_speedup.pyx":469
  *             count = PyFloat_AsDouble(<object>pv)
  *             if element == "H+":
  *                 continue             # <<<<<<<<<<<<<<
@@ -10534,7 +10411,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_speedup.pyx":445
+      /* "brainpy\_speedup.pyx":468
  *             element = <str>pk
  *             count = PyFloat_AsDouble(<object>pv)
  *             if element == "H+":             # <<<<<<<<<<<<<<
@@ -10543,14 +10420,14 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
  */
     }
 
-    /* "brainpy\_speedup.pyx":450
+    /* "brainpy\_speedup.pyx":473
  *             # accounted for in the call to `nth_modified_element_power_sum` at
  *             # the end?
  *             coef = (count if element != symbol else count - 1)             # <<<<<<<<<<<<<<
  *             phi += self._isotopic_constants.nth_element_power_sum(element, order) * coef
  * 
  */
-    __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_v_symbol, Py_NE)); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 450; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_v_symbol, Py_NE)); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 473; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if ((__pyx_t_4 != 0)) {
       __pyx_t_3 = __pyx_v_count;
     } else {
@@ -10558,7 +10435,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
     }
     __pyx_v_coef = __pyx_t_3;
 
-    /* "brainpy\_speedup.pyx":451
+    /* "brainpy\_speedup.pyx":474
  *             # the end?
  *             coef = (count if element != symbol else count - 1)
  *             phi += self._isotopic_constants.nth_element_power_sum(element, order) * coef             # <<<<<<<<<<<<<<
@@ -10569,7 +10446,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_speedup.pyx":453
+  /* "brainpy\_speedup.pyx":476
  *             phi += self._isotopic_constants.nth_element_power_sum(element, order) * coef
  * 
  *         phi += self._isotopic_constants.nth_modified_element_power_sum(symbol, order)             # <<<<<<<<<<<<<<
@@ -10578,7 +10455,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
  */
   __pyx_v_phi = (__pyx_v_phi + ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicConstants *)__pyx_v_self->_isotopic_constants->__pyx_vtab)->nth_modified_element_power_sum(__pyx_v_self->_isotopic_constants, __pyx_v_symbol, __pyx_v_order));
 
-  /* "brainpy\_speedup.pyx":454
+  /* "brainpy\_speedup.pyx":477
  * 
  *         phi += self._isotopic_constants.nth_modified_element_power_sum(symbol, order)
  *         return phi             # <<<<<<<<<<<<<<
@@ -10588,7 +10465,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
   __pyx_r = __pyx_v_phi;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":429
+  /* "brainpy\_speedup.pyx":452
  *         return phi
  * 
  *     cdef double _modified_phi_value(self, str symbol, int order):             # <<<<<<<<<<<<<<
@@ -10608,7 +10485,7 @@ static double __pyx_f_7brainpy_8_speedup_20IsotopicDistribution__modified_phi_va
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":456
+/* "brainpy\_speedup.pyx":479
  *         return phi
  * 
  *     cpdef list phi_values(self):             # <<<<<<<<<<<<<<
@@ -10634,12 +10511,12 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(st
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("phi_values", 0);
-  __Pyx_TraceCall("phi_values", __pyx_f[0], 456, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("phi_values", __pyx_f[0], 479, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_phi_values); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_phi_values); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_5phi_values)) {
       __Pyx_XDECREF(__pyx_r);
@@ -10655,14 +10532,14 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(st
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_r = ((PyObject*)__pyx_t_2);
       __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -10671,14 +10548,14 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(st
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":460
+  /* "brainpy\_speedup.pyx":483
  *             list power_sum
  *             size_t i
  *         power_sum = [0.]             # <<<<<<<<<<<<<<
  *         for i in range(1, self.order + 1):
  *             power_sum.append(self._phi_value(i))
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 460; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 483; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_float_0_);
   __Pyx_GIVEREF(__pyx_float_0_);
@@ -10686,37 +10563,37 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(st
   __pyx_v_power_sum = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":461
+  /* "brainpy\_speedup.pyx":484
  *             size_t i
  *         power_sum = [0.]
  *         for i in range(1, self.order + 1):             # <<<<<<<<<<<<<<
  *             power_sum.append(self._phi_value(i))
  *         return power_sum
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 461; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 484; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 461; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 484; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_long(__pyx_t_2); if (unlikely((__pyx_t_5 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 461; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyInt_As_long(__pyx_t_2); if (unlikely((__pyx_t_5 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 484; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   for (__pyx_t_6 = 1; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
     __pyx_v_i = __pyx_t_6;
 
-    /* "brainpy\_speedup.pyx":462
+    /* "brainpy\_speedup.pyx":485
  *         power_sum = [0.]
  *         for i in range(1, self.order + 1):
  *             power_sum.append(self._phi_value(i))             # <<<<<<<<<<<<<<
  *         return power_sum
  * 
  */
-    __pyx_t_2 = PyFloat_FromDouble(((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_phi_value(__pyx_v_self, __pyx_v_i)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 462; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble(((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_phi_value(__pyx_v_self, __pyx_v_i)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 485; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_power_sum, __pyx_t_2); if (unlikely(__pyx_t_7 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 462; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_power_sum, __pyx_t_2); if (unlikely(__pyx_t_7 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 485; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":463
+  /* "brainpy\_speedup.pyx":486
  *         for i in range(1, self.order + 1):
  *             power_sum.append(self._phi_value(i))
  *         return power_sum             # <<<<<<<<<<<<<<
@@ -10728,7 +10605,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(st
   __pyx_r = __pyx_v_power_sum;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":456
+  /* "brainpy\_speedup.pyx":479
  *         return phi
  * 
  *     cpdef list phi_values(self):             # <<<<<<<<<<<<<<
@@ -10774,9 +10651,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_4phi_values(
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("phi_values", 0);
-  __Pyx_TraceCall("phi_values", __pyx_f[0], 456, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("phi_values", __pyx_f[0], 479, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_phi_values(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10794,7 +10671,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_4phi_values(
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":465
+/* "brainpy\_speedup.pyx":488
  *         return power_sum
  * 
  *     cpdef list modified_phi_values(self, symbol):             # <<<<<<<<<<<<<<
@@ -10821,12 +10698,12 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("modified_phi_values", 0);
-  __Pyx_TraceCall("modified_phi_values", __pyx_f[0], 465, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("modified_phi_values", __pyx_f[0], 488, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_modified_phi_values); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_modified_phi_values); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_7modified_phi_values)) {
       __Pyx_XDECREF(__pyx_r);
@@ -10842,21 +10719,21 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_
         }
       }
       if (!__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_symbol); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_symbol); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_2);
       } else {
-        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
         __Pyx_INCREF(__pyx_v_symbol);
         __Pyx_GIVEREF(__pyx_v_symbol);
         PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_symbol);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_r = ((PyObject*)__pyx_t_2);
       __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -10865,14 +10742,14 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":469
+  /* "brainpy\_speedup.pyx":492
  *             list power_sum
  *             size_t i
  *         power_sum = [0.]             # <<<<<<<<<<<<<<
  *         for i in range(1, self.order + 1):
  *             power_sum.append(self._modified_phi_value(symbol, i))
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 469; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_float_0_);
   __Pyx_GIVEREF(__pyx_float_0_);
@@ -10880,38 +10757,38 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_
   __pyx_v_power_sum = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":470
+  /* "brainpy\_speedup.pyx":493
  *             size_t i
  *         power_sum = [0.]
  *         for i in range(1, self.order + 1):             # <<<<<<<<<<<<<<
  *             power_sum.append(self._modified_phi_value(symbol, i))
  *         return power_sum
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 493; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 493; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_6 = __Pyx_PyInt_As_long(__pyx_t_2); if (unlikely((__pyx_t_6 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyInt_As_long(__pyx_t_2); if (unlikely((__pyx_t_6 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 493; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   for (__pyx_t_7 = 1; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i = __pyx_t_7;
 
-    /* "brainpy\_speedup.pyx":471
+    /* "brainpy\_speedup.pyx":494
  *         power_sum = [0.]
  *         for i in range(1, self.order + 1):
  *             power_sum.append(self._modified_phi_value(symbol, i))             # <<<<<<<<<<<<<<
  *         return power_sum
  * 
  */
-    if (!(likely(PyString_CheckExact(__pyx_v_symbol))||((__pyx_v_symbol) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_v_symbol)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 471; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_2 = PyFloat_FromDouble(((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_modified_phi_value(__pyx_v_self, ((PyObject*)__pyx_v_symbol), __pyx_v_i)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 471; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_v_symbol))||((__pyx_v_symbol) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_v_symbol)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 494; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble(((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->_modified_phi_value(__pyx_v_self, ((PyObject*)__pyx_v_symbol), __pyx_v_i)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 494; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_power_sum, __pyx_t_2); if (unlikely(__pyx_t_8 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 471; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_power_sum, __pyx_t_2); if (unlikely(__pyx_t_8 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 494; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":472
+  /* "brainpy\_speedup.pyx":495
  *         for i in range(1, self.order + 1):
  *             power_sum.append(self._modified_phi_value(symbol, i))
  *         return power_sum             # <<<<<<<<<<<<<<
@@ -10923,7 +10800,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_
   __pyx_r = __pyx_v_power_sum;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":465
+  /* "brainpy\_speedup.pyx":488
  *         return power_sum
  * 
  *     cpdef list modified_phi_values(self, symbol):             # <<<<<<<<<<<<<<
@@ -10970,9 +10847,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_6modified_ph
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("modified_phi_values", 0);
-  __Pyx_TraceCall("modified_phi_values", __pyx_f[0], 465, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("modified_phi_values", __pyx_f[0], 488, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_values(__pyx_v_self, __pyx_v_symbol, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 465; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_values(__pyx_v_self, __pyx_v_symbol, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10990,7 +10867,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_6modified_ph
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":474
+/* "brainpy\_speedup.pyx":497
  *         return power_sum
  * 
  *     cpdef list probability(self):             # <<<<<<<<<<<<<<
@@ -11020,12 +10897,12 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("probability", 0);
-  __Pyx_TraceCall("probability", __pyx_f[0], 474, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("probability", __pyx_f[0], 497, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_probability); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_probability); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_9probability)) {
       __Pyx_XDECREF(__pyx_r);
@@ -11041,14 +10918,14 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_r = ((PyObject*)__pyx_t_2);
       __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -11057,19 +10934,19 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":482
+  /* "brainpy\_speedup.pyx":505
  *             int sign
  * 
  *         phi_values = self.phi_values()             # <<<<<<<<<<<<<<
  *         max_variant_count = max_variants(self.composition)
  *         probability_vector = []
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->phi_values(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 482; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->phi_values(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 505; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_phi_values = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":483
+  /* "brainpy\_speedup.pyx":506
  * 
  *         phi_values = self.phi_values()
  *         max_variant_count = max_variants(self.composition)             # <<<<<<<<<<<<<<
@@ -11081,41 +10958,39 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
   __pyx_v_max_variant_count = __pyx_f_7brainpy_8_speedup_max_variants(((PyObject*)__pyx_t_1));
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":484
+  /* "brainpy\_speedup.pyx":507
  *         phi_values = self.phi_values()
  *         max_variant_count = max_variants(self.composition)
  *         probability_vector = []             # <<<<<<<<<<<<<<
  *         newton(phi_values, probability_vector, max_variant_count)
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 484; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 507; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_probability_vector = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":485
+  /* "brainpy\_speedup.pyx":508
  *         max_variant_count = max_variants(self.composition)
  *         probability_vector = []
  *         newton(phi_values, probability_vector, max_variant_count)             # <<<<<<<<<<<<<<
  * 
  *         for i in range(0, len(probability_vector)):
  */
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_newton(__pyx_v_phi_values, __pyx_v_probability_vector, __pyx_v_max_variant_count, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 485; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_f_7brainpy_8_speedup_newton(__pyx_v_phi_values, __pyx_v_probability_vector, __pyx_v_max_variant_count);
 
-  /* "brainpy\_speedup.pyx":487
+  /* "brainpy\_speedup.pyx":510
  *         newton(phi_values, probability_vector, max_variant_count)
  * 
  *         for i in range(0, len(probability_vector)):             # <<<<<<<<<<<<<<
  *             # The sign of each term in the probability vector (populated by
  *             # Newton's Identities by solving for the Elementary Symmetric Polynomial
  */
-  __pyx_t_5 = PyList_GET_SIZE(__pyx_v_probability_vector); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 487; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyList_GET_SIZE(__pyx_v_probability_vector); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 510; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
     __pyx_v_i = __pyx_t_6;
 
-    /* "brainpy\_speedup.pyx":492
+    /* "brainpy\_speedup.pyx":515
  *             # given the Power Sums) alternates in the same order as `sign`.
  *             # This ensures that the probability vector is strictly positive.
  *             sign = 1 if i % 2 == 0 else -1             # <<<<<<<<<<<<<<
@@ -11129,7 +11004,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
     }
     __pyx_v_sign = __pyx_t_7;
 
-    /* "brainpy\_speedup.pyx":495
+    /* "brainpy\_speedup.pyx":518
  *             # q(j) = q(0)  * e(j) * (-1)^j
  *             # intensity of the jth peak is |probability[j]| * the intensity of monoisotopic peak
  *             probability_vector[i] *= self.monoisotopic_peak.intensity * sign             # <<<<<<<<<<<<<<
@@ -11137,19 +11012,19 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
  *         return probability_vector
  */
     __pyx_t_8 = __pyx_v_i;
-    __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_probability_vector, __pyx_t_8, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_probability_vector, __pyx_t_8, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 518; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_self->monoisotopic_peak->intensity * __pyx_v_sign)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_self->monoisotopic_peak->intensity * __pyx_v_sign)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 518; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_InPlaceMultiply(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyNumber_InPlaceMultiply(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 518; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(__Pyx_SetItemInt(__pyx_v_probability_vector, __pyx_t_8, __pyx_t_3, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_SetItemInt(__pyx_v_probability_vector, __pyx_t_8, __pyx_t_3, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 518; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":497
+  /* "brainpy\_speedup.pyx":520
  *             probability_vector[i] *= self.monoisotopic_peak.intensity * sign
  * 
  *         return probability_vector             # <<<<<<<<<<<<<<
@@ -11161,7 +11036,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(s
   __pyx_r = __pyx_v_probability_vector;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":474
+  /* "brainpy\_speedup.pyx":497
  *         return power_sum
  * 
  *     cpdef list probability(self):             # <<<<<<<<<<<<<<
@@ -11208,9 +11083,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_8probability
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("probability", 0);
-  __Pyx_TraceCall("probability", __pyx_f[0], 474, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("probability", __pyx_f[0], 497, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -11228,7 +11103,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_8probability
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":499
+/* "brainpy\_speedup.pyx":522
  *         return probability_vector
  * 
  *     cpdef list center_mass(self, list probability_vector):             # <<<<<<<<<<<<<<
@@ -11279,12 +11154,12 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("center_mass", 0);
-  __Pyx_TraceCall("center_mass", __pyx_f[0], 499, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("center_mass", __pyx_f[0], 522, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_center_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_center_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_11center_mass)) {
       __Pyx_XDECREF(__pyx_r);
@@ -11300,21 +11175,21 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
         }
       }
       if (!__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_probability_vector); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_probability_vector); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_2);
       } else {
-        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
         __Pyx_INCREF(__pyx_v_probability_vector);
         __Pyx_GIVEREF(__pyx_v_probability_vector);
         PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_probability_vector);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_r = ((PyObject*)__pyx_t_2);
       __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -11323,19 +11198,19 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":517
+  /* "brainpy\_speedup.pyx":540
  *             PyObject* pv
  * 
  *         mass_vector = []             # <<<<<<<<<<<<<<
  *         max_variant_count = max_variants(self.composition)
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 517; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 540; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_mass_vector = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":518
+  /* "brainpy\_speedup.pyx":541
  * 
  *         mass_vector = []
  *         max_variant_count = max_variants(self.composition)             # <<<<<<<<<<<<<<
@@ -11347,7 +11222,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
   __pyx_v_max_variant_count = __pyx_f_7brainpy_8_speedup_max_variants(((PyObject*)__pyx_t_1));
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":520
+  /* "brainpy\_speedup.pyx":543
  *         max_variant_count = max_variants(self.composition)
  * 
  *         base_intensity = self.monoisotopic_peak.intensity             # <<<<<<<<<<<<<<
@@ -11357,19 +11232,19 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
   __pyx_t_6 = __pyx_v_self->monoisotopic_peak->intensity;
   __pyx_v_base_intensity = __pyx_t_6;
 
-  /* "brainpy\_speedup.pyx":521
+  /* "brainpy\_speedup.pyx":544
  * 
  *         base_intensity = self.monoisotopic_peak.intensity
  *         ele_sym_poly_map = dict()             # <<<<<<<<<<<<<<
  *         composition_elements = PyDict_Keys(self.composition)
  * 
  */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 521; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 544; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_ele_sym_poly_map = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":522
+  /* "brainpy\_speedup.pyx":545
  *         base_intensity = self.monoisotopic_peak.intensity
  *         ele_sym_poly_map = dict()
  *         composition_elements = PyDict_Keys(self.composition)             # <<<<<<<<<<<<<<
@@ -11378,13 +11253,13 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
   __pyx_t_1 = __pyx_v_self->composition;
   __Pyx_INCREF(__pyx_t_1);
-  __pyx_t_2 = PyDict_Keys(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyDict_Keys(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 545; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_composition_elements = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":524
+  /* "brainpy\_speedup.pyx":547
  *         composition_elements = PyDict_Keys(self.composition)
  * 
  *         for j in range(PyList_GET_SIZE(composition_elements)):             # <<<<<<<<<<<<<<
@@ -11395,7 +11270,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_j = __pyx_t_8;
 
-    /* "brainpy\_speedup.pyx":525
+    /* "brainpy\_speedup.pyx":548
  * 
  *         for j in range(PyList_GET_SIZE(composition_elements)):
  *             element = <str>PyList_GET_ITEM(composition_elements, j)             # <<<<<<<<<<<<<<
@@ -11408,18 +11283,18 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
     __Pyx_XDECREF_SET(__pyx_v_element, ((PyObject*)__pyx_t_2));
     __pyx_t_2 = 0;
 
-    /* "brainpy\_speedup.pyx":526
+    /* "brainpy\_speedup.pyx":549
  *         for j in range(PyList_GET_SIZE(composition_elements)):
  *             element = <str>PyList_GET_ITEM(composition_elements, j)
  *             if element == "H+":             # <<<<<<<<<<<<<<
  *                 continue
  *             power_sum = self.modified_phi_values(element)
  */
-    __pyx_t_10 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 526; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = (__Pyx_PyString_Equals(__pyx_v_element, __pyx_kp_s_H, Py_EQ)); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 549; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_11 = (__pyx_t_10 != 0);
     if (__pyx_t_11) {
 
-      /* "brainpy\_speedup.pyx":527
+      /* "brainpy\_speedup.pyx":550
  *             element = <str>PyList_GET_ITEM(composition_elements, j)
  *             if element == "H+":
  *                 continue             # <<<<<<<<<<<<<<
@@ -11428,7 +11303,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_speedup.pyx":526
+      /* "brainpy\_speedup.pyx":549
  *         for j in range(PyList_GET_SIZE(composition_elements)):
  *             element = <str>PyList_GET_ITEM(composition_elements, j)
  *             if element == "H+":             # <<<<<<<<<<<<<<
@@ -11437,53 +11312,51 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
     }
 
-    /* "brainpy\_speedup.pyx":528
+    /* "brainpy\_speedup.pyx":551
  *             if element == "H+":
  *                 continue
  *             power_sum = self.modified_phi_values(element)             # <<<<<<<<<<<<<<
  *             ele_sym_poly = []
  *             newton(power_sum, ele_sym_poly, max_variant_count)
  */
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->modified_phi_values(__pyx_v_self, __pyx_v_element, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 528; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->modified_phi_values(__pyx_v_self, __pyx_v_element, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 551; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_XDECREF_SET(__pyx_v_power_sum, ((PyObject*)__pyx_t_2));
     __pyx_t_2 = 0;
 
-    /* "brainpy\_speedup.pyx":529
+    /* "brainpy\_speedup.pyx":552
  *                 continue
  *             power_sum = self.modified_phi_values(element)
  *             ele_sym_poly = []             # <<<<<<<<<<<<<<
  *             newton(power_sum, ele_sym_poly, max_variant_count)
  *             ele_sym_poly_map[element] = ele_sym_poly
  */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 529; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 552; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_XDECREF_SET(__pyx_v_ele_sym_poly, ((PyObject*)__pyx_t_2));
     __pyx_t_2 = 0;
 
-    /* "brainpy\_speedup.pyx":530
+    /* "brainpy\_speedup.pyx":553
  *             power_sum = self.modified_phi_values(element)
  *             ele_sym_poly = []
  *             newton(power_sum, ele_sym_poly, max_variant_count)             # <<<<<<<<<<<<<<
  *             ele_sym_poly_map[element] = ele_sym_poly
  *         for i in range(self._order + 1):
  */
-    __pyx_t_2 = __pyx_f_7brainpy_8_speedup_newton(__pyx_v_power_sum, __pyx_v_ele_sym_poly, __pyx_v_max_variant_count, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 530; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_f_7brainpy_8_speedup_newton(__pyx_v_power_sum, __pyx_v_ele_sym_poly, __pyx_v_max_variant_count);
 
-    /* "brainpy\_speedup.pyx":531
+    /* "brainpy\_speedup.pyx":554
  *             ele_sym_poly = []
  *             newton(power_sum, ele_sym_poly, max_variant_count)
  *             ele_sym_poly_map[element] = ele_sym_poly             # <<<<<<<<<<<<<<
  *         for i in range(self._order + 1):
  *             sign = 1 if i % 2 == 0 else -1
  */
-    if (unlikely(PyDict_SetItem(__pyx_v_ele_sym_poly_map, __pyx_v_element, __pyx_v_ele_sym_poly) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(PyDict_SetItem(__pyx_v_ele_sym_poly_map, __pyx_v_element, __pyx_v_ele_sym_poly) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 554; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_speedup.pyx":532
+  /* "brainpy\_speedup.pyx":555
  *             newton(power_sum, ele_sym_poly, max_variant_count)
  *             ele_sym_poly_map[element] = ele_sym_poly
  *         for i in range(self._order + 1):             # <<<<<<<<<<<<<<
@@ -11494,7 +11367,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_12; __pyx_t_8+=1) {
     __pyx_v_i = __pyx_t_8;
 
-    /* "brainpy\_speedup.pyx":533
+    /* "brainpy\_speedup.pyx":556
  *             ele_sym_poly_map[element] = ele_sym_poly
  *         for i in range(self._order + 1):
  *             sign = 1 if i % 2 == 0 else -1             # <<<<<<<<<<<<<<
@@ -11508,7 +11381,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
     }
     __pyx_v_sign = __pyx_t_13;
 
-    /* "brainpy\_speedup.pyx":534
+    /* "brainpy\_speedup.pyx":557
  *         for i in range(self._order + 1):
  *             sign = 1 if i % 2 == 0 else -1
  *             center = 0.0             # <<<<<<<<<<<<<<
@@ -11517,7 +11390,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
     __pyx_v_center = 0.0;
 
-    /* "brainpy\_speedup.pyx":535
+    /* "brainpy\_speedup.pyx":558
  *             sign = 1 if i % 2 == 0 else -1
  *             center = 0.0
  *             k = 0             # <<<<<<<<<<<<<<
@@ -11526,7 +11399,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
     __pyx_v_k = 0;
 
-    /* "brainpy\_speedup.pyx":536
+    /* "brainpy\_speedup.pyx":559
  *             center = 0.0
  *             k = 0
  *             while(PyDict_Next(ele_sym_poly_map, &k, &pk, &pv)):             # <<<<<<<<<<<<<<
@@ -11537,7 +11410,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __pyx_t_11 = (PyDict_Next(__pyx_v_ele_sym_poly_map, (&__pyx_v_k), (&__pyx_v_pk), (&__pyx_v_pv)) != 0);
       if (!__pyx_t_11) break;
 
-      /* "brainpy\_speedup.pyx":539
+      /* "brainpy\_speedup.pyx":562
  * 
  *             #for element, ele_sym_poly in ele_sym_poly_map.items():
  *                 element = <str>pk             # <<<<<<<<<<<<<<
@@ -11549,7 +11422,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __Pyx_XDECREF_SET(__pyx_v_element, ((PyObject*)__pyx_t_2));
       __pyx_t_2 = 0;
 
-      /* "brainpy\_speedup.pyx":540
+      /* "brainpy\_speedup.pyx":563
  *             #for element, ele_sym_poly in ele_sym_poly_map.items():
  *                 element = <str>pk
  *                 ele_sym_poly = <list>pv             # <<<<<<<<<<<<<<
@@ -11561,7 +11434,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __Pyx_XDECREF_SET(__pyx_v_ele_sym_poly, ((PyObject*)__pyx_t_2));
       __pyx_t_2 = 0;
 
-      /* "brainpy\_speedup.pyx":542
+      /* "brainpy\_speedup.pyx":565
  *                 ele_sym_poly = <list>pv
  * 
  *                 _element_count = PyFloat_AsDouble(<object>PyDict_GetItem(self.composition, element))             # <<<<<<<<<<<<<<
@@ -11572,10 +11445,10 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __Pyx_INCREF(__pyx_t_2);
       __pyx_t_9 = PyDict_GetItem(__pyx_t_2, __pyx_v_element);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_6 = PyFloat_AsDouble(((PyObject *)__pyx_t_9)); if (unlikely(__pyx_t_6 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PyFloat_AsDouble(((PyObject *)__pyx_t_9)); if (unlikely(__pyx_t_6 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 565; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_v__element_count = __pyx_t_6;
 
-      /* "brainpy\_speedup.pyx":544
+      /* "brainpy\_speedup.pyx":567
  *                 _element_count = PyFloat_AsDouble(<object>PyDict_GetItem(self.composition, element))
  * 
  *                 polynomial_term = PyFloat_AsDouble(<object>PyList_GET_ITEM(ele_sym_poly, i))             # <<<<<<<<<<<<<<
@@ -11583,10 +11456,10 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  *                 _monoisotopic_mass = element_obj._monoisotopic_mass
  */
       __pyx_t_9 = PyList_GET_ITEM(__pyx_v_ele_sym_poly, __pyx_v_i);
-      __pyx_t_6 = PyFloat_AsDouble(((PyObject *)__pyx_t_9)); if (unlikely(__pyx_t_6 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 544; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PyFloat_AsDouble(((PyObject *)__pyx_t_9)); if (unlikely(__pyx_t_6 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_v_polynomial_term = __pyx_t_6;
 
-      /* "brainpy\_speedup.pyx":545
+      /* "brainpy\_speedup.pyx":568
  * 
  *                 polynomial_term = PyFloat_AsDouble(<object>PyList_GET_ITEM(ele_sym_poly, i))
  *                 element_obj = (<Element>PyDict_GetItem(periodic_table, element))             # <<<<<<<<<<<<<<
@@ -11602,7 +11475,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __Pyx_XDECREF_SET(__pyx_v_element_obj, ((struct __pyx_obj_7brainpy_8_speedup_Element *)__pyx_t_2));
       __pyx_t_2 = 0;
 
-      /* "brainpy\_speedup.pyx":546
+      /* "brainpy\_speedup.pyx":569
  *                 polynomial_term = PyFloat_AsDouble(<object>PyList_GET_ITEM(ele_sym_poly, i))
  *                 element_obj = (<Element>PyDict_GetItem(periodic_table, element))
  *                 _monoisotopic_mass = element_obj._monoisotopic_mass             # <<<<<<<<<<<<<<
@@ -11612,7 +11485,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __pyx_t_6 = __pyx_v_element_obj->_monoisotopic_mass;
       __pyx_v__monoisotopic_mass = __pyx_t_6;
 
-      /* "brainpy\_speedup.pyx":548
+      /* "brainpy\_speedup.pyx":571
  *                 _monoisotopic_mass = element_obj._monoisotopic_mass
  * 
  *                 temp = _element_count             # <<<<<<<<<<<<<<
@@ -11621,7 +11494,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
       __pyx_v_temp = __pyx_v__element_count;
 
-      /* "brainpy\_speedup.pyx":549
+      /* "brainpy\_speedup.pyx":572
  * 
  *                 temp = _element_count
  *                 temp *= sign * polynomial_term             # <<<<<<<<<<<<<<
@@ -11630,7 +11503,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
       __pyx_v_temp = (__pyx_v_temp * (__pyx_v_sign * __pyx_v_polynomial_term));
 
-      /* "brainpy\_speedup.pyx":550
+      /* "brainpy\_speedup.pyx":573
  *                 temp = _element_count
  *                 temp *= sign * polynomial_term
  *                 temp *= base_intensity * _monoisotopic_mass             # <<<<<<<<<<<<<<
@@ -11639,7 +11512,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
  */
       __pyx_v_temp = (__pyx_v_temp * (__pyx_v_base_intensity * __pyx_v__monoisotopic_mass));
 
-      /* "brainpy\_speedup.pyx":551
+      /* "brainpy\_speedup.pyx":574
  *                 temp *= sign * polynomial_term
  *                 temp *= base_intensity * _monoisotopic_mass
  *                 center += temp             # <<<<<<<<<<<<<<
@@ -11649,30 +11522,30 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
       __pyx_v_center = (__pyx_v_center + __pyx_v_temp);
     }
 
-    /* "brainpy\_speedup.pyx":553
+    /* "brainpy\_speedup.pyx":576
  *                 center += temp
  * 
  *             mass_vector.append(center / probability_vector[i])             # <<<<<<<<<<<<<<
  *         return mass_vector
  * 
  */
-    __pyx_t_2 = PyFloat_FromDouble(__pyx_v_center); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 553; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble(__pyx_v_center); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     if (unlikely(__pyx_v_probability_vector == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 553; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_probability_vector, __pyx_v_i, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 553; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_probability_vector, __pyx_v_i, size_t, 0, __Pyx_PyInt_FromSize_t, 1, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 553; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_mass_vector, __pyx_t_3); if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 553; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_mass_vector, __pyx_t_3); if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
 
-  /* "brainpy\_speedup.pyx":554
+  /* "brainpy\_speedup.pyx":577
  * 
  *             mass_vector.append(center / probability_vector[i])
  *         return mass_vector             # <<<<<<<<<<<<<<
@@ -11684,7 +11557,7 @@ static PyObject *__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(s
   __pyx_r = __pyx_v_mass_vector;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":499
+  /* "brainpy\_speedup.pyx":522
  *         return probability_vector
  * 
  *     cpdef list center_mass(self, list probability_vector):             # <<<<<<<<<<<<<<
@@ -11724,7 +11597,7 @@ static PyObject *__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_11center_mas
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("center_mass (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_probability_vector), (&PyList_Type), 1, "probability_vector", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_probability_vector), (&PyList_Type), 1, "probability_vector", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_10center_mass(((struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self), ((PyObject*)__pyx_v_probability_vector));
 
   /* function exit code */
@@ -11745,9 +11618,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_10center_mas
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("center_mass", 0);
-  __Pyx_TraceCall("center_mass", __pyx_f[0], 499, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("center_mass", __pyx_f[0], 522, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(__pyx_v_self, __pyx_v_probability_vector, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass(__pyx_v_self, __pyx_v_probability_vector, 1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -11765,7 +11638,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_10center_mas
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":556
+/* "brainpy\_speedup.pyx":579
  *         return mass_vector
  * 
  *     def aggregated_isotopic_variants(self, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
@@ -11812,7 +11685,7 @@ static PyObject *__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_13aggregated
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "aggregated_isotopic_variants") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 556; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "aggregated_isotopic_variants") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -11823,7 +11696,7 @@ static PyObject *__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_13aggregated
       }
     }
     if (values[0]) {
-      __pyx_v_charge = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_charge == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 556; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      __pyx_v_charge = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_charge == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
     } else {
       __pyx_v_charge = ((int)0);
     }
@@ -11831,7 +11704,7 @@ static PyObject *__pyx_pw_7brainpy_8_speedup_20IsotopicDistribution_13aggregated
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("aggregated_isotopic_variants", 0, 0, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 556; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("aggregated_isotopic_variants", 0, 0, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("brainpy._speedup.IsotopicDistribution.aggregated_isotopic_variants", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -11874,45 +11747,45 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("aggregated_isotopic_variants", 0);
-  __Pyx_TraceCall("aggregated_isotopic_variants", __pyx_f[0], 556, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 556; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("aggregated_isotopic_variants", __pyx_f[0], 579, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
 
-  /* "brainpy\_speedup.pyx":571
+  /* "brainpy\_speedup.pyx":594
  *             Peak peak
  *             double center_mass_i, intensity_i
  *         probability_vector = self.probability()             # <<<<<<<<<<<<<<
  *         center_mass_vector = self.center_mass(probability_vector)
  * 
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->probability(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->probability(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 594; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_probability_vector = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":572
+  /* "brainpy\_speedup.pyx":595
  *             double center_mass_i, intensity_i
  *         probability_vector = self.probability()
  *         center_mass_vector = self.center_mass(probability_vector)             # <<<<<<<<<<<<<<
  * 
  *         peak_set = []
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->center_mass(__pyx_v_self, __pyx_v_probability_vector, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7brainpy_8_speedup_IsotopicDistribution *)__pyx_v_self->__pyx_vtab)->center_mass(__pyx_v_self, __pyx_v_probability_vector, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_center_mass_vector = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":574
+  /* "brainpy\_speedup.pyx":597
  *         center_mass_vector = self.center_mass(probability_vector)
  * 
  *         peak_set = []             # <<<<<<<<<<<<<<
  *         average_mass = 0.
  *         total = sum(probability_vector)
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_peak_set = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_speedup.pyx":575
+  /* "brainpy\_speedup.pyx":598
  * 
  *         peak_set = []
  *         average_mass = 0.             # <<<<<<<<<<<<<<
@@ -11921,43 +11794,43 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  */
   __pyx_v_average_mass = 0.;
 
-  /* "brainpy\_speedup.pyx":576
+  /* "brainpy\_speedup.pyx":599
  *         peak_set = []
  *         average_mass = 0.
  *         total = sum(probability_vector)             # <<<<<<<<<<<<<<
  * 
  *         for i in range(self.order + 1):
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_probability_vector);
   __Pyx_GIVEREF(__pyx_v_probability_vector);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_probability_vector);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_sum, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_sum, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_total = __pyx_t_3;
 
-  /* "brainpy\_speedup.pyx":578
+  /* "brainpy\_speedup.pyx":601
  *         total = sum(probability_vector)
  * 
  *         for i in range(self.order + 1):             # <<<<<<<<<<<<<<
  *             center_mass_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(center_mass_vector, i))
  *             if charge != 0:
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 601; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 601; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_long(__pyx_t_1); if (unlikely((__pyx_t_4 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyInt_As_long(__pyx_t_1); if (unlikely((__pyx_t_4 == (long)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 601; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "brainpy\_speedup.pyx":579
+    /* "brainpy\_speedup.pyx":602
  * 
  *         for i in range(self.order + 1):
  *             center_mass_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(center_mass_vector, i))             # <<<<<<<<<<<<<<
@@ -11965,10 +11838,10 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  *                 adjusted_mz = mass_charge_ratio(center_mass_i, charge, charge_carrier)
  */
     __pyx_t_6 = PyList_GET_ITEM(__pyx_v_center_mass_vector, __pyx_v_i);
-    __pyx_t_3 = PyFloat_AsDouble(((PyObject *)__pyx_t_6)); if (unlikely(__pyx_t_3 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyFloat_AsDouble(((PyObject *)__pyx_t_6)); if (unlikely(__pyx_t_3 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 602; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_center_mass_i = __pyx_t_3;
 
-    /* "brainpy\_speedup.pyx":580
+    /* "brainpy\_speedup.pyx":603
  *         for i in range(self.order + 1):
  *             center_mass_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(center_mass_vector, i))
  *             if charge != 0:             # <<<<<<<<<<<<<<
@@ -11978,20 +11851,20 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
     __pyx_t_7 = ((__pyx_v_charge != 0) != 0);
     if (__pyx_t_7) {
 
-      /* "brainpy\_speedup.pyx":581
+      /* "brainpy\_speedup.pyx":604
  *             center_mass_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(center_mass_vector, i))
  *             if charge != 0:
  *                 adjusted_mz = mass_charge_ratio(center_mass_i, charge, charge_carrier)             # <<<<<<<<<<<<<<
  *             else:
  *                 adjusted_mz = center_mass_i
  */
-      __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_v_charge_carrier); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 581; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_v_charge_carrier); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 604; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_9.__pyx_n = 1;
       __pyx_t_9.charge_carrier = __pyx_t_3;
       __pyx_t_8 = __pyx_f_7brainpy_8_speedup_mass_charge_ratio(__pyx_v_center_mass_i, __pyx_v_charge, &__pyx_t_9); 
       __pyx_v_adjusted_mz = __pyx_t_8;
 
-      /* "brainpy\_speedup.pyx":580
+      /* "brainpy\_speedup.pyx":603
  *         for i in range(self.order + 1):
  *             center_mass_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(center_mass_vector, i))
  *             if charge != 0:             # <<<<<<<<<<<<<<
@@ -12001,7 +11874,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
       goto __pyx_L5;
     }
 
-    /* "brainpy\_speedup.pyx":583
+    /* "brainpy\_speedup.pyx":606
  *                 adjusted_mz = mass_charge_ratio(center_mass_i, charge, charge_carrier)
  *             else:
  *                 adjusted_mz = center_mass_i             # <<<<<<<<<<<<<<
@@ -12013,7 +11886,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
     }
     __pyx_L5:;
 
-    /* "brainpy\_speedup.pyx":585
+    /* "brainpy\_speedup.pyx":608
  *                 adjusted_mz = center_mass_i
  * 
  *             intensity_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(probability_vector, i))             # <<<<<<<<<<<<<<
@@ -12021,27 +11894,27 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  *             peak = Peak(adjusted_mz, intensity_i / total, charge)
  */
     __pyx_t_6 = PyList_GET_ITEM(__pyx_v_probability_vector, __pyx_v_i);
-    __pyx_t_8 = PyFloat_AsDouble(((PyObject *)__pyx_t_6)); if (unlikely(__pyx_t_8 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = PyFloat_AsDouble(((PyObject *)__pyx_t_6)); if (unlikely(__pyx_t_8 == -1.0 && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 608; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_intensity_i = __pyx_t_8;
 
-    /* "brainpy\_speedup.pyx":587
+    /* "brainpy\_speedup.pyx":610
  *             intensity_i = PyFloat_AsDouble(<object>PyList_GET_ITEM(probability_vector, i))
  * 
  *             peak = Peak(adjusted_mz, intensity_i / total, charge)             # <<<<<<<<<<<<<<
  *             if peak.intensity < 0:
  *                 continue
  */
-    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_adjusted_mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 587; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_adjusted_mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (unlikely(__pyx_v_total == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 587; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_intensity_i / __pyx_v_total)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 587; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_intensity_i / __pyx_v_total)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_charge); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 587; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_charge); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_11 = PyTuple_New(3); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 587; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_11 = PyTuple_New(3); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_11);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_1);
@@ -12052,13 +11925,13 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
     __pyx_t_1 = 0;
     __pyx_t_2 = 0;
     __pyx_t_10 = 0;
-    __pyx_t_10 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak), __pyx_t_11, NULL); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 587; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_8_speedup_Peak), __pyx_t_11, NULL); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
     __Pyx_XDECREF_SET(__pyx_v_peak, ((struct __pyx_obj_7brainpy_8_speedup_Peak *)__pyx_t_10));
     __pyx_t_10 = 0;
 
-    /* "brainpy\_speedup.pyx":588
+    /* "brainpy\_speedup.pyx":611
  * 
  *             peak = Peak(adjusted_mz, intensity_i / total, charge)
  *             if peak.intensity < 0:             # <<<<<<<<<<<<<<
@@ -12068,7 +11941,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
     __pyx_t_7 = ((__pyx_v_peak->intensity < 0.0) != 0);
     if (__pyx_t_7) {
 
-      /* "brainpy\_speedup.pyx":589
+      /* "brainpy\_speedup.pyx":612
  *             peak = Peak(adjusted_mz, intensity_i / total, charge)
  *             if peak.intensity < 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -12077,7 +11950,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_speedup.pyx":588
+      /* "brainpy\_speedup.pyx":611
  * 
  *             peak = Peak(adjusted_mz, intensity_i / total, charge)
  *             if peak.intensity < 0:             # <<<<<<<<<<<<<<
@@ -12086,16 +11959,16 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  */
     }
 
-    /* "brainpy\_speedup.pyx":590
+    /* "brainpy\_speedup.pyx":613
  *             if peak.intensity < 0:
  *                 continue
  *             peak_set.append(peak)             # <<<<<<<<<<<<<<
  *             average_mass += adjusted_mz * intensity_i
  * 
  */
-    __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_peak_set, ((PyObject *)__pyx_v_peak)); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 590; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_peak_set, ((PyObject *)__pyx_v_peak)); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "brainpy\_speedup.pyx":591
+    /* "brainpy\_speedup.pyx":614
  *                 continue
  *             peak_set.append(peak)
  *             average_mass += adjusted_mz * intensity_i             # <<<<<<<<<<<<<<
@@ -12106,7 +11979,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_speedup.pyx":593
+  /* "brainpy\_speedup.pyx":616
  *             average_mass += adjusted_mz * intensity_i
  * 
  *         average_mass /= total             # <<<<<<<<<<<<<<
@@ -12115,11 +11988,11 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  */
   if (unlikely(__pyx_v_total == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 593; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v_average_mass = (__pyx_v_average_mass / __pyx_v_total);
 
-  /* "brainpy\_speedup.pyx":594
+  /* "brainpy\_speedup.pyx":617
  * 
  *         average_mass /= total
  *         self.average_mass = average_mass             # <<<<<<<<<<<<<<
@@ -12128,39 +12001,39 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
  */
   __pyx_v_self->average_mass = __pyx_v_average_mass;
 
-  /* "brainpy\_speedup.pyx":595
+  /* "brainpy\_speedup.pyx":618
  *         average_mass /= total
  *         self.average_mass = average_mass
  *         peak_set.sort(key=mz_getter)             # <<<<<<<<<<<<<<
  *         return tuple(peak_set)
  */
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_peak_set, __pyx_n_s_sort); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_peak_set, __pyx_n_s_sort); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_11 = PyDict_New(); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_11 = PyDict_New(); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_11);
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_mz_getter); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_mz_getter); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_11, __pyx_n_s_key, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_11, __pyx_n_s_key, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_empty_tuple, __pyx_t_11); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_empty_tuple, __pyx_t_11); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":596
+  /* "brainpy\_speedup.pyx":619
  *         self.average_mass = average_mass
  *         peak_set.sort(key=mz_getter)
  *         return tuple(peak_set)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyList_AsTuple(__pyx_v_peak_set); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 596; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_AsTuple(__pyx_v_peak_set); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 619; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_speedup.pyx":556
+  /* "brainpy\_speedup.pyx":579
  *         return mass_vector
  * 
  *     def aggregated_isotopic_variants(self, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
@@ -12187,7 +12060,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12aggregated
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":374
+/* "brainpy\_speedup.pyx":397
  * cdef class IsotopicDistribution(object):
  *     cdef:
  *         public dict composition             # <<<<<<<<<<<<<<
@@ -12216,7 +12089,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_11compositio
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 374, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 397, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_self->composition);
   __pyx_r = __pyx_v_self->composition;
@@ -12255,8 +12128,8 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_11composition_2__s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 374, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  if (!(likely(PyDict_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_v_value)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 397, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  if (!(likely(PyDict_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_v_value)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -12299,7 +12172,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_11composition_4__d
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__del__", 0);
-  __Pyx_TraceCall("__del__", __pyx_f[0], 374, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__del__", __pyx_f[0], 397, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(Py_None);
   __Pyx_GOTREF(__pyx_v_self->composition);
@@ -12318,7 +12191,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_11composition_4__d
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":375
+/* "brainpy\_speedup.pyx":398
  *     cdef:
  *         public dict composition
  *         public IsotopicConstants _isotopic_constants             # <<<<<<<<<<<<<<
@@ -12347,7 +12220,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_19_isotopic_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 375, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 398, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 398; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_self->_isotopic_constants));
   __pyx_r = ((PyObject *)__pyx_v_self->_isotopic_constants);
@@ -12386,8 +12259,8 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_19_isotopic_consta
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 375, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_7brainpy_8_speedup_IsotopicConstants))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 398, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 398; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_7brainpy_8_speedup_IsotopicConstants))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 398; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -12430,7 +12303,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_19_isotopic_consta
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__del__", 0);
-  __Pyx_TraceCall("__del__", __pyx_f[0], 375, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__del__", __pyx_f[0], 398, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 398; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(Py_None);
   __Pyx_GOTREF(__pyx_v_self->_isotopic_constants);
@@ -12449,7 +12322,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_19_isotopic_consta
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":376
+/* "brainpy\_speedup.pyx":399
  *         public dict composition
  *         public IsotopicConstants _isotopic_constants
  *         public int _order             # <<<<<<<<<<<<<<
@@ -12479,9 +12352,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_6_order___ge
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 376, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 399, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 399; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_order); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 399; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12521,8 +12394,8 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_6_order_2__set__(s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 376, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 399, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 399; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 399; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->_order = __pyx_t_1;
 
   /* function exit code */
@@ -12537,7 +12410,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_6_order_2__set__(s
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":377
+/* "brainpy\_speedup.pyx":400
  *         public IsotopicConstants _isotopic_constants
  *         public int _order
  *         public double average_mass             # <<<<<<<<<<<<<<
@@ -12567,9 +12440,9 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12average_ma
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 377, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 400, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->average_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->average_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12609,8 +12482,8 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12average_mass_2__
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 377, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 400, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 400; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->average_mass = __pyx_t_1;
 
   /* function exit code */
@@ -12625,7 +12498,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_12average_mass_2__
   return __pyx_r;
 }
 
-/* "brainpy\_speedup.pyx":378
+/* "brainpy\_speedup.pyx":401
  *         public int _order
  *         public double average_mass
  *         public Peak monoisotopic_peak             # <<<<<<<<<<<<<<
@@ -12654,7 +12527,7 @@ static PyObject *__pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_17monoisotop
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[0], 378, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__get__", __pyx_f[0], 401, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 401; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_self->monoisotopic_peak));
   __pyx_r = ((PyObject *)__pyx_v_self->monoisotopic_peak);
@@ -12693,8 +12566,8 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_17monoisotopic_pea
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __Pyx_TraceCall("__set__", __pyx_f[0], 378, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
-  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_7brainpy_8_speedup_Peak))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_TraceCall("__set__", __pyx_f[0], 401, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 401; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_7brainpy_8_speedup_Peak))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 401; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -12737,7 +12610,7 @@ static int __pyx_pf_7brainpy_8_speedup_20IsotopicDistribution_17monoisotopic_pea
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__del__", 0);
-  __Pyx_TraceCall("__del__", __pyx_f[0], 378, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
+  __Pyx_TraceCall("__del__", __pyx_f[0], 401, 0, {__pyx_filename = __pyx_f[0]; __pyx_lineno = 401; __pyx_clineno = __LINE__; goto __pyx_L1_error;});
   __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(Py_None);
   __Pyx_GOTREF(__pyx_v_self->monoisotopic_peak);
@@ -13454,9 +13327,6 @@ static int __pyx_setprop_7brainpy_8_speedup_17IsotopicConstants__order(PyObject 
 }
 
 static PyMethodDef __pyx_methods_7brainpy_8_speedup_IsotopicConstants[] = {
-  {"coefficients", (PyCFunction)__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_3coefficients, METH_VARARGS|METH_KEYWORDS, 0},
-  {"add_element", (PyCFunction)__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_5add_element, METH_O, 0},
-  {"update_coefficients", (PyCFunction)__pyx_pw_7brainpy_8_speedup_17IsotopicConstants_7update_coefficients, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 
@@ -13587,6 +13457,9 @@ static int __pyx_setprop_7brainpy_8_speedup_4Peak_charge(PyObject *o, PyObject *
 }
 
 static PyMethodDef __pyx_methods_7brainpy_8_speedup_Peak[] = {
+  {"___eq__", (PyCFunction)__pyx_pw_7brainpy_8_speedup_4Peak_5___eq__, METH_O, 0},
+  {"clone", (PyCFunction)__pyx_pw_7brainpy_8_speedup_4Peak_11clone, METH_NOARGS, 0},
+  {"__reduce__", (PyCFunction)__pyx_pw_7brainpy_8_speedup_4Peak_13__reduce__, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 
@@ -13616,7 +13489,7 @@ static PyTypeObject __pyx_type_7brainpy_8_speedup_Peak = {
   0, /*tp_as_number*/
   0, /*tp_as_sequence*/
   0, /*tp_as_mapping*/
-  0, /*tp_hash*/
+  __pyx_pw_7brainpy_8_speedup_4Peak_9__hash__, /*tp_hash*/
   0, /*tp_call*/
   0, /*tp_str*/
   0, /*tp_getattro*/
@@ -13626,7 +13499,7 @@ static PyTypeObject __pyx_type_7brainpy_8_speedup_Peak = {
   0, /*tp_doc*/
   0, /*tp_traverse*/
   0, /*tp_clear*/
-  0, /*tp_richcompare*/
+  __pyx_pw_7brainpy_8_speedup_4Peak_7__richcmp__, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
@@ -14099,10 +13972,6 @@ static PyTypeObject __pyx_type_7brainpy_8_speedup___pyx_scope_struct_1___iter__ 
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"_update_elementary_symmetric_polynomial", (PyCFunction)__pyx_pw_7brainpy_8_speedup_1_update_elementary_symmetric_polynomial, METH_VARARGS|METH_KEYWORDS, 0},
-  {"_update_power_sum", (PyCFunction)__pyx_pw_7brainpy_8_speedup_3_update_power_sum, METH_VARARGS|METH_KEYWORDS, 0},
-  {"newton", (PyCFunction)__pyx_pw_7brainpy_8_speedup_5newton, METH_VARARGS|METH_KEYWORDS, 0},
-  {"vietes", (PyCFunction)__pyx_pw_7brainpy_8_speedup_7vietes, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -14134,20 +14003,20 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_PolynomialParameters___iter, __pyx_k_PolynomialParameters___iter, sizeof(__pyx_k_PolynomialParameters___iter), 0, 0, 1, 1},
   {&__pyx_kp_s_The_list_of_neutron_shifts_is_no, __pyx_k_The_list_of_neutron_shifts_is_no, sizeof(__pyx_k_The_list_of_neutron_shifts_is_no), 0, 0, 1, 0},
   {&__pyx_n_s_abundance, __pyx_k_abundance, sizeof(__pyx_k_abundance), 0, 0, 1, 1},
-  {&__pyx_n_s_add_element, __pyx_k_add_element, sizeof(__pyx_k_add_element), 0, 0, 1, 1},
+  {&__pyx_n_s_all, __pyx_k_all, sizeof(__pyx_k_all), 0, 0, 1, 1},
   {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
   {&__pyx_n_s_attrgetter, __pyx_k_attrgetter, sizeof(__pyx_k_attrgetter), 0, 0, 1, 1},
   {&__pyx_n_s_brainpy__speedup, __pyx_k_brainpy__speedup, sizeof(__pyx_k_brainpy__speedup), 0, 0, 1, 1},
   {&__pyx_n_s_center_mass, __pyx_k_center_mass, sizeof(__pyx_k_center_mass), 0, 0, 1, 1},
   {&__pyx_n_s_charge, __pyx_k_charge, sizeof(__pyx_k_charge), 0, 0, 1, 1},
   {&__pyx_n_s_charge_carrier, __pyx_k_charge_carrier, sizeof(__pyx_k_charge_carrier), 0, 0, 1, 1},
+  {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_n_s_close, __pyx_k_close, sizeof(__pyx_k_close), 0, 0, 1, 1},
-  {&__pyx_n_s_coefficients, __pyx_k_coefficients, sizeof(__pyx_k_coefficients), 0, 0, 1, 1},
   {&__pyx_n_s_composition, __pyx_k_composition, sizeof(__pyx_k_composition), 0, 0, 1, 1},
   {&__pyx_n_s_element, __pyx_k_element, sizeof(__pyx_k_element), 0, 0, 1, 1},
   {&__pyx_n_s_element_coefficients, __pyx_k_element_coefficients, sizeof(__pyx_k_element_coefficients), 0, 0, 1, 1},
   {&__pyx_n_s_elementary_symmetric_polynomial, __pyx_k_elementary_symmetric_polynomial, sizeof(__pyx_k_elementary_symmetric_polynomial), 0, 0, 1, 1},
-  {&__pyx_n_s_esp_vec, __pyx_k_esp_vec, sizeof(__pyx_k_esp_vec), 0, 0, 1, 1},
+  {&__pyx_n_s_eq, __pyx_k_eq, sizeof(__pyx_k_eq), 0, 0, 1, 1},
   {&__pyx_n_s_freqs, __pyx_k_freqs, sizeof(__pyx_k_freqs), 0, 0, 1, 1},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
@@ -14173,7 +14042,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_mz, __pyx_k_mz, sizeof(__pyx_k_mz), 0, 0, 1, 1},
   {&__pyx_n_s_mz_getter, __pyx_k_mz_getter, sizeof(__pyx_k_mz_getter), 0, 0, 1, 1},
   {&__pyx_n_s_neutron_shift, __pyx_k_neutron_shift, sizeof(__pyx_k_neutron_shift), 0, 0, 1, 1},
-  {&__pyx_n_s_newton, __pyx_k_newton, sizeof(__pyx_k_newton), 0, 0, 1, 1},
   {&__pyx_n_s_nist_mass, __pyx_k_nist_mass, sizeof(__pyx_k_nist_mass), 0, 0, 1, 1},
   {&__pyx_n_s_nist_mass_2, __pyx_k_nist_mass_2, sizeof(__pyx_k_nist_mass_2), 0, 0, 1, 1},
   {&__pyx_n_s_operator, __pyx_k_operator, sizeof(__pyx_k_operator), 0, 0, 1, 1},
@@ -14181,7 +14049,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_phi_values, __pyx_k_phi_values, sizeof(__pyx_k_phi_values), 0, 0, 1, 1},
   {&__pyx_n_s_power_sum, __pyx_k_power_sum, sizeof(__pyx_k_power_sum), 0, 0, 1, 1},
   {&__pyx_n_s_probability, __pyx_k_probability, sizeof(__pyx_k_probability), 0, 0, 1, 1},
-  {&__pyx_n_s_ps_vec, __pyx_k_ps_vec, sizeof(__pyx_k_ps_vec), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_reverse, __pyx_k_reverse, sizeof(__pyx_k_reverse), 0, 0, 1, 1},
@@ -14192,18 +14059,17 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_symbol, __pyx_k_symbol, sizeof(__pyx_k_symbol), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_throw, __pyx_k_throw, sizeof(__pyx_k_throw), 0, 0, 1, 1},
-  {&__pyx_n_s_update_coefficients, __pyx_k_update_coefficients, sizeof(__pyx_k_update_coefficients), 0, 0, 1, 1},
   {&__pyx_n_s_update_isotopic_constants, __pyx_k_update_isotopic_constants, sizeof(__pyx_k_update_isotopic_constants), 0, 0, 1, 1},
   {&__pyx_n_s_v, __pyx_k_v, sizeof(__pyx_k_v), 0, 0, 1, 1},
-  {&__pyx_n_s_with_mass, __pyx_k_with_mass, sizeof(__pyx_k_with_mass), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_max = __Pyx_GetBuiltinName(__pyx_n_s_max); if (!__pyx_builtin_max) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 185; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_sorted = __Pyx_GetBuiltinName(__pyx_n_s_sorted); if (!__pyx_builtin_sorted) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_Exception = __Pyx_GetBuiltinName(__pyx_n_s_Exception); if (!__pyx_builtin_Exception) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 296; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_sum = __Pyx_GetBuiltinName(__pyx_n_s_sum); if (!__pyx_builtin_sum) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 576; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_Exception = __Pyx_GetBuiltinName(__pyx_n_s_Exception); if (!__pyx_builtin_Exception) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 295; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_all = __Pyx_GetBuiltinName(__pyx_n_s_all); if (!__pyx_builtin_all) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_sum = __Pyx_GetBuiltinName(__pyx_n_s_sum); if (!__pyx_builtin_sum) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -14213,14 +14079,14 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "brainpy\_speedup.pyx":296
+  /* "brainpy\_speedup.pyx":295
  *                 PyList_Append(accumulator, isotope.abundance * coef)
  *             else:
  *                 raise Exception("The list of neutron shifts is not ordered.")             # <<<<<<<<<<<<<<
  * 
  *         elementary_symmetric_polynomial = vietes(accumulator)
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_s_The_list_of_neutron_shifts_is_no); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 296; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_s_The_list_of_neutron_shifts_is_no); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 295; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
@@ -14259,6 +14125,7 @@ static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __pyx_float_0_ = PyFloat_FromDouble(0.); if (unlikely(!__pyx_float_0_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_float_1_0 = PyFloat_FromDouble(1.0); if (unlikely(!__pyx_float_1_0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_float_1eneg_10 = PyFloat_FromDouble(1e-10); if (unlikely(!__pyx_float_1eneg_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_1000 = PyInt_FromLong(1000); if (unlikely(!__pyx_int_1000)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -14385,7 +14252,9 @@ PyMODINIT_FUNC PyInit__speedup(void)
   if (PyObject_SetAttrString(__pyx_m, "Element", (PyObject *)&__pyx_type_7brainpy_8_speedup_Element) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_7brainpy_8_speedup_Element = &__pyx_type_7brainpy_8_speedup_Element;
   __pyx_vtabptr_7brainpy_8_speedup_IsotopicConstants = &__pyx_vtable_7brainpy_8_speedup_IsotopicConstants;
-  __pyx_vtable_7brainpy_8_speedup_IsotopicConstants.coefficients = (struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *(*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, struct __pyx_obj_7brainpy_8_speedup_Element *, int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args))__pyx_f_7brainpy_8_speedup_17IsotopicConstants_coefficients;
+  __pyx_vtable_7brainpy_8_speedup_IsotopicConstants.coefficients = (struct __pyx_obj_7brainpy_8_speedup_PolynomialParameters *(*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, struct __pyx_obj_7brainpy_8_speedup_Element *, struct __pyx_opt_args_7brainpy_8_speedup_17IsotopicConstants_coefficients *__pyx_optional_args))__pyx_f_7brainpy_8_speedup_17IsotopicConstants_coefficients;
+  __pyx_vtable_7brainpy_8_speedup_IsotopicConstants.add_element = (void (*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, PyObject *))__pyx_f_7brainpy_8_speedup_17IsotopicConstants_add_element;
+  __pyx_vtable_7brainpy_8_speedup_IsotopicConstants.update_coefficients = (void (*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *))__pyx_f_7brainpy_8_speedup_17IsotopicConstants_update_coefficients;
   __pyx_vtable_7brainpy_8_speedup_IsotopicConstants.nth_element_power_sum = (double (*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, PyObject *, int))__pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_element_power_sum;
   __pyx_vtable_7brainpy_8_speedup_IsotopicConstants.nth_modified_element_power_sum = (double (*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicConstants *, PyObject *, int))__pyx_f_7brainpy_8_speedup_17IsotopicConstants_nth_modified_element_power_sum;
   __pyx_type_7brainpy_8_speedup_IsotopicConstants.tp_base = (&PyDict_Type);
@@ -14394,9 +14263,9 @@ PyMODINIT_FUNC PyInit__speedup(void)
   if (__Pyx_SetVtable(__pyx_type_7brainpy_8_speedup_IsotopicConstants.tp_dict, __pyx_vtabptr_7brainpy_8_speedup_IsotopicConstants) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (PyObject_SetAttrString(__pyx_m, "IsotopicConstants", (PyObject *)&__pyx_type_7brainpy_8_speedup_IsotopicConstants) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_7brainpy_8_speedup_IsotopicConstants = &__pyx_type_7brainpy_8_speedup_IsotopicConstants;
-  if (PyType_Ready(&__pyx_type_7brainpy_8_speedup_Peak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 357; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_7brainpy_8_speedup_Peak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_8_speedup_Peak.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Peak", (PyObject *)&__pyx_type_7brainpy_8_speedup_Peak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 357; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Peak", (PyObject *)&__pyx_type_7brainpy_8_speedup_Peak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_7brainpy_8_speedup_Peak = &__pyx_type_7brainpy_8_speedup_Peak;
   __pyx_vtabptr_7brainpy_8_speedup_IsotopicDistribution = &__pyx_vtable_7brainpy_8_speedup_IsotopicDistribution;
   __pyx_vtable_7brainpy_8_speedup_IsotopicDistribution._update_isotopic_constants = (PyObject *(*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution *, int __pyx_skip_dispatch))__pyx_f_7brainpy_8_speedup_20IsotopicDistribution__update_isotopic_constants;
@@ -14407,10 +14276,10 @@ PyMODINIT_FUNC PyInit__speedup(void)
   __pyx_vtable_7brainpy_8_speedup_IsotopicDistribution.modified_phi_values = (PyObject *(*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution *, PyObject *, int __pyx_skip_dispatch))__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_modified_phi_values;
   __pyx_vtable_7brainpy_8_speedup_IsotopicDistribution.probability = (PyObject *(*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution *, int __pyx_skip_dispatch))__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_probability;
   __pyx_vtable_7brainpy_8_speedup_IsotopicDistribution.center_mass = (PyObject *(*)(struct __pyx_obj_7brainpy_8_speedup_IsotopicDistribution *, PyObject *, int __pyx_skip_dispatch))__pyx_f_7brainpy_8_speedup_20IsotopicDistribution_center_mass;
-  if (PyType_Ready(&__pyx_type_7brainpy_8_speedup_IsotopicDistribution) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_7brainpy_8_speedup_IsotopicDistribution) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 395; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_8_speedup_IsotopicDistribution.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_7brainpy_8_speedup_IsotopicDistribution.tp_dict, __pyx_vtabptr_7brainpy_8_speedup_IsotopicDistribution) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyObject_SetAttrString(__pyx_m, "IsotopicDistribution", (PyObject *)&__pyx_type_7brainpy_8_speedup_IsotopicDistribution) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_SetVtable(__pyx_type_7brainpy_8_speedup_IsotopicDistribution.tp_dict, __pyx_vtabptr_7brainpy_8_speedup_IsotopicDistribution) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 395; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "IsotopicDistribution", (PyObject *)&__pyx_type_7brainpy_8_speedup_IsotopicDistribution) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 395; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_7brainpy_8_speedup_IsotopicDistribution = &__pyx_type_7brainpy_8_speedup_IsotopicDistribution;
   if (PyType_Ready(&__pyx_type_7brainpy_8_speedup___pyx_scope_struct____iter__) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_8_speedup___pyx_scope_struct____iter__.tp_print = 0;
@@ -14548,7 +14417,7 @@ PyMODINIT_FUNC PyInit__speedup(void)
  *     freqs = dict()
  *     for i, mass_freqs in nist_mass[element].items():
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_8_speedup_9_isotopes_of, NULL, __pyx_n_s_brainpy__speedup); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_8_speedup_1_isotopes_of, NULL, __pyx_n_s_brainpy__speedup); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_isotopes_of, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -14610,14 +14479,14 @@ PyMODINIT_FUNC PyInit__speedup(void)
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_speedup.pyx":556
+  /* "brainpy\_speedup.pyx":579
  *         return mass_vector
  * 
  *     def aggregated_isotopic_variants(self, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
  *         '''
  *         Compute the m/z (or neutral mass when `charge` == 0) for each
  */
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_7brainpy_8_speedup_PROTON); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 556; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_7brainpy_8_speedup_PROTON); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_k__5 = __pyx_t_2;
   __Pyx_GIVEREF(__pyx_t_2);
@@ -14848,6 +14717,126 @@ static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
 #endif
 }
 
+static double __Pyx__PyObject_AsDouble(PyObject* obj) {
+    PyObject* float_value;
+#if CYTHON_COMPILING_IN_PYPY
+    float_value = PyNumber_Float(obj);  if (0) goto bad;
+#else
+    PyNumberMethods *nb = Py_TYPE(obj)->tp_as_number;
+    if (likely(nb) && likely(nb->nb_float)) {
+        float_value = nb->nb_float(obj);
+        if (likely(float_value) && unlikely(!PyFloat_Check(float_value))) {
+            PyErr_Format(PyExc_TypeError,
+                "__float__ returned non-float (type %.200s)",
+                Py_TYPE(float_value)->tp_name);
+            Py_DECREF(float_value);
+            goto bad;
+        }
+    } else if (PyUnicode_CheckExact(obj) || PyBytes_CheckExact(obj)) {
+#if PY_MAJOR_VERSION >= 3
+        float_value = PyFloat_FromString(obj);
+#else
+        float_value = PyFloat_FromString(obj, 0);
+#endif
+    } else {
+        PyObject* args = PyTuple_New(1);
+        if (unlikely(!args)) goto bad;
+        PyTuple_SET_ITEM(args, 0, obj);
+        float_value = PyObject_Call((PyObject*)&PyFloat_Type, args, 0);
+        PyTuple_SET_ITEM(args, 0, 0);
+        Py_DECREF(args);
+    }
+#endif
+    if (likely(float_value)) {
+        double value = PyFloat_AS_DOUBLE(float_value);
+        Py_DECREF(float_value);
+        return value;
+    }
+bad:
+    return (double)-1;
+}
+
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
+    PyObject *r;
+    if (!j) return NULL;
+    r = PyObject_GetItem(o, j);
+    Py_DECREF(j);
+    return r;
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    if (wraparound & unlikely(i < 0)) i += PyList_GET_SIZE(o);
+    if ((!boundscheck) || likely((0 <= i) & (i < PyList_GET_SIZE(o)))) {
+        PyObject *r = PyList_GET_ITEM(o, i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    if (wraparound & unlikely(i < 0)) i += PyTuple_GET_SIZE(o);
+    if ((!boundscheck) || likely((0 <= i) & (i < PyTuple_GET_SIZE(o)))) {
+        PyObject *r = PyTuple_GET_ITEM(o, i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
+                                                     CYTHON_NCP_UNUSED int wraparound,
+                                                     CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    if (is_list || PyList_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
+        if ((!boundscheck) || (likely((n >= 0) & (n < PyList_GET_SIZE(o))))) {
+            PyObject *r = PyList_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    }
+    else if (PyTuple_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
+        if ((!boundscheck) || likely((n >= 0) & (n < PyTuple_GET_SIZE(o)))) {
+            PyObject *r = PyTuple_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    } else {
+        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
+        if (likely(m && m->sq_item)) {
+            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
+                Py_ssize_t l = m->sq_length(o);
+                if (likely(l >= 0)) {
+                    i += l;
+                } else {
+                    if (PyErr_ExceptionMatches(PyExc_OverflowError))
+                        PyErr_Clear();
+                    else
+                        return NULL;
+                }
+            }
+            return m->sq_item(o, i);
+        }
+    }
+#else
+    if (is_list || PySequence_Check(o)) {
+        return PySequence_GetItem(o, i);
+    }
+#endif
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+}
+
 static void __Pyx_RaiseArgtupleInvalid(
     const char* func_name,
     int exact,
@@ -14985,152 +14974,6 @@ invalid_keyword:
     #endif
 bad:
     return -1;
-}
-
-static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
-    PyErr_Format(PyExc_TypeError,
-        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
-        name, type->tp_name, Py_TYPE(obj)->tp_name);
-}
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact)
-{
-    if (unlikely(!type)) {
-        PyErr_SetString(PyExc_SystemError, "Missing type object");
-        return 0;
-    }
-    if (none_allowed && obj == Py_None) return 1;
-    else if (exact) {
-        if (likely(Py_TYPE(obj) == type)) return 1;
-        #if PY_MAJOR_VERSION == 2
-        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
-        #endif
-    }
-    else {
-        if (likely(PyObject_TypeCheck(obj, type))) return 1;
-    }
-    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
-    return 0;
-}
-
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
-    PyObject *r;
-    if (!j) return NULL;
-    r = PyObject_GetItem(o, j);
-    Py_DECREF(j);
-    return r;
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_COMPILING_IN_CPYTHON
-    if (wraparound & unlikely(i < 0)) i += PyList_GET_SIZE(o);
-    if ((!boundscheck) || likely((0 <= i) & (i < PyList_GET_SIZE(o)))) {
-        PyObject *r = PyList_GET_ITEM(o, i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_COMPILING_IN_CPYTHON
-    if (wraparound & unlikely(i < 0)) i += PyTuple_GET_SIZE(o);
-    if ((!boundscheck) || likely((0 <= i) & (i < PyTuple_GET_SIZE(o)))) {
-        PyObject *r = PyTuple_GET_ITEM(o, i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
-                                                     CYTHON_NCP_UNUSED int wraparound,
-                                                     CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_COMPILING_IN_CPYTHON
-    if (is_list || PyList_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
-        if ((!boundscheck) || (likely((n >= 0) & (n < PyList_GET_SIZE(o))))) {
-            PyObject *r = PyList_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    }
-    else if (PyTuple_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
-        if ((!boundscheck) || likely((n >= 0) & (n < PyTuple_GET_SIZE(o)))) {
-            PyObject *r = PyTuple_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    } else {
-        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
-        if (likely(m && m->sq_item)) {
-            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
-                Py_ssize_t l = m->sq_length(o);
-                if (likely(l >= 0)) {
-                    i += l;
-                } else {
-                    if (PyErr_ExceptionMatches(PyExc_OverflowError))
-                        PyErr_Clear();
-                    else
-                        return NULL;
-                }
-            }
-            return m->sq_item(o, i);
-        }
-    }
-#else
-    if (is_list || PySequence_Check(o)) {
-        return PySequence_GetItem(o, i);
-    }
-#endif
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-}
-
-static double __Pyx__PyObject_AsDouble(PyObject* obj) {
-    PyObject* float_value;
-#if CYTHON_COMPILING_IN_PYPY
-    float_value = PyNumber_Float(obj);  if (0) goto bad;
-#else
-    PyNumberMethods *nb = Py_TYPE(obj)->tp_as_number;
-    if (likely(nb) && likely(nb->nb_float)) {
-        float_value = nb->nb_float(obj);
-        if (likely(float_value) && unlikely(!PyFloat_Check(float_value))) {
-            PyErr_Format(PyExc_TypeError,
-                "__float__ returned non-float (type %.200s)",
-                Py_TYPE(float_value)->tp_name);
-            Py_DECREF(float_value);
-            goto bad;
-        }
-    } else if (PyUnicode_CheckExact(obj) || PyBytes_CheckExact(obj)) {
-#if PY_MAJOR_VERSION >= 3
-        float_value = PyFloat_FromString(obj);
-#else
-        float_value = PyFloat_FromString(obj, 0);
-#endif
-    } else {
-        PyObject* args = PyTuple_New(1);
-        if (unlikely(!args)) goto bad;
-        PyTuple_SET_ITEM(args, 0, obj);
-        float_value = PyObject_Call((PyObject*)&PyFloat_Type, args, 0);
-        PyTuple_SET_ITEM(args, 0, 0);
-        Py_DECREF(args);
-    }
-#endif
-    if (likely(float_value)) {
-        double value = PyFloat_AS_DOUBLE(float_value);
-        Py_DECREF(float_value);
-        return value;
-    }
-bad:
-    return (double)-1;
 }
 
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
@@ -16320,6 +16163,32 @@ static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, Py
     Py_INCREF(dict);
 }
 
+static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
+    PyErr_Format(PyExc_TypeError,
+        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
+        name, type->tp_name, Py_TYPE(obj)->tp_name);
+}
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact)
+{
+    if (unlikely(!type)) {
+        PyErr_SetString(PyExc_SystemError, "Missing type object");
+        return 0;
+    }
+    if (none_allowed && obj == Py_None) return 1;
+    else if (exact) {
+        if (likely(Py_TYPE(obj) == type)) return 1;
+        #if PY_MAJOR_VERSION == 2
+        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
+        #endif
+    }
+    else {
+        if (likely(PyObject_TypeCheck(obj, type))) return 1;
+    }
+    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
+    return 0;
+}
+
 static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
     PyObject *result;
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -17046,190 +16915,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
         return (target_type) value;\
     }
 
-static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *x) {
-    const size_t neg_one = (size_t) -1, const_zero = (size_t) 0;
-    const int is_unsigned = neg_one > const_zero;
-#if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_Check(x))) {
-        if (sizeof(size_t) < sizeof(long)) {
-            __PYX_VERIFY_RETURN_INT(size_t, long, PyInt_AS_LONG(x))
-        } else {
-            long val = PyInt_AS_LONG(x);
-            if (is_unsigned && unlikely(val < 0)) {
-                goto raise_neg_overflow;
-            }
-            return (size_t) val;
-        }
-    } else
-#endif
-    if (likely(PyLong_Check(x))) {
-        if (is_unsigned) {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (size_t) 0;
-                case  1: __PYX_VERIFY_RETURN_INT(size_t, digit, digits[0])
-                case 2:
-                    if (8 * sizeof(size_t) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) >= 2 * PyLong_SHIFT) {
-                            return (size_t) (((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(size_t) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) >= 3 * PyLong_SHIFT) {
-                            return (size_t) (((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(size_t) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) >= 4 * PyLong_SHIFT) {
-                            return (size_t) (((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
-                        }
-                    }
-                    break;
-            }
-#endif
-#if CYTHON_COMPILING_IN_CPYTHON
-            if (unlikely(Py_SIZE(x) < 0)) {
-                goto raise_neg_overflow;
-            }
-#else
-            {
-                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
-                if (unlikely(result < 0))
-                    return (size_t) -1;
-                if (unlikely(result == 1))
-                    goto raise_neg_overflow;
-            }
-#endif
-            if (sizeof(size_t) <= sizeof(unsigned long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(size_t, unsigned long, PyLong_AsUnsignedLong(x))
-            } else if (sizeof(size_t) <= sizeof(unsigned PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(size_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
-            }
-        } else {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (size_t) 0;
-                case -1: __PYX_VERIFY_RETURN_INT(size_t, sdigit, -(sdigit) digits[0])
-                case  1: __PYX_VERIFY_RETURN_INT(size_t,  digit, +digits[0])
-                case -2:
-                    if (8 * sizeof(size_t) - 1 > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
-                            return (size_t) (((size_t)-1)*(((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 2:
-                    if (8 * sizeof(size_t) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
-                            return (size_t) ((((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
-                        }
-                    }
-                    break;
-                case -3:
-                    if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
-                            return (size_t) (((size_t)-1)*(((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(size_t) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
-                            return (size_t) ((((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
-                        }
-                    }
-                    break;
-                case -4:
-                    if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) - 1 > 4 * PyLong_SHIFT) {
-                            return (size_t) (((size_t)-1)*(((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(size_t) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(size_t) - 1 > 4 * PyLong_SHIFT) {
-                            return (size_t) ((((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
-                        }
-                    }
-                    break;
-            }
-#endif
-            if (sizeof(size_t) <= sizeof(long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(size_t, long, PyLong_AsLong(x))
-            } else if (sizeof(size_t) <= sizeof(PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(size_t, PY_LONG_LONG, PyLong_AsLongLong(x))
-            }
-        }
-        {
-#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
-            PyErr_SetString(PyExc_RuntimeError,
-                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
-#else
-            size_t val;
-            PyObject *v = __Pyx_PyNumber_Int(x);
- #if PY_MAJOR_VERSION < 3
-            if (likely(v) && !PyLong_Check(v)) {
-                PyObject *tmp = v;
-                v = PyNumber_Long(tmp);
-                Py_DECREF(tmp);
-            }
- #endif
-            if (likely(v)) {
-                int one = 1; int is_little = (int)*(unsigned char *)&one;
-                unsigned char *bytes = (unsigned char *)&val;
-                int ret = _PyLong_AsByteArray((PyLongObject *)v,
-                                              bytes, sizeof(val),
-                                              is_little, !is_unsigned);
-                Py_DECREF(v);
-                if (likely(!ret))
-                    return val;
-            }
-#endif
-            return (size_t) -1;
-        }
-    } else {
-        size_t val;
-        PyObject *tmp = __Pyx_PyNumber_Int(x);
-        if (!tmp) return (size_t) -1;
-        val = __Pyx_PyInt_As_size_t(tmp);
-        Py_DECREF(tmp);
-        return val;
-    }
-raise_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "value too large to convert to size_t");
-    return (size_t) -1;
-raise_neg_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "can't convert negative value to size_t");
-    return (size_t) -1;
-}
-
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
@@ -17412,6 +17097,190 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
+}
+
+static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *x) {
+    const size_t neg_one = (size_t) -1, const_zero = (size_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(size_t) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(size_t, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (size_t) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (size_t) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(size_t, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(size_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) >= 2 * PyLong_SHIFT) {
+                            return (size_t) (((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(size_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) >= 3 * PyLong_SHIFT) {
+                            return (size_t) (((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(size_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) >= 4 * PyLong_SHIFT) {
+                            return (size_t) (((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (size_t) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(size_t) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, unsigned long, PyLong_AsUnsignedLong(x))
+            } else if (sizeof(size_t) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (size_t) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(size_t, sdigit, -(sdigit) digits[0])
+                case  1: __PYX_VERIFY_RETURN_INT(size_t,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(size_t) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (size_t) (((size_t)-1)*(((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(size_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (size_t) ((((((size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(size_t) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (size_t) (((size_t)-1)*(((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(size_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (size_t) ((((((((size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(size_t) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (size_t) (((size_t)-1)*(((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(size_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(size_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(size_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (size_t) ((((((((((size_t)digits[3]) << PyLong_SHIFT) | (size_t)digits[2]) << PyLong_SHIFT) | (size_t)digits[1]) << PyLong_SHIFT) | (size_t)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(size_t) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, long, PyLong_AsLong(x))
+            } else if (sizeof(size_t) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(size_t, PY_LONG_LONG, PyLong_AsLongLong(x))
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            size_t val;
+            PyObject *v = __Pyx_PyNumber_Int(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (size_t) -1;
+        }
+    } else {
+        size_t val;
+        PyObject *tmp = __Pyx_PyNumber_Int(x);
+        if (!tmp) return (size_t) -1;
+        val = __Pyx_PyInt_As_size_t(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to size_t");
+    return (size_t) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to size_t");
+    return (size_t) -1;
 }
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
