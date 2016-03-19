@@ -13,6 +13,7 @@ import operator
 mz_getter = operator.attrgetter("mz")
 
 from mass_dict import nist_mass as _nist_mass
+from brainpy._c.isotopic_distribution cimport TheoreticalPeak as Peak
 
 cdef dict nist_mass
 nist_mass = _nist_mass
@@ -286,7 +287,7 @@ cdef class IsotopicConstants(dict):
                 coef = 1.
 
             if current_order > len(accumulator):
-                for i in range(len(accumulator)):
+                for i in range(len(accumulator), current_order):
                     PyList_Append(accumulator, 0.)
                 PyList_Append(accumulator, isotope.abundance * coef)
             elif current_order == len(accumulator):
@@ -356,41 +357,41 @@ cdef class IsotopicConstants(dict):
         return constants.mass_coefficients.power_sum[order]
 
 
-cdef class Peak(object):
-    cdef:
-        public double mz
-        public double intensity
-        public int charge
+# cdef class Peak(object):
+#     cdef:
+#         public double mz
+#         public double intensity
+#         public int charge
 
-    def __init__(self, mz, intensity, charge):
-        self.mz = mz
-        self.intensity = intensity
-        self.charge = charge
+#     def __init__(self, mz, intensity, charge):
+#         self.mz = mz
+#         self.intensity = intensity
+#         self.charge = charge
 
-    def __repr__(self):
-        return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
+#     def __repr__(self):
+#         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
 
-    def _eq(self, other):
-        equal = all(
-            abs(self.mz - other.mz) < 1e-10,
-            abs(self.intensity - other.intensity) < 1e-10,
-            self.charge == other.charge)
-        return equal
+#     def _eq(self, other):
+#         equal = all(
+#             abs(self.mz - other.mz) < 1e-10,
+#             abs(self.intensity - other.intensity) < 1e-10,
+#             self.charge == other.charge)
+#         return equal
 
-    def __richcmp__(self, other, int code):
-        if code == 2:
-            return self._eq(other)
-        elif code == 3:
-            return not self._eq(other)
+#     def __richcmp__(self, other, int code):
+#         if code == 2:
+#             return self._eq(other)
+#         elif code == 3:
+#             return not self._eq(other)
 
-    def __hash__(self):
-        return hash(self.mz)
+#     def __hash__(self):
+#         return hash(self.mz)
 
-    def clone(self):
-        return self.__class__(self.mz, self.intensity, self.charge)
+#     def clone(self):
+#         return self.__class__(self.mz, self.intensity, self.charge)
 
-    def __reduce__(self):
-        return Peak, (self.mz, self.intensity, self.charge)
+#     def __reduce__(self):
+#         return Peak, (self.mz, self.intensity, self.charge)
 
 cdef class IsotopicDistribution(object):
     cdef:
@@ -573,7 +574,7 @@ cdef class IsotopicDistribution(object):
                 temp *= base_intensity * _monoisotopic_mass
                 center += temp
 
-            mass_vector.append(center / probability_vector[i])
+            mass_vector.append((center / probability_vector[i]) if probability_vector[i] > 0 else 0)
         return mass_vector
 
     def aggregated_isotopic_variants(self, int charge=0, charge_carrier=PROTON):

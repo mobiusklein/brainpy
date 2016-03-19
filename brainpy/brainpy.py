@@ -271,7 +271,7 @@ class IsotopicConstants(dict):
                 coef = 1.
 
             if current_order > len(accumulator):
-                for i in range(len(accumulator)):
+                for i in range(len(accumulator), current_order):
                     accumulator.append(0.)
                 accumulator.append(isotope.abundance * coef)
             elif current_order == len(accumulator):
@@ -502,7 +502,7 @@ class IsotopicDistribution(object):
             for element, ele_sym_poly in ele_sym_poly_map.items():
                 center += self.composition[element] * sign * ele_sym_poly[i] *\
                  self.monoisotopic_peak.intensity * periodic_table[element].monoisotopic_mass()
-            mass_vector.append(center / probability_vector[i])
+            mass_vector.append((center / probability_vector[i]) if probability_vector[i] > 0 else 0)
         return mass_vector
 
     def aggregated_isotopic_variants(self, charge=0, charge_carrier=PROTON):
@@ -523,6 +523,8 @@ class IsotopicDistribution(object):
                 adjusted_mz = mass_charge_ratio(center_mass_vector[i], charge, charge_carrier)
             else:
                 adjusted_mz = center_mass_vector[i]
+            if adjusted_mz < 1:
+                continue
             peak = Peak(adjusted_mz, probability_vector[i] / total, charge)
             if peak.intensity < 0:
                 continue
@@ -574,6 +576,7 @@ try:
     _has_c = True
     _IsotopicDistribution = IsotopicDistribution
     from ._speedup import IsotopicDistribution
+    from ._c.isotopic_distribution import pyisotopic_variants as isotopic_variants
 
 except ImportError:
     _has_c = False
