@@ -1,8 +1,8 @@
-from cmass_data.composition cimport (
+from brainpy._c.composition cimport (
     _PeriodicTable, Element, Isotope, Composition,
     get_element_from_periodic_table2, element_max_neutron_shift)
 
-from cmass_data.double_vector cimport(
+from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
     free_double_vector, print_double_vector, double_vector_to_list)
 

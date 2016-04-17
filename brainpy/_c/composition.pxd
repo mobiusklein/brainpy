@@ -1,5 +1,7 @@
 from brainpy.mass_dict import nist_mass as __nist_mass
 
+ctypedef int count_type
+
 cdef dict nist_mass
 nist_mass = __nist_mass
 
@@ -30,7 +32,7 @@ cdef PeriodicTable* _PeriodicTable
 
 cdef struct Composition:
     char** elements
-    double* counts
+    count_type* counts
     size_t size
     size_t used
 
@@ -61,17 +63,17 @@ cdef int get_element_from_periodic_table2(PeriodicTable* table, char* symbol, El
 cdef Composition* make_composition() nogil
 cdef Composition* copy_composition(Composition* composition) nogil
 cdef void print_composition(Composition* composition) nogil
-cdef int composition_set_element_count(Composition* composition, char* element, double count) nogil
-cdef int composition_get_element_count(Composition* composition, char* element, double* count) nogil
-cdef int composition_inc_element_count(Composition* composition, char* element, double increment) nogil
+cdef int composition_set_element_count(Composition* composition, char* element, count_type count) nogil
+cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) nogil
+cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil
 cdef int composition_resize(Composition* composition) nogil
 cdef double composition_mass(Composition* composition) nogil
 cdef void free_composition(Composition* composition) nogil
 
 cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil
 cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil
-cdef Composition* composition_mul(Composition* composition, double scale) nogil
-cdef void composition_imul(Composition* composition, double scale) nogil
+cdef Composition* composition_mul(Composition* composition, int scale) nogil
+cdef void composition_imul(Composition* composition, int scale) nogil
 
 cdef dict composition_to_dict(Composition* composition)
 cdef Composition* dict_to_composition(dict comp_dict)

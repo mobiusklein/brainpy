@@ -1,8 +1,7 @@
-# cython: language = c
 cimport cython
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.string cimport PyString_FromString, PyString_AsString
-from cpython.float cimport PyFloat_AsDouble, PyFloat_FromDouble
+from cpython.int cimport PyInt_AsLong, PyInt_FromLong
 from libc.string cimport strcmp, memcpy, strlen
 from libc.stdlib cimport malloc, free, realloc, atoi
 from libc.math cimport abs, fabs
@@ -285,7 +284,7 @@ cdef Composition* make_composition() nogil:
         Composition* composition
     composition = <Composition*>malloc(sizeof(Composition))
     composition.elements = <char**>malloc(sizeof(char*) * 7)
-    composition.counts = <double*>malloc(sizeof(double) * 7)
+    composition.counts = <count_type*>malloc(sizeof(count_type) * 7)
     composition.size = 7
     composition.used = 0
     return composition
@@ -297,7 +296,7 @@ cdef Composition* copy_composition(Composition* composition) nogil:
         size_t i
     result = <Composition*>malloc(sizeof(Composition))
     result.elements = <char**>malloc(sizeof(char*) * composition.size)
-    result.counts = <double*>malloc(sizeof(double) * composition.size)
+    result.counts = <count_type*>malloc(sizeof(count_type) * composition.size)
     result.size = composition.size
     result.used = 0
 
@@ -316,11 +315,11 @@ cdef void print_composition(Composition* composition) nogil:
     printf("Size: %d, Used: %d\n", composition.size, composition.used)
     printf("{\n")
     while i < composition.used:
-        printf("  %s: %0.2f\n", composition.elements[i], composition.counts[i])
+        printf("  %s: %d\n", composition.elements[i], composition.counts[i])
         i += 1
     printf("}\n\n")
 
-cdef int composition_set_element_count(Composition* composition, char* element, double count) nogil:
+cdef int composition_set_element_count(Composition* composition, char* element, count_type count) nogil:
     cdef:
         size_t i
         int status
@@ -345,7 +344,7 @@ cdef int composition_set_element_count(Composition* composition, char* element, 
         return 0
     return 1
 
-cdef int composition_get_element_count(Composition* composition, char* element, double* count) nogil:
+cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) nogil:
     cdef:
         size_t i
         int status
@@ -363,7 +362,7 @@ cdef int composition_get_element_count(Composition* composition, char* element, 
         count[0] = 0
     return 0
 
-cdef int composition_inc_element_count(Composition* composition, char* element, double increment) nogil:
+cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil:
     cdef:
         size_t i
         int status
@@ -390,7 +389,7 @@ cdef int composition_inc_element_count(Composition* composition, char* element, 
 
 cdef int composition_resize(Composition* composition) nogil:
     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)
-    composition.counts = <double*>realloc(composition.counts, sizeof(double) * composition.size * 2)
+    composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
     composition.size *= 2
     if composition.counts == NULL:
         return -1
@@ -426,7 +425,7 @@ cdef void free_composition(Composition* composition) nogil:
 cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil:
     cdef:
         Composition* result
-        double value
+        count_type value
         char* symbol
         int status
         size_t i
@@ -446,7 +445,7 @@ cdef Composition* composition_add(Composition* composition_1, Composition* compo
 cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil:
     cdef:
         char* symbol
-        double value
+        count_type value
         int status
         size_t i
     i = 0
@@ -462,7 +461,7 @@ cdef int composition_iadd(Composition* composition_1, Composition* composition_2
             pass
     return status
 
-cdef Composition* composition_mul(Composition* composition, double scale) nogil:
+cdef Composition* composition_mul(Composition* composition, int scale) nogil:
     cdef:
         Composition* result
         size_t i
@@ -474,7 +473,7 @@ cdef Composition* composition_mul(Composition* composition, double scale) nogil:
         i += 1
     return result
 
-cdef void composition_imul(Composition* composition, double scale) nogil:
+cdef void composition_imul(Composition* composition, int scale) nogil:
     cdef:
         size_t i
 
@@ -489,7 +488,7 @@ cdef dict composition_to_dict(Composition* composition):
         str symbol
         size_t i
         char* symbol_c
-        double value
+        count_type value
     i = 0
     result = dict()
     while i < composition.used:
@@ -508,7 +507,7 @@ cdef Composition* dict_to_composition(dict comp_dict):
         str symbol
         size_t i
         char* symbol_c
-        double value
+        count_type value
     result = make_composition()
     for symbol, value in comp_dict.items():
         symbol_c = PyString_AsString(symbol)
@@ -566,13 +565,16 @@ def main():
 
 
 cdef class PyComposition(object):
-    def __cinit__(self, **kwargs):
+    def __cinit__(self, base=None, **kwargs):
         cdef:
             char* element
-            double count
+            count_type count
         self.impl = make_composition()
         self._clean = False
         self.cached_mass = 0.
+
+        if base is not None and isinstance(base, dict):
+            self.update(base)
 
         for element, count in kwargs.items():
             self[element] = count
@@ -580,21 +582,27 @@ cdef class PyComposition(object):
     def __dealloc__(self):
         free_composition(self.impl)
 
-    def __getitem__(self, char* key):
+    def __getitem__(self, str key):
         cdef:
-            double count
+            count_type count
             int status
-        status = composition_get_element_count(self.impl, key, &count)
+            char* ckey
+        ckey = PyString_AsString(key)
+        status = composition_get_element_count(self.impl, ckey, &count)
         if status == 0:
             return count
         else:
-            composition_set_element_count(self.impl, key, 0)
+            intern(key)
+            composition_set_element_count(self.impl, ckey, 0)
             return 0.
 
-    def __setitem__(self, char* key, double count):
+    def __setitem__(self, str key, count_type count):
         cdef:
             int status
-        status = composition_set_element_count(self.impl, key, count)
+            char* ckey
+        ckey = PyString_AsString(key)
+        intern(key)
+        status = composition_set_element_count(self.impl, ckey, count)
         self._clean = False
 
     def update(self, arg=None, **kwargs):
@@ -619,7 +627,7 @@ cdef class PyComposition(object):
     def values(self):
         cdef:
             size_t i
-            double value
+            count_type value
             list counts
         counts = []
         i = 0
@@ -633,7 +641,7 @@ cdef class PyComposition(object):
         cdef:
             size_t i
             char* elem
-            double value
+            count_type value
             list items
 
         i = 0
@@ -716,14 +724,23 @@ cdef class PyComposition(object):
     def __mul__(self, scale):
         cdef:
             PyComposition result
+            PyComposition inst
+            int scale_factor
 
-        result = self.copy()
+        if isinstance(self, PyComposition):
+            inst = self
+            scale_factor = PyInt_AsLong(scale)
+        else:
+            inst = scale
+            scale_factor = PyInt_AsLong(self)
 
-        composition_imul(result.impl, scale)
+        result = inst.copy()
+
+        composition_imul(result.impl, scale_factor)
 
         return result
 
-    def __imul__(self, scale):
+    def __imul__(self, int scale):
         composition_imul(self.impl, scale)
         return self
 
@@ -742,4 +759,4 @@ cdef class PyComposition(object):
         return self.impl.used
 
     def __repr__(self):
-        return "{%s}" % ', '.join("%s: %f" % kv for kv in self.items())
+        return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())

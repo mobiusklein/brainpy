@@ -1,7 +1,7 @@
-from cmass_data.composition cimport (
+from brainpy._c.composition cimport (
     _PeriodicTable, Element, Isotope, Composition)
 
-from cmass_data.double_vector cimport DoubleVector
+from brainpy._c.double_vector cimport DoubleVector
 
 ctypedef DoubleVector dvec
 

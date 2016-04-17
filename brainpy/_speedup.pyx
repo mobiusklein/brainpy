@@ -9,19 +9,16 @@ from cpython.object cimport PyObject
 from libc.math cimport log, exp
 
 import operator
+import re
 
 mz_getter = operator.attrgetter("mz")
 
 from mass_dict import nist_mass as _nist_mass
 from brainpy._c.isotopic_distribution cimport TheoreticalPeak as Peak
 
-cdef dict nist_mass
+
 nist_mass = _nist_mass
-
-cdef double PROTON
 PROTON = nist_mass["H+"][0][0]
-
-cdef dict periodic_table
 
 
 cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON):
@@ -166,11 +163,22 @@ cdef int max_variants(dict composition):
 cdef double calculate_mass(dict composition, dict mass_data=None):
     cdef:
         double mass
+        object match
     mass = 0.0
     if mass_data is None:
         mass_data = nist_mass
     for element in composition:
-            mass += (composition[element] * mass_data[element][0][0])
+            try:
+                mass += (composition[element] * mass_data[element][0][0])
+            except KeyError:
+                match = re.search(r"(\S+)\[(\d+)\]", element)
+                if match:
+                    element_ = match.group(1)
+                    isotope = int(match.group(2))
+                    mass += composition[element] * mass_data[element_][isotope][0]
+                else:
+                    raise
+
     return mass
 
 

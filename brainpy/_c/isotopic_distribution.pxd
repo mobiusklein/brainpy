@@ -1,6 +1,6 @@
-from composition cimport Composition
-from isotopic_constants cimport IsotopicConstants
-from double_vector cimport DoubleVector
+from brainpy._c.composition cimport Composition
+from brainpy._c.isotopic_constants cimport IsotopicConstants
+from brainpy._c.double_vector cimport DoubleVector
 
 
 cdef struct Peak:

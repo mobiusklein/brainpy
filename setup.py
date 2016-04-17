@@ -5,7 +5,7 @@ import traceback
 try:
     from Cython.Build import cythonize
     extensions = cythonize([
-        # Extension(name="brainpy._speedup", sources=["brainpy/_speedup.pyx"]),
+        Extension(name="brainpy._speedup", sources=["brainpy/_speedup.pyx"]),
         Extension(name="brainpy._c.composition", sources=["brainpy/_c/composition.pyx"]),
         Extension(name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.pyx"]),
         Extension(name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.pyx"]),
@@ -13,7 +13,7 @@ try:
         ])
 except ImportError:
     extensions = ([
-        # Extension(name="brainpy._speedup", sources=["brainpy/_speedup.c"]),
+        Extension(name="brainpy._speedup", sources=["brainpy/_speedup.c"]),
         Extension(name="brainpy._c.composition", sources=["brainpy/_c/composition.c"]),
         Extension(name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.c"]),
         Extension(name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.c"]),
@@ -88,6 +88,7 @@ def run_setup(include_cext=True):
         author=', '.join(["Joshua Klein", "Han Hu"]),
         author_email=["jaklein@bu.edu"],
         ext_modules=extensions if include_cext else None,
+        include_package_data=True,
         cmdclass=cmdclass,
         classifiers=[
                 'Development Status :: 4 - Beta',

@@ -1,12 +1,12 @@
-from composition cimport (
+from brainpy._c.composition cimport (
     _PeriodicTable, Element, Isotope, Composition,
     mass_charge_ratio, PROTON,
     get_element_from_periodic_table2, element_max_neutron_shift,
     composition_get_element_count, element_monoisotopic_mass,
     composition_mass, get_isotope_by_neutron_shift, dict_to_composition,
-    print_composition, free_composition)
+    print_composition, free_composition, count_type)
 
-from double_vector cimport(
+from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
     free_double_vector, print_double_vector)
 
@@ -15,7 +15,7 @@ from libc.string cimport strcmp
 from libc.math cimport log, exp, sqrt
 from libc cimport *
 
-from isotopic_constants cimport (
+from brainpy._c.isotopic_constants cimport (
     IsotopicConstants, isotopic_constants_get, make_isotopic_constants,
     isotopic_constants_resize, free_isotopic_constants, isotopic_constants_add_element,
     isotopic_constants_get, isotopic_constants_update_coefficients,
@@ -351,7 +351,8 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
         int max_variant_count, sign
         Element* element_struct
         char* element
-        double center, temp, _element_count, polynomial_term
+        count_type _element_count
+        double center, temp, polynomial_term
         double _monoisotopic_mass, base_intensity
         size_t i, j, k
         ElementPolynomialMap* ep_map
