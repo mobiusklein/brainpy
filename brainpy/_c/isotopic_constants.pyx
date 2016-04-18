@@ -296,7 +296,6 @@ cdef void print_isotopic_constants(IsotopicConstants* isotopes) nogil:
         print_phi_constants(isotopes.constants[i])
 
 
-
 def main():
     cdef:
         IsotopicConstants* ic

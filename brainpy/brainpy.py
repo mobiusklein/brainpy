@@ -372,6 +372,23 @@ def max_variants(composition):
 
 @give_repr
 class Peak(object):
+    """
+    Represent a single theoretical peak centroid.
+
+    Peaks are comparable, hashable, and can be copied by calling
+    :meth:`clone`
+    
+    Attributes
+    ----------
+    charge : int
+        The charge state of the peak
+    intensity : float
+        The height of the peak. Peaks created as part of a
+        theoretical isotopic cluster will be have an intensity
+        between 0 and 1.
+    mz : float
+        The mass-to-charge ratio of the peak
+    """
     def __init__(self, mz, intensity, charge):
         self.mz = mz
         self.intensity = intensity
@@ -396,6 +413,20 @@ class Peak(object):
 
 @give_repr
 class IsotopicDistribution(object):
+    """
+    Constructs a theoretical isotopic distribution for a given composition
+    out to a given number of peaks.
+    
+    Attributes
+    ----------
+    average_mass : float
+        The average (weighted) mass of the resulting isotopic cluster
+    composition : dict
+        The composition to create the isotopic cluster for
+    order : int
+        The number of peaks to produce and the number of terms in the
+        generating polynomial expression.
+    """
     def __init__(self, composition, order=-1):
         self.composition = composition
         self._isotopic_constants = IsotopicConstants(order)
@@ -510,6 +541,20 @@ class IsotopicDistribution(object):
         Compute the m/z (or neutral mass when `charge` == 0) for each
         aggregated isotopic peak and their intensity relative to
         the monoisotopic peak.
+
+        Parameters
+        ----------
+        charge: int
+            The charge state of the resulting theoretical isotopic cluster
+        charge_carrier: float
+            The mass added for each degree of charge
+
+        Returns
+        -------
+        theoretical_isotopic_distribution: list
+            A list of :class:`Peak` objects whose intensities are proportional to
+            each other to reflect relative peak heights.
+
         '''
         probability_vector = self.probability()
         center_mass_vector = self.center_mass(probability_vector)

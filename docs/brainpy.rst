@@ -19,6 +19,9 @@ brainpy.brainpy module
     .. autofunction:: max_variants
     .. autofunction:: calculate_mass
     .. autoclass:: Peak
+    .. autoclass:: IsotopicDistribution
+
+        .. automethod:: aggregated_isotopic_variants
 
 Module contents
 ---------------
