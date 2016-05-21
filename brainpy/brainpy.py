@@ -177,9 +177,10 @@ class Isotope(object):
         The number of neutrons different between this isotope and the "normal" form. May be 0
         if this represents that normal form.
     '''
-    def __init__(self, mass, abundance, neutron_shift):
+    def __init__(self, mass, abundance, neutron_shift, neutrons):
         self.mass = mass
         self.abundance = abundance
+        self.neutrons = neutrons
         self.neutron_shift = neutron_shift
 
 
@@ -226,6 +227,14 @@ class Element(object):
         return hash(self.symbol)
 
 
+def make_fixed_isotope_element(element, neutrons):
+    isotope = element.isotopes[neutrons - element.isotopes[0].neutrons]
+    el = Element(element.symbol + ("[%d]" % neutrons), OrderedDict([
+            (0, Isotope(isotope.mass, abundance=1.0, neutron_shift=0, neutrons=neutrons)),
+        ]))
+    return el
+
+
 def _isotopes_of(element):
     freqs = dict()
     for i, mass_freqs in nist_mass[element].items():
@@ -236,7 +245,7 @@ def _isotopes_of(element):
     if len(freqs) == 0:
         return OrderedDict()
     mono_neutrons = max(freqs.items(), key=lambda x: x[1][1])[0]
-    freqs = OrderedDict(sorted(((k - mono_neutrons, Isotope(*v, neutron_shift=k - mono_neutrons))
+    freqs = OrderedDict(sorted(((k - mono_neutrons, Isotope(*v, neutron_shift=k - mono_neutrons, neutrons=k))
                                 for k, v in freqs.items()), key=lambda x: x[0]))
     return freqs
 
@@ -287,7 +296,13 @@ class IsotopicConstants(dict):
     def add_element(self, symbol):
         if symbol in self:
             return
-        element = Element(symbol)
+        if symbol in periodic_table:
+            element = periodic_table[symbol]
+        else:
+            symbol_parsed, isotope = _get_isotope(symbol)
+            if isotope == 0:
+                raise KeyError(symbol)
+            element = make_fixed_isotope_element(periodic_table[symbol_parsed], isotope)
         order = element.max_neutron_shift()
         element_parameters = self.coefficients(element)
         mass_parameters = self.coefficients(element, True)
@@ -347,6 +362,24 @@ def calculate_mass(composition, mass_data=None):
     return mass
 
 
+def _make_isotope_string(element, isotope=0):
+    if isotope == 0:
+        return element
+    else:
+        return "%s[%d]" % (element, isotope)
+
+
+def _get_isotope(element_string):
+    if "[" in element_string:
+        match = re.search(r"(\S+)\[(\d+)\]", element_string)
+        if match:
+            element_ = match.group(1)
+            isotope = int(match.group(2))
+            return element_, isotope
+    else:
+        return element_string, 0
+
+
 def max_variants(composition):
     """Calculates the maximum number of isotopic variants that could be produced by a
     composition.
@@ -365,7 +398,10 @@ def max_variants(composition):
     for element, count in composition.items():
         if element == "H+":
             continue
-        max_n_variants += count * periodic_table[element].max_neutron_shift()
+        try:
+            max_n_variants += count * periodic_table[element].max_neutron_shift()
+        except KeyError:
+            pass
 
     return max_n_variants
 
@@ -459,7 +495,8 @@ class IsotopicDistribution(object):
         for element in self.composition:
             if element == "H+":
                 continue
-            intensity += log(periodic_table[element].isotopes[0].abundance)
+            # intensity += log(periodic_table[element].isotopes[0].abundance)
+            intensity += log(self._isotopic_constants[element].element.isotopes[0].abundance)
         intensity = exp(intensity)
         return Peak(mass, intensity, 0)
 
@@ -532,7 +569,8 @@ class IsotopicDistribution(object):
             center = 0.0
             for element, ele_sym_poly in ele_sym_poly_map.items():
                 center += self.composition[element] * sign * ele_sym_poly[i] *\
-                 self.monoisotopic_peak.intensity * periodic_table[element].monoisotopic_mass()
+                 self.monoisotopic_peak.intensity * self._isotopic_constants[element].element.monoisotopic_mass()
+                 # self.monoisotopic_peak.intensity * periodic_table[element].monoisotopic_mass()
             mass_vector.append((center / probability_vector[i]) if probability_vector[i] > 0 else 0)
         return mass_vector
 

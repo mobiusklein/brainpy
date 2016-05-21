@@ -478,7 +478,8 @@ struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio;
 struct __pyx_t_7brainpy_2_c_11composition_Isotope;
 struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap;
 struct __pyx_t_7brainpy_2_c_11composition_Element;
-struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable;
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket;
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable;
 struct __pyx_t_7brainpy_2_c_11composition_Composition;
 
 /* "brainpy\_c\composition.pxd":10
@@ -486,7 +487,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Composition;
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil             # <<<<<<<<<<<<<<
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
- * 
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
  */
 struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass {
   int __pyx_n;
@@ -497,16 +498,16 @@ struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass {
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil             # <<<<<<<<<<<<<<
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
  * 
- * cdef struct Isotope:
  */
 struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio {
   int __pyx_n;
   double charge_carrier;
 };
 
-/* "brainpy\_c\composition.pxd":13
- * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
+/* "brainpy\_c\composition.pxd":17
+ * # Isotope and IsotopeMap Declarations
  * 
  * cdef struct Isotope:             # <<<<<<<<<<<<<<
  *     double mass
@@ -519,7 +520,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Isotope {
   int neutron_shift;
 };
 
-/* "brainpy\_c\composition.pxd":19
+/* "brainpy\_c\composition.pxd":23
  *     int neutron_shift
  * 
  * cdef struct IsotopeMap:             # <<<<<<<<<<<<<<
@@ -531,8 +532,8 @@ struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap {
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":23
- *     size_t size
+/* "brainpy\_c\composition.pxd":35
+ * # Element Declarations
  * 
  * cdef struct Element:             # <<<<<<<<<<<<<<
  *     char* symbol
@@ -543,20 +544,33 @@ struct __pyx_t_7brainpy_2_c_11composition_Element {
   struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *isotopes;
 };
 
-/* "brainpy\_c\composition.pxd":27
- *     IsotopeMap* isotopes
+/* "brainpy\_c\composition.pxd":53
+ * # ElementHashTable and ElementHashBucket Declarations
  * 
- * cdef struct PeriodicTable:             # <<<<<<<<<<<<<<
+ * cdef struct ElementHashBucket:             # <<<<<<<<<<<<<<
  *     Element** elements
- *     size_t size
+ *     size_t used
  */
-struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable {
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket {
   struct __pyx_t_7brainpy_2_c_11composition_Element **elements;
+  size_t used;
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":33
- * cdef PeriodicTable* _PeriodicTable
+/* "brainpy\_c\composition.pxd":59
+ * 
+ * 
+ * cdef struct ElementHashTable:             # <<<<<<<<<<<<<<
+ *     ElementHashBucket* buckets
+ *     size_t size
+ */
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable {
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *buckets;
+  size_t size;
+};
+
+/* "brainpy\_c\composition.pxd":81
+ * # Composition Declarations
  * 
  * cdef struct Composition:             # <<<<<<<<<<<<<<
  *     char** elements
@@ -569,7 +583,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Composition {
   size_t used;
 };
 
-/* "brainpy\_c\composition.pxd":81
+/* "brainpy\_c\composition.pxd":105
  * cdef Composition* dict_to_composition(dict comp_dict)
  * 
  * cdef class PyComposition(object):             # <<<<<<<<<<<<<<
@@ -585,11 +599,12 @@ struct __pyx_obj_7brainpy_2_c_11composition_PyComposition {
 };
 
 
-/* "brainpy\_c\composition.pyx":761
+/* "brainpy\_c\composition.pyx":961
  *         return self.impl.used
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+ * 
  */
 struct __pyx_obj_7brainpy_2_c_11composition___pyx_scope_struct____repr__ {
   PyObject_HEAD
@@ -597,10 +612,12 @@ struct __pyx_obj_7brainpy_2_c_11composition___pyx_scope_struct____repr__ {
 };
 
 
-/* "brainpy\_c\composition.pyx":762
+/* "brainpy\_c\composition.pyx":962
  * 
  *     def __repr__(self):
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bint __equality_pycomposition(self, PyComposition other):
  */
 struct __pyx_obj_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr {
   PyObject_HEAD
@@ -613,7 +630,7 @@ struct __pyx_obj_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr {
 
 
 
-/* "brainpy\_c\composition.pyx":567
+/* "brainpy\_c\composition.pyx":766
  * 
  * 
  * cdef class PyComposition(object):             # <<<<<<<<<<<<<<
@@ -623,6 +640,8 @@ struct __pyx_obj_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr {
 
 struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition {
   double (*mass)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch);
+  int (*__pyx___equality_pycomposition)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch);
+  int (*__pyx___equality_dict)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, PyObject *, int __pyx_skip_dispatch);
 };
 static struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition *__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition;
 
@@ -838,10 +857,8 @@ static CYTHON_INLINE PyObject* __Pyx_dict_iterator(PyObject* dict, int is_dict, 
 static CYTHON_INLINE int __Pyx_dict_iter_next(PyObject* dict_or_iter, Py_ssize_t orig_length, Py_ssize_t* ppos,
                                               PyObject** pkey, PyObject** pvalue, PyObject** pitem, int is_dict);
 
-static CYTHON_INLINE int __Pyx_PySequence_ContainsTF(PyObject* item, PyObject* seq, int eq) {
-    int result = PySequence_Contains(seq, item);
-    return unlikely(result < 0) ? result : (result == (eq == Py_EQ));
-}
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact);
 
 static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
 
@@ -851,11 +868,6 @@ static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
 
 static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
     Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
-
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact);
-
-static PyObject* __Pyx_Intern(PyObject* s);
 
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
 
@@ -1004,6 +1016,8 @@ static PyTypeObject *__Pyx_ImportType(const char *module_name, const char *class
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static int __pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_pycomposition(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_other, int __pyx_skip_dispatch); /* proto*/
+static int __pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_dict(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_skip_dispatch); /* proto*/
 
 /* Module declarations from 'cython' */
 
@@ -1026,6 +1040,8 @@ static PyTypeObject *__pyx_ptype_7cpython_4type_type = 0;
 
 /* Module declarations from 'cpython.int' */
 
+/* Module declarations from 'cpython.dict' */
+
 /* Module declarations from 'libc.stdlib' */
 
 /* Module declarations from 'libc.math' */
@@ -1038,16 +1054,22 @@ static PyTypeObject *__pyx_ptype_7brainpy_2_c_11composition___pyx_scope_struct__
 static PyTypeObject *__pyx_ptype_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr = 0;
 static PyObject *__pyx_v_7brainpy_2_c_11composition_nist_mass = 0;
 static double __pyx_v_7brainpy_2_c_11composition_PROTON;
-static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_v_7brainpy_2_c_11composition__PeriodicTable;
-static size_t __pyx_f_7brainpy_2_c_11composition_hash_string(char *); /*proto*/
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_v_7brainpy_2_c_11composition__ElementTable;
+static PyObject *__pyx_v_7brainpy_2_c_11composition__string_table = 0;
+static char *__pyx_f_7brainpy_2_c_11composition__parse_isotope_string(char *, int *, char *); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_c_11composition_make_isotope_map(PyObject *, size_t); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_shift(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *, int); /*proto*/
 static void __pyx_f_7brainpy_2_c_11composition_free_isotope_map(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *); /*proto*/
 static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *, struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap **); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_11composition_make_element(char *); /*proto*/
 static double __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
-static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_f_7brainpy_2_c_11composition_make_periodic_table(void); /*proto*/
-static int __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element(struct __pyx_t_7brainpy_2_c_11composition_Element *, int); /*proto*/
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_f_7brainpy_2_c_11composition_make_element_hash_table(size_t); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_insert(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *, struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_find(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_table_put(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
+static size_t __pyx_f_7brainpy_2_c_11composition_hash_string(char *); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2_c_11composition_make_composition(void); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2_c_11composition_copy_composition(struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
 static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
@@ -1060,9 +1082,13 @@ static void __pyx_f_7brainpy_2_c_11composition_free_composition(struct __pyx_t_7
 static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2_c_11composition_composition_add(struct __pyx_t_7brainpy_2_c_11composition_Composition *, struct __pyx_t_7brainpy_2_c_11composition_Composition *, int); /*proto*/
 static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7brainpy_2_c_11composition_Composition *, struct __pyx_t_7brainpy_2_c_11composition_Composition *, int); /*proto*/
 static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7brainpy_2_c_11composition_Composition *, int); /*proto*/
+static char *__pyx_f_7brainpy_2_c_11composition__make_isotope_string(struct __pyx_t_7brainpy_2_c_11composition_Element *, struct __pyx_t_7brainpy_2_c_11composition_Isotope *, char *); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_count(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *, int); /*proto*/
 static double __pyx_f_7brainpy_2_c_11composition_element_isotopic_mass(struct __pyx_t_7brainpy_2_c_11composition_Element *, int); /*proto*/
-static char *__pyx_f_7brainpy_2_c_11composition__parse_isotope_string(char *, int *, char *); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_resize(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *); /*proto*/
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_f_7brainpy_2_c_11composition_make_element_hash_table_populated(size_t); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_composition_eq(struct __pyx_t_7brainpy_2_c_11composition_Composition *, struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
+static PyObject *__pyx_f_7brainpy_2_c_11composition__store_string(PyObject *); /*proto*/
 #define __Pyx_MODULE_NAME "brainpy._c.composition"
 int __pyx_module_is_main_brainpy___c__composition = 0;
 
@@ -1076,7 +1102,7 @@ static char __pyx_k_O[] = "O";
 static char __pyx_k_i[] = "i";
 static char __pyx_k_j[] = "j";
 static char __pyx_k_k[] = "k";
-static char __pyx_k_s[] = "{%s}";
+static char __pyx_k_s[] = "%s";
 static char __pyx_k_x[] = "x";
 static char __pyx_k__3[] = "{\n";
 static char __pyx_k__4[] = "}\n\n";
@@ -1085,7 +1111,9 @@ static char __pyx_k_H_2[] = "H+";
 static char __pyx_k_arg[] = "arg";
 static char __pyx_k_end[] = "end";
 static char __pyx_k_key[] = "key";
-static char __pyx_k_s_d[] = "  %s: %d\n";
+static char __pyx_k_out[] = "out";
+static char __pyx_k_s_2[] = "{%s}";
+static char __pyx_k_s_d[] = "%s[%d]";
 static char __pyx_k_sym[] = "sym";
 static char __pyx_k_O_18[] = "O[18]";
 static char __pyx_k_args[] = "args";
@@ -1100,47 +1128,73 @@ static char __pyx_k_mass[] = "mass";
 static char __pyx_k_send[] = "send";
 static char __pyx_k_sort[] = "sort";
 static char __pyx_k_test[] = "__test__";
+static char __pyx_k_Error[] = "Error, ";
 static char __pyx_k_close[] = "close";
 static char __pyx_k_f_f_d[] = "%f, %f, %d\n";
 static char __pyx_k_items[] = "items";
 static char __pyx_k_print[] = "print";
 static char __pyx_k_range[] = "range";
-static char __pyx_k_s_d_2[] = "%s: %d";
+static char __pyx_k_s_d_2[] = "  %s: %d\n";
+static char __pyx_k_s_d_3[] = "%s: %d";
 static char __pyx_k_throw[] = "throw";
 static char __pyx_k_PROTON[] = "PROTON";
 static char __pyx_k_Summed[] = "Summed";
 static char __pyx_k_import[] = "__import__";
 static char __pyx_k_main_2[] = "main";
+static char __pyx_k_status[] = "status";
 static char __pyx_k_update[] = "update";
 static char __pyx_k_Massing[] = "Massing";
+static char __pyx_k_element[] = "element";
 static char __pyx_k_genexpr[] = "genexpr";
+static char __pyx_k_isotope[] = "isotope";
 static char __pyx_k_Addr_d_d[] = "Addr %d %d\n";
+static char __pyx_k_elem_obj[] = "elem_obj";
 static char __pyx_k_pyx_capi[] = "__pyx_capi__";
+static char __pyx_k_Fixed_s_f[] = "Fixed: %s, %f";
 static char __pyx_k_TypeError[] = "TypeError";
 static char __pyx_k_nist_mass[] = "nist_mass";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static char __pyx_k_select_1_1[] = "__select_1_1";
 static char __pyx_k_composition[] = "composition";
+static char __pyx_k_isotope_obj[] = "isotope_obj";
 static char __pyx_k_nist_mass_2[] = "__nist_mass";
-static char __pyx_k_PeriodicTable[] = "_PeriodicTable";
+static char __pyx_k_ElementTable[] = "_ElementTable";
 static char __pyx_k_Size_d_Used_d[] = "Size: %d, Used: %d\n";
+static char __pyx_k_equality_dict[] = "__equality_dict";
 static char __pyx_k_NotImplemented[] = "NotImplemented";
+static char __pyx_k_element_symbol[] = "element_symbol";
+static char __pyx_k_isotope_string[] = "isotope_string";
+static char __pyx_k_Fetched_element[] = "Fetched element";
 static char __pyx_k_sum_composition[] = "sum_composition";
+static char __pyx_k_c_element_symbol[] = "c_element_symbol";
 static char __pyx_k_brainpy_mass_dict[] = "brainpy.mass_dict";
+static char __pyx_k_isotope_parse_test[] = "isotope_parse_test";
 static char __pyx_k_element_name_buffer[] = "element_name_buffer";
+static char __pyx_k_isotope_update_test[] = "isotope_update_test";
+static char __pyx_k_fixed_isotope_element[] = "fixed_isotope_element";
 static char __pyx_k_repr___locals_genexpr[] = "__repr__.<locals>.genexpr";
 static char __pyx_k_brainpy__c_composition[] = "brainpy._c.composition";
+static char __pyx_k_element_hash_table_get[] = "element_hash_table_get";
+static char __pyx_k_equality_pycomposition[] = "__equality_pycomposition";
+static char __pyx_k_Could_not_find_element_s[] = "Could not find element %s\n";
+static char __pyx_k_Element_Symbol_s_Isotope_d[] = "Element Symbol: %s, Isotope: %d\n";
 static char __pyx_k_Cannot_add_s_to_PyComposition[] = "Cannot add %s to PyComposition";
 static char __pyx_k_Cannot_subtract_s_from_PyComposi[] = "Cannot subtract %s from PyComposition";
 static char __pyx_k_D_Programming_exploration_brainp[] = "D:\\Programming\\exploration\\brainpy\\brainpy\\_c\\composition.pyx";
+static char __pyx_k_element_hash_bucket_insert_faile[] = "element_hash_bucket_insert failed with %s\n";
+static char __pyx_k_element_hash_bucket_resize_faile[] = "element_hash_bucket_resize failed\n";
+static char __pyx_k_element_hash_table_get_exited_wi[] = "element_hash_table_get exited with status %d\n";
+static char __pyx_k_element_hash_table_put_exited_wi[] = "element_hash_table_put exited with status %d\n";
 static PyObject *__pyx_kp_s_Cannot_add_s_to_PyComposition;
 static PyObject *__pyx_kp_s_Cannot_subtract_s_from_PyComposi;
 static PyObject *__pyx_kp_s_D_Programming_exploration_brainp;
+static PyObject *__pyx_n_s_ElementTable;
+static PyObject *__pyx_kp_s_Error;
+static PyObject *__pyx_kp_s_Fetched_element;
 static PyObject *__pyx_kp_s_H_2;
 static PyObject *__pyx_n_s_Massing;
 static PyObject *__pyx_n_s_NotImplemented;
 static PyObject *__pyx_n_s_PROTON;
-static PyObject *__pyx_n_s_PeriodicTable;
 static PyObject *__pyx_n_s_Summed;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s__5;
@@ -1149,16 +1203,29 @@ static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_base;
 static PyObject *__pyx_n_s_brainpy__c_composition;
 static PyObject *__pyx_n_s_brainpy_mass_dict;
+static PyObject *__pyx_n_s_c_element_symbol;
 static PyObject *__pyx_n_s_close;
 static PyObject *__pyx_n_s_composition;
 static PyObject *__pyx_n_s_copy;
 static PyObject *__pyx_n_s_elem;
+static PyObject *__pyx_n_s_elem_obj;
+static PyObject *__pyx_n_s_element;
+static PyObject *__pyx_n_s_element_hash_table_get;
 static PyObject *__pyx_n_s_element_name_buffer;
+static PyObject *__pyx_n_s_element_symbol;
 static PyObject *__pyx_n_s_end;
+static PyObject *__pyx_n_s_equality_dict;
+static PyObject *__pyx_n_s_equality_pycomposition;
 static PyObject *__pyx_n_s_file;
+static PyObject *__pyx_n_s_fixed_isotope_element;
 static PyObject *__pyx_n_s_genexpr;
 static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_import;
+static PyObject *__pyx_n_s_isotope;
+static PyObject *__pyx_n_s_isotope_obj;
+static PyObject *__pyx_n_s_isotope_parse_test;
+static PyObject *__pyx_n_s_isotope_string;
+static PyObject *__pyx_n_s_isotope_update_test;
 static PyObject *__pyx_n_s_items;
 static PyObject *__pyx_n_s_j;
 static PyObject *__pyx_n_s_join;
@@ -1170,16 +1237,18 @@ static PyObject *__pyx_n_s_main_2;
 static PyObject *__pyx_n_s_mass;
 static PyObject *__pyx_n_s_nist_mass;
 static PyObject *__pyx_n_s_nist_mass_2;
+static PyObject *__pyx_n_s_out;
 static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_pyx_capi;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_repr___locals_genexpr;
-static PyObject *__pyx_kp_s_s;
-static PyObject *__pyx_kp_s_s_d_2;
+static PyObject *__pyx_kp_s_s_2;
+static PyObject *__pyx_kp_s_s_d_3;
 static PyObject *__pyx_n_s_select_1_1;
 static PyObject *__pyx_n_s_send;
 static PyObject *__pyx_n_s_sort;
+static PyObject *__pyx_n_s_status;
 static PyObject *__pyx_n_s_sum_composition;
 static PyObject *__pyx_n_s_sym;
 static PyObject *__pyx_n_s_test;
@@ -1188,6 +1257,8 @@ static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_n_s_x;
 static PyObject *__pyx_pf_7brainpy_2_c_11composition___select_1_1(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_x); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_4isotope_update_test(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element_symbol); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_6isotope_parse_test(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element_symbol); /* proto */
 static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, PyObject *__pyx_v_base, PyObject *__pyx_v_kwargs); /* proto */
 static void __pyx_pf_7brainpy_2_c_11composition_13PyComposition_2__dealloc__(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem__(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, PyObject *__pyx_v_key); /* proto */
@@ -1208,6 +1279,9 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_32mass(stru
 static Py_ssize_t __pyx_pf_7brainpy_2_c_11composition_13PyComposition_34__len__(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8__repr___genexpr(PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_36__repr__(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_38__equality_pycomposition(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_other); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_40__equality_dict(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, PyObject *__pyx_v_other); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_42__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code); /* proto */
 static PyObject *__pyx_tp_new_7brainpy_2_c_11composition_PyComposition(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_7brainpy_2_c_11composition___pyx_scope_struct____repr__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -1218,10 +1292,14 @@ static double __pyx_k_;
 static double __pyx_k__2;
 static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__8;
+static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__12;
 static PyObject *__pyx_codeobj__7;
 static PyObject *__pyx_codeobj__9;
+static PyObject *__pyx_codeobj__11;
+static PyObject *__pyx_codeobj__13;
 
-/* "brainpy\_c\composition.pyx":22
+/* "brainpy\_c\composition.pyx":27
  * cdef double PROTON = nist_mass["H+"][0][0]
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -1238,7 +1316,7 @@ static double __pyx_f_7brainpy_2_c_11composition_neutral_mass(double __pyx_v_mz,
     }
   }
 
-  /* "brainpy\_c\composition.pyx":23
+  /* "brainpy\_c\composition.pyx":28
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) nogil:
  *     return (mz * fabs(z)) - (z * charge_carrier)             # <<<<<<<<<<<<<<
@@ -1248,7 +1326,7 @@ static double __pyx_f_7brainpy_2_c_11composition_neutral_mass(double __pyx_v_mz,
   __pyx_r = ((__pyx_v_mz * fabs(__pyx_v_z)) - (__pyx_v_z * __pyx_v_charge_carrier));
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":22
+  /* "brainpy\_c\composition.pyx":27
  * cdef double PROTON = nist_mass["H+"][0][0]
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -1261,7 +1339,7 @@ static double __pyx_f_7brainpy_2_c_11composition_neutral_mass(double __pyx_v_mz,
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":25
+/* "brainpy\_c\composition.pyx":30
  *     return (mz * fabs(z)) - (z * charge_carrier)
  * 
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -1283,12 +1361,12 @@ static double __pyx_f_7brainpy_2_c_11composition_mass_charge_ratio(double __pyx_
     }
   }
 
-  /* "brainpy\_c\composition.pyx":26
+  /* "brainpy\_c\composition.pyx":31
  * 
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) nogil:
  *     return (neutral_mass + (z * charge_carrier)) / fabs(z)             # <<<<<<<<<<<<<<
  * 
- * cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size):
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:
  */
   __pyx_t_1 = (__pyx_v_neutral_mass + (__pyx_v_z * __pyx_v_charge_carrier));
   __pyx_t_2 = fabs(__pyx_v_z);
@@ -1300,12 +1378,12 @@ static double __pyx_f_7brainpy_2_c_11composition_mass_charge_ratio(double __pyx_
     #ifdef WITH_THREAD
     PyGILState_Release(__pyx_gilstate_save);
     #endif
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 26; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_r = (__pyx_t_1 / __pyx_t_2);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":25
+  /* "brainpy\_c\composition.pyx":30
  *     return (mz * fabs(z)) - (z * charge_carrier)
  * 
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -1321,8 +1399,415 @@ static double __pyx_f_7brainpy_2_c_11composition_mass_charge_ratio(double __pyx_
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":28
+/* "brainpy\_c\composition.pyx":33
  *     return (neutral_mass + (z * charge_carrier)) / fabs(z)
+ * 
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i = 0
+ */
+
+static char *__pyx_f_7brainpy_2_c_11composition__parse_isotope_string(char *__pyx_v_label, int *__pyx_v_isotope_num, char *__pyx_v_element_name) {
+  size_t __pyx_v_i;
+  int __pyx_v_in_bracket;
+  char __pyx_v_current;
+  size_t __pyx_v_name_end;
+  size_t __pyx_v_num_start;
+  size_t __pyx_v_num_end;
+  size_t __pyx_v_size;
+  char __pyx_v_number_part[4];
+  char *__pyx_r;
+  size_t __pyx_t_1;
+  size_t __pyx_t_2;
+  int __pyx_t_3;
+
+  /* "brainpy\_c\composition.pyx":35
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:
+ *     cdef:
+ *         size_t i = 0             # <<<<<<<<<<<<<<
+ *         bint in_bracket = False
+ *         char current
+ */
+  __pyx_v_i = 0;
+
+  /* "brainpy\_c\composition.pyx":36
+ *     cdef:
+ *         size_t i = 0
+ *         bint in_bracket = False             # <<<<<<<<<<<<<<
+ *         char current
+ *         size_t name_end
+ */
+  __pyx_v_in_bracket = 0;
+
+  /* "brainpy\_c\composition.pyx":45
+ *         char[4] number_part
+ * 
+ *     name_end = 0             # <<<<<<<<<<<<<<
+ *     num_start = 0
+ *     num_end = 0
+ */
+  __pyx_v_name_end = 0;
+
+  /* "brainpy\_c\composition.pyx":46
+ * 
+ *     name_end = 0
+ *     num_start = 0             # <<<<<<<<<<<<<<
+ *     num_end = 0
+ *     size = strlen(label)
+ */
+  __pyx_v_num_start = 0;
+
+  /* "brainpy\_c\composition.pyx":47
+ *     name_end = 0
+ *     num_start = 0
+ *     num_end = 0             # <<<<<<<<<<<<<<
+ *     size = strlen(label)
+ *     for i in range(size):
+ */
+  __pyx_v_num_end = 0;
+
+  /* "brainpy\_c\composition.pyx":48
+ *     num_start = 0
+ *     num_end = 0
+ *     size = strlen(label)             # <<<<<<<<<<<<<<
+ *     for i in range(size):
+ *         current = label[i]
+ */
+  __pyx_v_size = strlen(__pyx_v_label);
+
+  /* "brainpy\_c\composition.pyx":49
+ *     num_end = 0
+ *     size = strlen(label)
+ *     for i in range(size):             # <<<<<<<<<<<<<<
+ *         current = label[i]
+ *         if in_bracket:
+ */
+  __pyx_t_1 = __pyx_v_size;
+  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+    __pyx_v_i = __pyx_t_2;
+
+    /* "brainpy\_c\composition.pyx":50
+ *     size = strlen(label)
+ *     for i in range(size):
+ *         current = label[i]             # <<<<<<<<<<<<<<
+ *         if in_bracket:
+ *             if current == 93:
+ */
+    __pyx_v_current = (__pyx_v_label[__pyx_v_i]);
+
+    /* "brainpy\_c\composition.pyx":51
+ *     for i in range(size):
+ *         current = label[i]
+ *         if in_bracket:             # <<<<<<<<<<<<<<
+ *             if current == 93:
+ *                 break
+ */
+    __pyx_t_3 = (__pyx_v_in_bracket != 0);
+    if (__pyx_t_3) {
+
+      /* "brainpy\_c\composition.pyx":52
+ *         current = label[i]
+ *         if in_bracket:
+ *             if current == 93:             # <<<<<<<<<<<<<<
+ *                 break
+ *             num_end += 1
+ */
+      __pyx_t_3 = ((__pyx_v_current == 93) != 0);
+      if (__pyx_t_3) {
+
+        /* "brainpy\_c\composition.pyx":53
+ *         if in_bracket:
+ *             if current == 93:
+ *                 break             # <<<<<<<<<<<<<<
+ *             num_end += 1
+ *         elif current == 91:
+ */
+        goto __pyx_L4_break;
+
+        /* "brainpy\_c\composition.pyx":52
+ *         current = label[i]
+ *         if in_bracket:
+ *             if current == 93:             # <<<<<<<<<<<<<<
+ *                 break
+ *             num_end += 1
+ */
+      }
+
+      /* "brainpy\_c\composition.pyx":54
+ *             if current == 93:
+ *                 break
+ *             num_end += 1             # <<<<<<<<<<<<<<
+ *         elif current == 91:
+ *             in_bracket = True
+ */
+      __pyx_v_num_end = (__pyx_v_num_end + 1);
+
+      /* "brainpy\_c\composition.pyx":51
+ *     for i in range(size):
+ *         current = label[i]
+ *         if in_bracket:             # <<<<<<<<<<<<<<
+ *             if current == 93:
+ *                 break
+ */
+      goto __pyx_L5;
+    }
+
+    /* "brainpy\_c\composition.pyx":55
+ *                 break
+ *             num_end += 1
+ *         elif current == 91:             # <<<<<<<<<<<<<<
+ *             in_bracket = True
+ *             name_end = i
+ */
+    __pyx_t_3 = ((__pyx_v_current == 91) != 0);
+    if (__pyx_t_3) {
+
+      /* "brainpy\_c\composition.pyx":56
+ *             num_end += 1
+ *         elif current == 91:
+ *             in_bracket = True             # <<<<<<<<<<<<<<
+ *             name_end = i
+ *             num_start = i + 1
+ */
+      __pyx_v_in_bracket = 1;
+
+      /* "brainpy\_c\composition.pyx":57
+ *         elif current == 91:
+ *             in_bracket = True
+ *             name_end = i             # <<<<<<<<<<<<<<
+ *             num_start = i + 1
+ *             num_end = num_start
+ */
+      __pyx_v_name_end = __pyx_v_i;
+
+      /* "brainpy\_c\composition.pyx":58
+ *             in_bracket = True
+ *             name_end = i
+ *             num_start = i + 1             # <<<<<<<<<<<<<<
+ *             num_end = num_start
+ *         else:
+ */
+      __pyx_v_num_start = (__pyx_v_i + 1);
+
+      /* "brainpy\_c\composition.pyx":59
+ *             name_end = i
+ *             num_start = i + 1
+ *             num_end = num_start             # <<<<<<<<<<<<<<
+ *         else:
+ *             name_end += 1
+ */
+      __pyx_v_num_end = __pyx_v_num_start;
+
+      /* "brainpy\_c\composition.pyx":55
+ *                 break
+ *             num_end += 1
+ *         elif current == 91:             # <<<<<<<<<<<<<<
+ *             in_bracket = True
+ *             name_end = i
+ */
+      goto __pyx_L5;
+    }
+
+    /* "brainpy\_c\composition.pyx":61
+ *             num_end = num_start
+ *         else:
+ *             name_end += 1             # <<<<<<<<<<<<<<
+ * 
+ *     if num_start > 0:
+ */
+    /*else*/ {
+      __pyx_v_name_end = (__pyx_v_name_end + 1);
+    }
+    __pyx_L5:;
+  }
+  __pyx_L4_break:;
+
+  /* "brainpy\_c\composition.pyx":63
+ *             name_end += 1
+ * 
+ *     if num_start > 0:             # <<<<<<<<<<<<<<
+ *         memcpy(number_part, label + num_start, num_end - num_start)
+ *         number_part[num_end - num_start] = '\0'
+ */
+  __pyx_t_3 = ((__pyx_v_num_start > 0) != 0);
+  if (__pyx_t_3) {
+
+    /* "brainpy\_c\composition.pyx":64
+ * 
+ *     if num_start > 0:
+ *         memcpy(number_part, label + num_start, num_end - num_start)             # <<<<<<<<<<<<<<
+ *         number_part[num_end - num_start] = '\0'
+ *         isotope_num[0] = atoi(number_part)
+ */
+    memcpy(__pyx_v_number_part, (__pyx_v_label + __pyx_v_num_start), (__pyx_v_num_end - __pyx_v_num_start));
+
+    /* "brainpy\_c\composition.pyx":65
+ *     if num_start > 0:
+ *         memcpy(number_part, label + num_start, num_end - num_start)
+ *         number_part[num_end - num_start] = '\0'             # <<<<<<<<<<<<<<
+ *         isotope_num[0] = atoi(number_part)
+ *     else:
+ */
+    (__pyx_v_number_part[(__pyx_v_num_end - __pyx_v_num_start)]) = '\x00';
+
+    /* "brainpy\_c\composition.pyx":66
+ *         memcpy(number_part, label + num_start, num_end - num_start)
+ *         number_part[num_end - num_start] = '\0'
+ *         isotope_num[0] = atoi(number_part)             # <<<<<<<<<<<<<<
+ *     else:
+ *         isotope_num[0] = 0
+ */
+    (__pyx_v_isotope_num[0]) = atoi(__pyx_v_number_part);
+
+    /* "brainpy\_c\composition.pyx":63
+ *             name_end += 1
+ * 
+ *     if num_start > 0:             # <<<<<<<<<<<<<<
+ *         memcpy(number_part, label + num_start, num_end - num_start)
+ *         number_part[num_end - num_start] = '\0'
+ */
+    goto __pyx_L7;
+  }
+
+  /* "brainpy\_c\composition.pyx":68
+ *         isotope_num[0] = atoi(number_part)
+ *     else:
+ *         isotope_num[0] = 0             # <<<<<<<<<<<<<<
+ * 
+ *     element_name[name_end] = '\0'
+ */
+  /*else*/ {
+    (__pyx_v_isotope_num[0]) = 0;
+  }
+  __pyx_L7:;
+
+  /* "brainpy\_c\composition.pyx":70
+ *         isotope_num[0] = 0
+ * 
+ *     element_name[name_end] = '\0'             # <<<<<<<<<<<<<<
+ *     memcpy(element_name, label, name_end)
+ * 
+ */
+  (__pyx_v_element_name[__pyx_v_name_end]) = '\x00';
+
+  /* "brainpy\_c\composition.pyx":71
+ * 
+ *     element_name[name_end] = '\0'
+ *     memcpy(element_name, label, name_end)             # <<<<<<<<<<<<<<
+ * 
+ *     return element_name
+ */
+  memcpy(__pyx_v_element_name, __pyx_v_label, __pyx_v_name_end);
+
+  /* "brainpy\_c\composition.pyx":73
+ *     memcpy(element_name, label, name_end)
+ * 
+ *     return element_name             # <<<<<<<<<<<<<<
+ * 
+ * cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+ */
+  __pyx_r = __pyx_v_element_name;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":33
+ *     return (neutral_mass + (z * charge_carrier)) / fabs(z)
+ * 
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i = 0
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":75
+ *     return element_name
+ * 
+ * cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:             # <<<<<<<<<<<<<<
+ *     if isotope.neutron_shift == 0:
+ *         sprintf(out, "%s", element.symbol)
+ */
+
+static char *__pyx_f_7brainpy_2_c_11composition__make_isotope_string(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element, struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_v_isotope, char *__pyx_v_out) {
+  char *__pyx_r;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":76
+ * 
+ * cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+ *     if isotope.neutron_shift == 0:             # <<<<<<<<<<<<<<
+ *         sprintf(out, "%s", element.symbol)
+ *         return out
+ */
+  __pyx_t_1 = ((__pyx_v_isotope->neutron_shift == 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\composition.pyx":77
+ * cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+ *     if isotope.neutron_shift == 0:
+ *         sprintf(out, "%s", element.symbol)             # <<<<<<<<<<<<<<
+ *         return out
+ *     else:
+ */
+    sprintf(__pyx_v_out, __pyx_k_s, __pyx_v_element->symbol);
+
+    /* "brainpy\_c\composition.pyx":78
+ *     if isotope.neutron_shift == 0:
+ *         sprintf(out, "%s", element.symbol)
+ *         return out             # <<<<<<<<<<<<<<
+ *     else:
+ *         sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)
+ */
+    __pyx_r = __pyx_v_out;
+    goto __pyx_L0;
+
+    /* "brainpy\_c\composition.pyx":76
+ * 
+ * cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+ *     if isotope.neutron_shift == 0:             # <<<<<<<<<<<<<<
+ *         sprintf(out, "%s", element.symbol)
+ *         return out
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":80
+ *         return out
+ *     else:
+ *         sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)             # <<<<<<<<<<<<<<
+ *         return out
+ * 
+ */
+  /*else*/ {
+    sprintf(__pyx_v_out, __pyx_k_s_d, __pyx_v_element->symbol, __pyx_v_isotope->neutrons);
+
+    /* "brainpy\_c\composition.pyx":81
+ *     else:
+ *         sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)
+ *         return out             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+    __pyx_r = __pyx_v_out;
+    goto __pyx_L0;
+  }
+
+  /* "brainpy\_c\composition.pyx":75
+ *     return element_name
+ * 
+ * cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:             # <<<<<<<<<<<<<<
+ *     if isotope.neutron_shift == 0:
+ *         sprintf(out, "%s", element.symbol)
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":87
+ * # Isotope and IsotopeMap Methods
  * 
  * cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size):             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1350,7 +1835,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("make_isotope_map", 0);
 
-  /* "brainpy\_c\composition.pyx":35
+  /* "brainpy\_c\composition.pyx":94
  *         tuple values
  * 
  *     result = <IsotopeMap*>malloc(sizeof(IsotopeMap))             # <<<<<<<<<<<<<<
@@ -1359,7 +1844,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
   __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap))));
 
-  /* "brainpy\_c\composition.pyx":36
+  /* "brainpy\_c\composition.pyx":95
  * 
  *     result = <IsotopeMap*>malloc(sizeof(IsotopeMap))
  *     result.bins = <Isotope*>malloc(sizeof(Isotope) * size)             # <<<<<<<<<<<<<<
@@ -1368,7 +1853,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
   __pyx_v_result->bins = ((struct __pyx_t_7brainpy_2_c_11composition_Isotope *)malloc(((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Isotope)) * __pyx_v_size)));
 
-  /* "brainpy\_c\composition.pyx":37
+  /* "brainpy\_c\composition.pyx":96
  *     result = <IsotopeMap*>malloc(sizeof(IsotopeMap))
  *     result.bins = <Isotope*>malloc(sizeof(Isotope) * size)
  *     result.size = size             # <<<<<<<<<<<<<<
@@ -1377,7 +1862,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
   __pyx_v_result->size = __pyx_v_size;
 
-  /* "brainpy\_c\composition.pyx":39
+  /* "brainpy\_c\composition.pyx":98
  *     result.size = size
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -1386,7 +1871,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":40
+  /* "brainpy\_c\composition.pyx":99
  * 
  *     i = 0
  *     for k, values in organized_isotope_data:             # <<<<<<<<<<<<<<
@@ -1395,15 +1880,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
   if (unlikely(__pyx_v_organized_isotope_data == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_1 = __pyx_v_organized_isotope_data; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
   for (;;) {
     if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_COMPILING_IN_CPYTHON
-    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     #else
-    __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     #endif
     if ((likely(PyTuple_CheckExact(__pyx_t_3))) || (PyList_CheckExact(__pyx_t_3))) {
@@ -1416,7 +1901,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -1429,15 +1914,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
       __Pyx_INCREF(__pyx_t_4);
       __Pyx_INCREF(__pyx_t_5);
       #else
-      __pyx_t_4 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_5 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       #endif
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_6 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_t_7 = Py_TYPE(__pyx_t_6)->tp_iternext;
@@ -1445,7 +1930,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
       __Pyx_GOTREF(__pyx_t_4);
       index = 1; __pyx_t_5 = __pyx_t_7(__pyx_t_6); if (unlikely(!__pyx_t_5)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_5);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_6), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_6), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_7 = NULL;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       goto __pyx_L6_unpacking_done;
@@ -1453,17 +1938,17 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_7 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L6_unpacking_done:;
     }
-    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (!(likely(PyTuple_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyTuple_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_k = __pyx_t_8;
     __Pyx_XDECREF_SET(__pyx_v_values, ((PyObject*)__pyx_t_5));
     __pyx_t_5 = 0;
 
-    /* "brainpy\_c\composition.pyx":41
+    /* "brainpy\_c\composition.pyx":100
  *     i = 0
  *     for k, values in organized_isotope_data:
  *         result.bins[i].mass = values[0]             # <<<<<<<<<<<<<<
@@ -1472,15 +1957,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
     if (unlikely(__pyx_v_values == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     (__pyx_v_result->bins[__pyx_v_i]).mass = __pyx_t_9;
 
-    /* "brainpy\_c\composition.pyx":42
+    /* "brainpy\_c\composition.pyx":101
  *     for k, values in organized_isotope_data:
  *         result.bins[i].mass = values[0]
  *         result.bins[i].abundance = values[1]             # <<<<<<<<<<<<<<
@@ -1489,15 +1974,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
     if (unlikely(__pyx_v_values == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     (__pyx_v_result->bins[__pyx_v_i]).abundance = __pyx_t_9;
 
-    /* "brainpy\_c\composition.pyx":43
+    /* "brainpy\_c\composition.pyx":102
  *         result.bins[i].mass = values[0]
  *         result.bins[i].abundance = values[1]
  *         result.bins[i].neutron_shift = values[2]             # <<<<<<<<<<<<<<
@@ -1506,15 +1991,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
     if (unlikely(__pyx_v_values == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     (__pyx_v_result->bins[__pyx_v_i]).neutron_shift = __pyx_t_8;
 
-    /* "brainpy\_c\composition.pyx":44
+    /* "brainpy\_c\composition.pyx":103
  *         result.bins[i].abundance = values[1]
  *         result.bins[i].neutron_shift = values[2]
  *         result.bins[i].neutrons = values[3]             # <<<<<<<<<<<<<<
@@ -1523,15 +2008,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
     if (unlikely(__pyx_v_values == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 3, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_3 = __Pyx_GetItemInt_Tuple(__pyx_v_values, 3, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     (__pyx_v_result->bins[__pyx_v_i]).neutrons = __pyx_t_8;
 
-    /* "brainpy\_c\composition.pyx":45
+    /* "brainpy\_c\composition.pyx":104
  *         result.bins[i].neutron_shift = values[2]
  *         result.bins[i].neutrons = values[3]
  *         i += 1             # <<<<<<<<<<<<<<
@@ -1540,7 +2025,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
  */
     __pyx_v_i = (__pyx_v_i + 1);
 
-    /* "brainpy\_c\composition.pyx":40
+    /* "brainpy\_c\composition.pyx":99
  * 
  *     i = 0
  *     for k, values in organized_isotope_data:             # <<<<<<<<<<<<<<
@@ -1550,18 +2035,18 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":46
+  /* "brainpy\_c\composition.pyx":105
  *         result.bins[i].neutrons = values[3]
  *         i += 1
  *     return result             # <<<<<<<<<<<<<<
  * 
- * cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil:
+ * 
  */
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":28
- *     return (neutral_mass + (z * charge_carrier)) / fabs(z)
+  /* "brainpy\_c\composition.pyx":87
+ * # Isotope and IsotopeMap Methods
  * 
  * cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size):             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1583,8 +2068,8 @@ static struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_f_7brainpy_2_
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":48
- *     return result
+/* "brainpy\_c\composition.pyx":108
+ * 
  * 
  * cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1599,7 +2084,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
   size_t __pyx_t_2;
   int __pyx_t_3;
 
-  /* "brainpy\_c\composition.pyx":53
+  /* "brainpy\_c\composition.pyx":113
  *         Isotope* isotope_item
  * 
  *     for i in range(isotopes.size):             # <<<<<<<<<<<<<<
@@ -1610,7 +2095,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\composition.pyx":54
+    /* "brainpy\_c\composition.pyx":114
  * 
  *     for i in range(isotopes.size):
  *         isotope_item = &(isotopes.bins[i])             # <<<<<<<<<<<<<<
@@ -1619,7 +2104,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
  */
     __pyx_v_isotope_item = (&(__pyx_v_isotopes->bins[__pyx_v_i]));
 
-    /* "brainpy\_c\composition.pyx":55
+    /* "brainpy\_c\composition.pyx":115
  *     for i in range(isotopes.size):
  *         isotope_item = &(isotopes.bins[i])
  *         if isotope_item.neutron_shift == neutron_shift:             # <<<<<<<<<<<<<<
@@ -1629,7 +2114,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
     __pyx_t_3 = ((__pyx_v_isotope_item->neutron_shift == __pyx_v_neutron_shift) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\composition.pyx":56
+      /* "brainpy\_c\composition.pyx":116
  *         isotope_item = &(isotopes.bins[i])
  *         if isotope_item.neutron_shift == neutron_shift:
  *             return isotope_item             # <<<<<<<<<<<<<<
@@ -1639,7 +2124,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
       __pyx_r = __pyx_v_isotope_item;
       goto __pyx_L0;
 
-      /* "brainpy\_c\composition.pyx":55
+      /* "brainpy\_c\composition.pyx":115
  *     for i in range(isotopes.size):
  *         isotope_item = &(isotopes.bins[i])
  *         if isotope_item.neutron_shift == neutron_shift:             # <<<<<<<<<<<<<<
@@ -1649,18 +2134,18 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
     }
   }
 
-  /* "brainpy\_c\composition.pyx":57
+  /* "brainpy\_c\composition.pyx":117
  *         if isotope_item.neutron_shift == neutron_shift:
  *             return isotope_item
  *     return NULL             # <<<<<<<<<<<<<<
  * 
- * cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) nogil:
+ * 
  */
   __pyx_r = NULL;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":48
- *     return result
+  /* "brainpy\_c\composition.pyx":108
+ * 
  * 
  * cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1672,8 +2157,8 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":59
- *     return NULL
+/* "brainpy\_c\composition.pyx":120
+ * 
  * 
  * cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1688,7 +2173,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
   size_t __pyx_t_2;
   int __pyx_t_3;
 
-  /* "brainpy\_c\composition.pyx":64
+  /* "brainpy\_c\composition.pyx":125
  *         Isotope* isotope_item
  * 
  *     for i in range(isotopes.size):             # <<<<<<<<<<<<<<
@@ -1699,7 +2184,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\composition.pyx":65
+    /* "brainpy\_c\composition.pyx":126
  * 
  *     for i in range(isotopes.size):
  *         isotope_item = &(isotopes.bins[i])             # <<<<<<<<<<<<<<
@@ -1708,7 +2193,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
  */
     __pyx_v_isotope_item = (&(__pyx_v_isotopes->bins[__pyx_v_i]));
 
-    /* "brainpy\_c\composition.pyx":66
+    /* "brainpy\_c\composition.pyx":127
  *     for i in range(isotopes.size):
  *         isotope_item = &(isotopes.bins[i])
  *         if isotope_item.neutrons == neutrons:             # <<<<<<<<<<<<<<
@@ -1718,7 +2203,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
     __pyx_t_3 = ((__pyx_v_isotope_item->neutrons == __pyx_v_neutrons) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\composition.pyx":67
+      /* "brainpy\_c\composition.pyx":128
  *         isotope_item = &(isotopes.bins[i])
  *         if isotope_item.neutrons == neutrons:
  *             return isotope_item             # <<<<<<<<<<<<<<
@@ -1728,7 +2213,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
       __pyx_r = __pyx_v_isotope_item;
       goto __pyx_L0;
 
-      /* "brainpy\_c\composition.pyx":66
+      /* "brainpy\_c\composition.pyx":127
  *     for i in range(isotopes.size):
  *         isotope_item = &(isotopes.bins[i])
  *         if isotope_item.neutrons == neutrons:             # <<<<<<<<<<<<<<
@@ -1738,18 +2223,18 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
     }
   }
 
-  /* "brainpy\_c\composition.pyx":68
+  /* "brainpy\_c\composition.pyx":129
  *         if isotope_item.neutrons == neutrons:
  *             return isotope_item
  *     return NULL             # <<<<<<<<<<<<<<
  * 
- * cdef void print_isotope_map(IsotopeMap* isotope_map):
+ * 
  */
   __pyx_r = NULL;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":59
- *     return NULL
+  /* "brainpy\_c\composition.pyx":120
+ * 
  * 
  * cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1761,8 +2246,8 @@ static struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_f_7brainpy_2_c_1
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":70
- *     return NULL
+/* "brainpy\_c\composition.pyx":132
+ * 
  * 
  * cdef void print_isotope_map(IsotopeMap* isotope_map):             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1776,7 +2261,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_isotope_map(struct __pyx_t_
   size_t __pyx_t_2;
   __Pyx_RefNannySetupContext("print_isotope_map", 0);
 
-  /* "brainpy\_c\composition.pyx":74
+  /* "brainpy\_c\composition.pyx":136
  *         size_t i
  * 
  *     for i in range(isotope_map.size):             # <<<<<<<<<<<<<<
@@ -1787,7 +2272,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_isotope_map(struct __pyx_t_
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\composition.pyx":75
+    /* "brainpy\_c\composition.pyx":137
  * 
  *     for i in range(isotope_map.size):
  *         printf("%f, %f, %d\n", isotope_map.bins[i].mass, isotope_map.bins[i].abundance, isotope_map.bins[i].neutron_shift)             # <<<<<<<<<<<<<<
@@ -1797,8 +2282,8 @@ static void __pyx_f_7brainpy_2_c_11composition_print_isotope_map(struct __pyx_t_
     printf(__pyx_k_f_f_d, (__pyx_v_isotope_map->bins[__pyx_v_i]).mass, (__pyx_v_isotope_map->bins[__pyx_v_i]).abundance, (__pyx_v_isotope_map->bins[__pyx_v_i]).neutron_shift);
   }
 
-  /* "brainpy\_c\composition.pyx":70
- *     return NULL
+  /* "brainpy\_c\composition.pyx":132
+ * 
  * 
  * cdef void print_isotope_map(IsotopeMap* isotope_map):             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1809,7 +2294,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_isotope_map(struct __pyx_t_
   __Pyx_RefNannyFinishContext();
 }
 
-/* "brainpy\_c\composition.pyx":78
+/* "brainpy\_c\composition.pyx":140
  * 
  * 
  * cdef void free_isotope_map(IsotopeMap* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -1819,7 +2304,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_isotope_map(struct __pyx_t_
 
 static void __pyx_f_7brainpy_2_c_11composition_free_isotope_map(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_v_isotopes) {
 
-  /* "brainpy\_c\composition.pyx":79
+  /* "brainpy\_c\composition.pyx":141
  * 
  * cdef void free_isotope_map(IsotopeMap* isotopes) nogil:
  *     free(isotopes.bins)             # <<<<<<<<<<<<<<
@@ -1828,16 +2313,16 @@ static void __pyx_f_7brainpy_2_c_11composition_free_isotope_map(struct __pyx_t_7
  */
   free(__pyx_v_isotopes->bins);
 
-  /* "brainpy\_c\composition.pyx":80
+  /* "brainpy\_c\composition.pyx":142
  * cdef void free_isotope_map(IsotopeMap* isotopes) nogil:
  *     free(isotopes.bins)
  *     free(isotopes)             # <<<<<<<<<<<<<<
  * 
- * cdef struct Element:
+ * 
  */
   free(__pyx_v_isotopes);
 
-  /* "brainpy\_c\composition.pyx":78
+  /* "brainpy\_c\composition.pyx":140
  * 
  * 
  * cdef void free_isotope_map(IsotopeMap* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -1848,8 +2333,8 @@ static void __pyx_f_7brainpy_2_c_11composition_free_isotope_map(struct __pyx_t_7
   /* function exit code */
 }
 
-/* "brainpy\_c\composition.pyx":86
- *     IsotopeMap* isotopes
+/* "brainpy\_c\composition.pyx":148
+ * # Element Methods
  * 
  * cdef double element_monoisotopic_mass(Element* element) nogil:             # <<<<<<<<<<<<<<
  *     return get_isotope_by_neutron_shift(element.isotopes, 0).mass
@@ -1859,7 +2344,7 @@ static void __pyx_f_7brainpy_2_c_11composition_free_isotope_map(struct __pyx_t_7
 static double __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
   double __pyx_r;
 
-  /* "brainpy\_c\composition.pyx":87
+  /* "brainpy\_c\composition.pyx":149
  * 
  * cdef double element_monoisotopic_mass(Element* element) nogil:
  *     return get_isotope_by_neutron_shift(element.isotopes, 0).mass             # <<<<<<<<<<<<<<
@@ -1869,8 +2354,8 @@ static double __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(struc
   __pyx_r = __pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_shift(__pyx_v_element->isotopes, 0)->mass;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":86
- *     IsotopeMap* isotopes
+  /* "brainpy\_c\composition.pyx":148
+ * # Element Methods
  * 
  * cdef double element_monoisotopic_mass(Element* element) nogil:             # <<<<<<<<<<<<<<
  *     return get_isotope_by_neutron_shift(element.isotopes, 0).mass
@@ -1882,7 +2367,7 @@ static double __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(struc
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":89
+/* "brainpy\_c\composition.pyx":151
  *     return get_isotope_by_neutron_shift(element.isotopes, 0).mass
  * 
  * cdef double element_isotopic_mass(Element* element, int isotope_number) nogil:             # <<<<<<<<<<<<<<
@@ -1893,7 +2378,7 @@ static double __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(struc
 static double __pyx_f_7brainpy_2_c_11composition_element_isotopic_mass(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element, int __pyx_v_isotope_number) {
   double __pyx_r;
 
-  /* "brainpy\_c\composition.pyx":90
+  /* "brainpy\_c\composition.pyx":152
  * 
  * cdef double element_isotopic_mass(Element* element, int isotope_number) nogil:
  *     return get_isotope_by_neutron_count(element.isotopes, isotope_number).mass             # <<<<<<<<<<<<<<
@@ -1903,7 +2388,7 @@ static double __pyx_f_7brainpy_2_c_11composition_element_isotopic_mass(struct __
   __pyx_r = __pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_count(__pyx_v_element->isotopes, __pyx_v_isotope_number)->mass;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":89
+  /* "brainpy\_c\composition.pyx":151
  *     return get_isotope_by_neutron_shift(element.isotopes, 0).mass
  * 
  * cdef double element_isotopic_mass(Element* element, int isotope_number) nogil:             # <<<<<<<<<<<<<<
@@ -1916,7 +2401,7 @@ static double __pyx_f_7brainpy_2_c_11composition_element_isotopic_mass(struct __
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":92
+/* "brainpy\_c\composition.pyx":154
  *     return get_isotope_by_neutron_count(element.isotopes, isotope_number).mass
  * 
  * cdef int element_min_neutron_shift(Element* element) nogil:             # <<<<<<<<<<<<<<
@@ -1927,7 +2412,7 @@ static double __pyx_f_7brainpy_2_c_11composition_element_isotopic_mass(struct __
 static int __pyx_f_7brainpy_2_c_11composition_element_min_neutron_shift(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
   int __pyx_r;
 
-  /* "brainpy\_c\composition.pyx":93
+  /* "brainpy\_c\composition.pyx":155
  * 
  * cdef int element_min_neutron_shift(Element* element) nogil:
  *     return element.isotopes.bins[0].neutron_shift             # <<<<<<<<<<<<<<
@@ -1937,7 +2422,7 @@ static int __pyx_f_7brainpy_2_c_11composition_element_min_neutron_shift(struct _
   __pyx_r = (__pyx_v_element->isotopes->bins[0]).neutron_shift;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":92
+  /* "brainpy\_c\composition.pyx":154
  *     return get_isotope_by_neutron_count(element.isotopes, isotope_number).mass
  * 
  * cdef int element_min_neutron_shift(Element* element) nogil:             # <<<<<<<<<<<<<<
@@ -1950,7 +2435,7 @@ static int __pyx_f_7brainpy_2_c_11composition_element_min_neutron_shift(struct _
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":95
+/* "brainpy\_c\composition.pyx":157
  *     return element.isotopes.bins[0].neutron_shift
  * 
  * cdef int element_max_neutron_shift(Element* element) nogil:             # <<<<<<<<<<<<<<
@@ -1961,7 +2446,7 @@ static int __pyx_f_7brainpy_2_c_11composition_element_min_neutron_shift(struct _
 static int __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
   int __pyx_r;
 
-  /* "brainpy\_c\composition.pyx":96
+  /* "brainpy\_c\composition.pyx":158
  * 
  * cdef int element_max_neutron_shift(Element* element) nogil:
  *     return element.isotopes.bins[element.isotopes.size - 1].neutron_shift             # <<<<<<<<<<<<<<
@@ -1971,7 +2456,7 @@ static int __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(struct _
   __pyx_r = (__pyx_v_element->isotopes->bins[(__pyx_v_element->isotopes->size - 1)]).neutron_shift;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":95
+  /* "brainpy\_c\composition.pyx":157
  *     return element.isotopes.bins[0].neutron_shift
  * 
  * cdef int element_max_neutron_shift(Element* element) nogil:             # <<<<<<<<<<<<<<
@@ -1984,7 +2469,7 @@ static int __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(struct _
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":98
+/* "brainpy\_c\composition.pyx":160
  *     return element.isotopes.bins[element.isotopes.size - 1].neutron_shift
  * 
  * def __select_1_1(object x):             # <<<<<<<<<<<<<<
@@ -1994,7 +2479,8 @@ static int __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(struct _
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_1__select_1_1(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
-static PyMethodDef __pyx_mdef_7brainpy_2_c_11composition_1__select_1_1 = {"__select_1_1", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_1__select_1_1, METH_O, 0};
+static char __pyx_doc_7brainpy_2_c_11composition___select_1_1[] = "__select_1_1(x)";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_11composition_1__select_1_1 = {"__select_1_1", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_1__select_1_1, METH_O, __pyx_doc_7brainpy_2_c_11composition___select_1_1};
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_1__select_1_1(PyObject *__pyx_self, PyObject *__pyx_v_x) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2016,7 +2502,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition___select_1_1(CYTHON_UNUSED 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__select_1_1", 0);
 
-  /* "brainpy\_c\composition.pyx":99
+  /* "brainpy\_c\composition.pyx":161
  * 
  * def __select_1_1(object x):
  *     return x[1][1]             # <<<<<<<<<<<<<<
@@ -2024,16 +2510,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition___select_1_1(CYTHON_UNUSED 
  * cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_x, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_x, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 161; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_1, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_1, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 161; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":98
+  /* "brainpy\_c\composition.pyx":160
  *     return element.isotopes.bins[element.isotopes.size - 1].neutron_shift
  * 
  * def __select_1_1(object x):             # <<<<<<<<<<<<<<
@@ -2053,7 +2539,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition___select_1_1(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":101
+/* "brainpy\_c\composition.pyx":163
  *     return x[1][1]
  * 
  * cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):             # <<<<<<<<<<<<<<
@@ -2088,19 +2574,19 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_isotopes_of", 0);
 
-  /* "brainpy\_c\composition.pyx":113
+  /* "brainpy\_c\composition.pyx":175
  *         object k, v
  * 
  *     freqs = dict()             # <<<<<<<<<<<<<<
  *     for i, mass_freqs in nist_mass[element_symbol].items():
  *         if i == 0:
  */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_freqs = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":114
+  /* "brainpy\_c\composition.pyx":176
  * 
  *     freqs = dict()
  *     for i, mass_freqs in nist_mass[element_symbol].items():             # <<<<<<<<<<<<<<
@@ -2109,14 +2595,14 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
   if (unlikely(__pyx_v_7brainpy_2_c_11composition_nist_mass == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_element_symbol); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_element_symbol); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_2_c_11composition_nist_mass, __pyx_t_2); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_3 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_2_c_11composition_nist_mass, __pyx_t_2); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -2130,10 +2616,10 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -2141,9 +2627,9 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
     __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_4 = 0;
     __pyx_t_5 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -2151,17 +2637,17 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -2171,7 +2657,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -2187,7 +2673,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -2200,15 +2686,15 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       __Pyx_INCREF(__pyx_t_3);
       __Pyx_INCREF(__pyx_t_6);
       #else
-      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       #endif
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_t_8 = Py_TYPE(__pyx_t_7)->tp_iternext;
@@ -2216,7 +2702,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       __Pyx_GOTREF(__pyx_t_3);
       index = 1; __pyx_t_6 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_6)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_6);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_8 = NULL;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L6_unpacking_done;
@@ -2224,17 +2710,17 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L6_unpacking_done:;
     }
-    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (!(likely(PyTuple_CheckExact(__pyx_t_6))||((__pyx_t_6) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_6)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyTuple_CheckExact(__pyx_t_6))||((__pyx_t_6) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_6)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_i = __pyx_t_9;
     __Pyx_XDECREF_SET(__pyx_v_mass_freqs, ((PyObject*)__pyx_t_6));
     __pyx_t_6 = 0;
 
-    /* "brainpy\_c\composition.pyx":115
+    /* "brainpy\_c\composition.pyx":177
  *     freqs = dict()
  *     for i, mass_freqs in nist_mass[element_symbol].items():
  *         if i == 0:             # <<<<<<<<<<<<<<
@@ -2244,7 +2730,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
     __pyx_t_10 = ((__pyx_v_i == 0) != 0);
     if (__pyx_t_10) {
 
-      /* "brainpy\_c\composition.pyx":116
+      /* "brainpy\_c\composition.pyx":178
  *     for i, mass_freqs in nist_mass[element_symbol].items():
  *         if i == 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -2253,7 +2739,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_c\composition.pyx":115
+      /* "brainpy\_c\composition.pyx":177
  *     freqs = dict()
  *     for i, mass_freqs in nist_mass[element_symbol].items():
  *         if i == 0:             # <<<<<<<<<<<<<<
@@ -2262,7 +2748,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
     }
 
-    /* "brainpy\_c\composition.pyx":117
+    /* "brainpy\_c\composition.pyx":179
  *         if i == 0:
  *             continue
  *         if mass_freqs[1] > 0:             # <<<<<<<<<<<<<<
@@ -2271,29 +2757,29 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
     if (unlikely(__pyx_v_mass_freqs == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 179; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v_mass_freqs, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v_mass_freqs, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 179; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 179; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 179; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_10) {
 
-      /* "brainpy\_c\composition.pyx":118
+      /* "brainpy\_c\composition.pyx":180
  *             continue
  *         if mass_freqs[1] > 0:
  *             freqs[i] = mass_freqs             # <<<<<<<<<<<<<<
  * 
  *     if len(freqs) == 0:
  */
-      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_i); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_i); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
-      if (unlikely(PyDict_SetItem(__pyx_v_freqs, __pyx_t_6, __pyx_v_mass_freqs) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(PyDict_SetItem(__pyx_v_freqs, __pyx_t_6, __pyx_v_mass_freqs) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "brainpy\_c\composition.pyx":117
+      /* "brainpy\_c\composition.pyx":179
  *         if i == 0:
  *             continue
  *         if mass_freqs[1] > 0:             # <<<<<<<<<<<<<<
@@ -2302,7 +2788,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
     }
 
-    /* "brainpy\_c\composition.pyx":114
+    /* "brainpy\_c\composition.pyx":176
  * 
  *     freqs = dict()
  *     for i, mass_freqs in nist_mass[element_symbol].items():             # <<<<<<<<<<<<<<
@@ -2313,18 +2799,18 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\composition.pyx":120
+  /* "brainpy\_c\composition.pyx":182
  *             freqs[i] = mass_freqs
  * 
  *     if len(freqs) == 0:             # <<<<<<<<<<<<<<
  *         return
  * 
  */
-  __pyx_t_4 = PyDict_Size(__pyx_v_freqs); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyDict_Size(__pyx_v_freqs); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_10 = ((__pyx_t_4 == 0) != 0);
   if (__pyx_t_10) {
 
-    /* "brainpy\_c\composition.pyx":121
+    /* "brainpy\_c\composition.pyx":183
  * 
  *     if len(freqs) == 0:
  *         return             # <<<<<<<<<<<<<<
@@ -2333,7 +2819,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
     goto __pyx_L0;
 
-    /* "brainpy\_c\composition.pyx":120
+    /* "brainpy\_c\composition.pyx":182
  *             freqs[i] = mass_freqs
  * 
  *     if len(freqs) == 0:             # <<<<<<<<<<<<<<
@@ -2342,41 +2828,41 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
   }
 
-  /* "brainpy\_c\composition.pyx":123
+  /* "brainpy\_c\composition.pyx":185
  *         return
  * 
  *     freq_list = freqs.items()             # <<<<<<<<<<<<<<
  *     freq_list.sort(key=__select_1_1)
  *     mono_neutrons = freq_list[-1][0]
  */
-  __pyx_t_2 = __Pyx_PyDict_Items(__pyx_v_freqs); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyDict_Items(__pyx_v_freqs); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 185; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(PyList_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 185; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_freq_list = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_c\composition.pyx":124
+  /* "brainpy\_c\composition.pyx":186
  * 
  *     freq_list = freqs.items()
  *     freq_list.sort(key=__select_1_1)             # <<<<<<<<<<<<<<
  *     mono_neutrons = freq_list[-1][0]
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_freq_list, __pyx_n_s_sort); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_freq_list, __pyx_n_s_sort); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_6 = PyDict_New(); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyDict_New(); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_select_1_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_select_1_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_key, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_key, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":125
+  /* "brainpy\_c\composition.pyx":187
  *     freq_list = freqs.items()
  *     freq_list.sort(key=__select_1_1)
  *     mono_neutrons = freq_list[-1][0]             # <<<<<<<<<<<<<<
@@ -2385,45 +2871,45 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
  */
   if (unlikely(__pyx_v_freq_list == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 125; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 187; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_freq_list, -1L, long, 1, __Pyx_PyInt_From_long, 1, 1, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 125; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_freq_list, -1L, long, 1, __Pyx_PyInt_From_long, 1, 1, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 187; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_6 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 125; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_6 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 187; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_6); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 125; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_6); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 187; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_mono_neutrons = __pyx_t_9;
 
-  /* "brainpy\_c\composition.pyx":127
+  /* "brainpy\_c\composition.pyx":189
  *     mono_neutrons = freq_list[-1][0]
  * 
  *     bunches = []             # <<<<<<<<<<<<<<
  *     for k, v in freqs.items():
  *         bunches.append((k - mono_neutrons, (v[0], v[1], k - mono_neutrons, k)))
  */
-  __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 189; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_v_bunches = ((PyObject*)__pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "brainpy\_c\composition.pyx":128
+  /* "brainpy\_c\composition.pyx":190
  * 
  *     bunches = []
  *     for k, v in freqs.items():             # <<<<<<<<<<<<<<
  *         bunches.append((k - mono_neutrons, (v[0], v[1], k - mono_neutrons, k)))
  * 
  */
-  __pyx_t_6 = __Pyx_PyDict_Items(__pyx_v_freqs); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyDict_Items(__pyx_v_freqs); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   if (likely(PyList_CheckExact(__pyx_t_6)) || PyTuple_CheckExact(__pyx_t_6)) {
     __pyx_t_1 = __pyx_t_6; __Pyx_INCREF(__pyx_t_1); __pyx_t_4 = 0;
     __pyx_t_5 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_t_6); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_t_6); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   for (;;) {
@@ -2431,17 +2917,17 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_6 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_4); __Pyx_INCREF(__pyx_t_6); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_4); __Pyx_INCREF(__pyx_t_6); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_6 = PySequence_ITEM(__pyx_t_1, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = PySequence_ITEM(__pyx_t_1, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_6);
         #endif
       } else {
         if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_6 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_4); __Pyx_INCREF(__pyx_t_6); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_4); __Pyx_INCREF(__pyx_t_6); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_6 = PySequence_ITEM(__pyx_t_1, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = PySequence_ITEM(__pyx_t_1, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_6);
         #endif
       }
@@ -2451,7 +2937,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -2467,7 +2953,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -2480,15 +2966,15 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       __Pyx_INCREF(__pyx_t_2);
       __Pyx_INCREF(__pyx_t_3);
       #else
-      __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       #endif
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_7 = PyObject_GetIter(__pyx_t_6); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyObject_GetIter(__pyx_t_6); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_8 = Py_TYPE(__pyx_t_7)->tp_iternext;
@@ -2496,7 +2982,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       __Pyx_GOTREF(__pyx_t_2);
       index = 1; __pyx_t_3 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_3)) goto __pyx_L12_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_3);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_8 = NULL;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L13_unpacking_done;
@@ -2504,7 +2990,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L13_unpacking_done:;
     }
     __Pyx_XDECREF_SET(__pyx_v_k, __pyx_t_2);
@@ -2512,28 +2998,28 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
     __Pyx_XDECREF_SET(__pyx_v_v, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "brainpy\_c\composition.pyx":129
+    /* "brainpy\_c\composition.pyx":191
  *     bunches = []
  *     for k, v in freqs.items():
  *         bunches.append((k - mono_neutrons, (v[0], v[1], k - mono_neutrons, k)))             # <<<<<<<<<<<<<<
  * 
  *     bunches.sort()
  */
-    __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_mono_neutrons); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_mono_neutrons); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_3 = PyNumber_Subtract(__pyx_v_k, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyNumber_Subtract(__pyx_v_k, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_v, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_6 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_v, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_6 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_v, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_v, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_7 = __Pyx_PyInt_From_int(__pyx_v_mono_neutrons); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = __Pyx_PyInt_From_int(__pyx_v_mono_neutrons); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_11 = PyNumber_Subtract(__pyx_v_k, __pyx_t_7); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_11 = PyNumber_Subtract(__pyx_v_k, __pyx_t_7); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_11);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyTuple_New(4); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = PyTuple_New(4); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_6);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_6);
@@ -2547,7 +3033,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
     __pyx_t_6 = 0;
     __pyx_t_2 = 0;
     __pyx_t_11 = 0;
-    __pyx_t_11 = PyTuple_New(2); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_11 = PyTuple_New(2); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_11);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_3);
@@ -2555,10 +3041,10 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
     PyTuple_SET_ITEM(__pyx_t_11, 1, __pyx_t_7);
     __pyx_t_3 = 0;
     __pyx_t_7 = 0;
-    __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_bunches, __pyx_t_11); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_bunches, __pyx_t_11); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-    /* "brainpy\_c\composition.pyx":128
+    /* "brainpy\_c\composition.pyx":190
  * 
  *     bunches = []
  *     for k, v in freqs.items():             # <<<<<<<<<<<<<<
@@ -2568,26 +3054,26 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":131
+  /* "brainpy\_c\composition.pyx":193
  *         bunches.append((k - mono_neutrons, (v[0], v[1], k - mono_neutrons, k)))
  * 
  *     bunches.sort()             # <<<<<<<<<<<<<<
  * 
  *     # bunches = sorted([((k - mono_neutrons, (v[0], v[1], k - mono_neutrons, k))
  */
-  __pyx_t_12 = PyList_Sort(__pyx_v_bunches); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 131; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_12 = PyList_Sort(__pyx_v_bunches); if (unlikely(__pyx_t_12 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\composition.pyx":135
+  /* "brainpy\_c\composition.pyx":197
  *     # bunches = sorted([((k - mono_neutrons, (v[0], v[1], k - mono_neutrons, k))
  *     #                   for k, v in freqs.items())], key=lambda x: x[0])
  *     isotope_frequencies[0] = make_isotope_map(bunches, len(bunches))             # <<<<<<<<<<<<<<
  * 
  * cdef Element* make_element(char* symbol):
  */
-  __pyx_t_4 = PyList_GET_SIZE(__pyx_v_bunches); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 135; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyList_GET_SIZE(__pyx_v_bunches); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 197; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   (__pyx_v_isotope_frequencies[0]) = __pyx_f_7brainpy_2_c_11composition_make_isotope_map(__pyx_v_bunches, __pyx_t_4);
 
-  /* "brainpy\_c\composition.pyx":101
+  /* "brainpy\_c\composition.pyx":163
  *     return x[1][1]
  * 
  * cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):             # <<<<<<<<<<<<<<
@@ -2615,7 +3101,7 @@ static void __pyx_f_7brainpy_2_c_11composition__isotopes_of(char *__pyx_v_elemen
   __Pyx_RefNannyFinishContext();
 }
 
-/* "brainpy\_c\composition.pyx":137
+/* "brainpy\_c\composition.pyx":199
  *     isotope_frequencies[0] = make_isotope_map(bunches, len(bunches))
  * 
  * cdef Element* make_element(char* symbol):             # <<<<<<<<<<<<<<
@@ -2629,7 +3115,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_1
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("make_element", 0);
 
-  /* "brainpy\_c\composition.pyx":140
+  /* "brainpy\_c\composition.pyx":202
  *     cdef:
  *         Element* element
  *     element = <Element*>malloc(sizeof(Element))             # <<<<<<<<<<<<<<
@@ -2638,7 +3124,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_1
  */
   __pyx_v_element = ((struct __pyx_t_7brainpy_2_c_11composition_Element *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Element))));
 
-  /* "brainpy\_c\composition.pyx":141
+  /* "brainpy\_c\composition.pyx":203
  *         Element* element
  *     element = <Element*>malloc(sizeof(Element))
  *     element.symbol = symbol             # <<<<<<<<<<<<<<
@@ -2647,7 +3133,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_1
  */
   __pyx_v_element->symbol = __pyx_v_symbol;
 
-  /* "brainpy\_c\composition.pyx":142
+  /* "brainpy\_c\composition.pyx":204
  *     element = <Element*>malloc(sizeof(Element))
  *     element.symbol = symbol
  *     _isotopes_of(symbol, &element.isotopes)             # <<<<<<<<<<<<<<
@@ -2656,17 +3142,17 @@ static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_1
  */
   __pyx_f_7brainpy_2_c_11composition__isotopes_of(__pyx_v_symbol, (&__pyx_v_element->isotopes));
 
-  /* "brainpy\_c\composition.pyx":143
+  /* "brainpy\_c\composition.pyx":205
  *     element.symbol = symbol
  *     _isotopes_of(symbol, &element.isotopes)
  *     return element             # <<<<<<<<<<<<<<
  * 
- * cdef void make_element_in_place(char* symbol, Element* element):
+ * cdef void free_element(Element* element) nogil:
  */
   __pyx_r = __pyx_v_element;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":137
+  /* "brainpy\_c\composition.pyx":199
  *     isotope_frequencies[0] = make_isotope_map(bunches, len(bunches))
  * 
  * cdef Element* make_element(char* symbol):             # <<<<<<<<<<<<<<
@@ -2680,50 +3166,8 @@ static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_1
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":145
+/* "brainpy\_c\composition.pyx":207
  *     return element
- * 
- * cdef void make_element_in_place(char* symbol, Element* element):             # <<<<<<<<<<<<<<
- *     element.symbol = symbol
- *     _isotopes_of(symbol, &element.isotopes)
- */
-
-static void __pyx_f_7brainpy_2_c_11composition_make_element_in_place(char *__pyx_v_symbol, struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("make_element_in_place", 0);
-
-  /* "brainpy\_c\composition.pyx":146
- * 
- * cdef void make_element_in_place(char* symbol, Element* element):
- *     element.symbol = symbol             # <<<<<<<<<<<<<<
- *     _isotopes_of(symbol, &element.isotopes)
- * 
- */
-  __pyx_v_element->symbol = __pyx_v_symbol;
-
-  /* "brainpy\_c\composition.pyx":147
- * cdef void make_element_in_place(char* symbol, Element* element):
- *     element.symbol = symbol
- *     _isotopes_of(symbol, &element.isotopes)             # <<<<<<<<<<<<<<
- * 
- * cdef void free_element(Element* element) nogil:
- */
-  __pyx_f_7brainpy_2_c_11composition__isotopes_of(__pyx_v_symbol, (&__pyx_v_element->isotopes));
-
-  /* "brainpy\_c\composition.pyx":145
- *     return element
- * 
- * cdef void make_element_in_place(char* symbol, Element* element):             # <<<<<<<<<<<<<<
- *     element.symbol = symbol
- *     _isotopes_of(symbol, &element.isotopes)
- */
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-}
-
-/* "brainpy\_c\composition.pyx":149
- *     _isotopes_of(symbol, &element.isotopes)
  * 
  * cdef void free_element(Element* element) nogil:             # <<<<<<<<<<<<<<
  *     free_isotope_map(element.isotopes)
@@ -2732,7 +3176,7 @@ static void __pyx_f_7brainpy_2_c_11composition_make_element_in_place(char *__pyx
 
 static void __pyx_f_7brainpy_2_c_11composition_free_element(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
 
-  /* "brainpy\_c\composition.pyx":150
+  /* "brainpy\_c\composition.pyx":208
  * 
  * cdef void free_element(Element* element) nogil:
  *     free_isotope_map(element.isotopes)             # <<<<<<<<<<<<<<
@@ -2741,17 +3185,17 @@ static void __pyx_f_7brainpy_2_c_11composition_free_element(struct __pyx_t_7brai
  */
   __pyx_f_7brainpy_2_c_11composition_free_isotope_map(__pyx_v_element->isotopes);
 
-  /* "brainpy\_c\composition.pyx":151
+  /* "brainpy\_c\composition.pyx":209
  * cdef void free_element(Element* element) nogil:
  *     free_isotope_map(element.isotopes)
  *     free(element)             # <<<<<<<<<<<<<<
  * 
- * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:
+ * cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil:
  */
   free(__pyx_v_element);
 
-  /* "brainpy\_c\composition.pyx":149
- *     _isotopes_of(symbol, &element.isotopes)
+  /* "brainpy\_c\composition.pyx":207
+ *     return element
  * 
  * cdef void free_element(Element* element) nogil:             # <<<<<<<<<<<<<<
  *     free_isotope_map(element.isotopes)
@@ -2761,322 +3205,146 @@ static void __pyx_f_7brainpy_2_c_11composition_free_element(struct __pyx_t_7brai
   /* function exit code */
 }
 
-/* "brainpy\_c\composition.pyx":153
+/* "brainpy\_c\composition.pyx":211
  *     free(element)
  * 
- * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:             # <<<<<<<<<<<<<<
+ * cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
- *         size_t i = 0
+ *         int i
  */
 
-static char *__pyx_f_7brainpy_2_c_11composition__parse_isotope_string(char *__pyx_v_label, int *__pyx_v_isotope_num, char *__pyx_v_element_name) {
-  size_t __pyx_v_i;
-  int __pyx_v_in_bracket;
-  char __pyx_v_current;
-  size_t __pyx_v_name_end;
-  size_t __pyx_v_num_start;
-  size_t __pyx_v_num_end;
-  size_t __pyx_v_size;
-  char __pyx_v_number_part[4];
-  char *__pyx_r;
-  size_t __pyx_t_1;
-  size_t __pyx_t_2;
-  int __pyx_t_3;
+static struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element(struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element, int __pyx_v_neutron_count) {
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_out;
+  struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *__pyx_v_isotope_map;
+  struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_v_reference;
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_r;
+  double __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":155
- * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:
- *     cdef:
- *         size_t i = 0             # <<<<<<<<<<<<<<
- *         bint in_bracket = False
- *         char current
- */
-  __pyx_v_i = 0;
-
-  /* "brainpy\_c\composition.pyx":156
- *     cdef:
- *         size_t i = 0
- *         bint in_bracket = False             # <<<<<<<<<<<<<<
- *         char current
- *         size_t name_end
- */
-  __pyx_v_in_bracket = 0;
-
-  /* "brainpy\_c\composition.pyx":165
- *         char[4] number_part
+  /* "brainpy\_c\composition.pyx":219
+ *         char* symbol
  * 
- *     name_end = 0             # <<<<<<<<<<<<<<
- *     num_start = 0
- *     num_end = 0
+ *     out = <Element*>malloc(sizeof(Element))             # <<<<<<<<<<<<<<
+ *     isotope_map = <IsotopeMap*>malloc(sizeof(IsotopeMap))
+ *     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
  */
-  __pyx_v_name_end = 0;
+  __pyx_v_out = ((struct __pyx_t_7brainpy_2_c_11composition_Element *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Element))));
 
-  /* "brainpy\_c\composition.pyx":166
+  /* "brainpy\_c\composition.pyx":220
  * 
- *     name_end = 0
- *     num_start = 0             # <<<<<<<<<<<<<<
- *     num_end = 0
- *     size = strlen(label)
+ *     out = <Element*>malloc(sizeof(Element))
+ *     isotope_map = <IsotopeMap*>malloc(sizeof(IsotopeMap))             # <<<<<<<<<<<<<<
+ *     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
+ *     isotope_map.size = 1
  */
-  __pyx_v_num_start = 0;
+  __pyx_v_isotope_map = ((struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap))));
 
-  /* "brainpy\_c\composition.pyx":167
- *     name_end = 0
- *     num_start = 0
- *     num_end = 0             # <<<<<<<<<<<<<<
- *     size = strlen(label)
- *     for i in range(size):
+  /* "brainpy\_c\composition.pyx":221
+ *     out = <Element*>malloc(sizeof(Element))
+ *     isotope_map = <IsotopeMap*>malloc(sizeof(IsotopeMap))
+ *     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)             # <<<<<<<<<<<<<<
+ *     isotope_map.size = 1
+ *     out.isotopes = isotope_map
  */
-  __pyx_v_num_end = 0;
+  __pyx_v_isotope_map->bins = ((struct __pyx_t_7brainpy_2_c_11composition_Isotope *)malloc(((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Isotope)) * 1)));
 
-  /* "brainpy\_c\composition.pyx":168
- *     num_start = 0
- *     num_end = 0
- *     size = strlen(label)             # <<<<<<<<<<<<<<
- *     for i in range(size):
- *         current = label[i]
- */
-  __pyx_v_size = strlen(__pyx_v_label);
-
-  /* "brainpy\_c\composition.pyx":169
- *     num_end = 0
- *     size = strlen(label)
- *     for i in range(size):             # <<<<<<<<<<<<<<
- *         current = label[i]
- *         if in_bracket:
- */
-  __pyx_t_1 = __pyx_v_size;
-  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
-    __pyx_v_i = __pyx_t_2;
-
-    /* "brainpy\_c\composition.pyx":170
- *     size = strlen(label)
- *     for i in range(size):
- *         current = label[i]             # <<<<<<<<<<<<<<
- *         if in_bracket:
- *             if current == 93:
- */
-    __pyx_v_current = (__pyx_v_label[__pyx_v_i]);
-
-    /* "brainpy\_c\composition.pyx":171
- *     for i in range(size):
- *         current = label[i]
- *         if in_bracket:             # <<<<<<<<<<<<<<
- *             if current == 93:
- *                 break
- */
-    __pyx_t_3 = (__pyx_v_in_bracket != 0);
-    if (__pyx_t_3) {
-
-      /* "brainpy\_c\composition.pyx":172
- *         current = label[i]
- *         if in_bracket:
- *             if current == 93:             # <<<<<<<<<<<<<<
- *                 break
- *             num_end += 1
- */
-      __pyx_t_3 = ((__pyx_v_current == 93) != 0);
-      if (__pyx_t_3) {
-
-        /* "brainpy\_c\composition.pyx":173
- *         if in_bracket:
- *             if current == 93:
- *                 break             # <<<<<<<<<<<<<<
- *             num_end += 1
- *         elif current == 91:
- */
-        goto __pyx_L4_break;
-
-        /* "brainpy\_c\composition.pyx":172
- *         current = label[i]
- *         if in_bracket:
- *             if current == 93:             # <<<<<<<<<<<<<<
- *                 break
- *             num_end += 1
- */
-      }
-
-      /* "brainpy\_c\composition.pyx":174
- *             if current == 93:
- *                 break
- *             num_end += 1             # <<<<<<<<<<<<<<
- *         elif current == 91:
- *             in_bracket = True
- */
-      __pyx_v_num_end = (__pyx_v_num_end + 1);
-
-      /* "brainpy\_c\composition.pyx":171
- *     for i in range(size):
- *         current = label[i]
- *         if in_bracket:             # <<<<<<<<<<<<<<
- *             if current == 93:
- *                 break
- */
-      goto __pyx_L5;
-    }
-
-    /* "brainpy\_c\composition.pyx":175
- *                 break
- *             num_end += 1
- *         elif current == 91:             # <<<<<<<<<<<<<<
- *             in_bracket = True
- *             name_end = i
- */
-    __pyx_t_3 = ((__pyx_v_current == 91) != 0);
-    if (__pyx_t_3) {
-
-      /* "brainpy\_c\composition.pyx":176
- *             num_end += 1
- *         elif current == 91:
- *             in_bracket = True             # <<<<<<<<<<<<<<
- *             name_end = i
- *             num_start = i + 1
- */
-      __pyx_v_in_bracket = 1;
-
-      /* "brainpy\_c\composition.pyx":177
- *         elif current == 91:
- *             in_bracket = True
- *             name_end = i             # <<<<<<<<<<<<<<
- *             num_start = i + 1
- *             num_end = num_start
- */
-      __pyx_v_name_end = __pyx_v_i;
-
-      /* "brainpy\_c\composition.pyx":178
- *             in_bracket = True
- *             name_end = i
- *             num_start = i + 1             # <<<<<<<<<<<<<<
- *             num_end = num_start
- *         else:
- */
-      __pyx_v_num_start = (__pyx_v_i + 1);
-
-      /* "brainpy\_c\composition.pyx":179
- *             name_end = i
- *             num_start = i + 1
- *             num_end = num_start             # <<<<<<<<<<<<<<
- *         else:
- *             name_end += 1
- */
-      __pyx_v_num_end = __pyx_v_num_start;
-
-      /* "brainpy\_c\composition.pyx":175
- *                 break
- *             num_end += 1
- *         elif current == 91:             # <<<<<<<<<<<<<<
- *             in_bracket = True
- *             name_end = i
- */
-      goto __pyx_L5;
-    }
-
-    /* "brainpy\_c\composition.pyx":181
- *             num_end = num_start
- *         else:
- *             name_end += 1             # <<<<<<<<<<<<<<
- * 
- *     if num_start > 0:
- */
-    /*else*/ {
-      __pyx_v_name_end = (__pyx_v_name_end + 1);
-    }
-    __pyx_L5:;
-  }
-  __pyx_L4_break:;
-
-  /* "brainpy\_c\composition.pyx":183
- *             name_end += 1
- * 
- *     if num_start > 0:             # <<<<<<<<<<<<<<
- *         memcpy(number_part, label + num_start, num_end - num_start)
- *         number_part[num_end - num_start] = '\0'
- */
-  __pyx_t_3 = ((__pyx_v_num_start > 0) != 0);
-  if (__pyx_t_3) {
-
-    /* "brainpy\_c\composition.pyx":184
- * 
- *     if num_start > 0:
- *         memcpy(number_part, label + num_start, num_end - num_start)             # <<<<<<<<<<<<<<
- *         number_part[num_end - num_start] = '\0'
- *         isotope_num[0] = atoi(number_part)
- */
-    memcpy(__pyx_v_number_part, (__pyx_v_label + __pyx_v_num_start), (__pyx_v_num_end - __pyx_v_num_start));
-
-    /* "brainpy\_c\composition.pyx":185
- *     if num_start > 0:
- *         memcpy(number_part, label + num_start, num_end - num_start)
- *         number_part[num_end - num_start] = '\0'             # <<<<<<<<<<<<<<
- *         isotope_num[0] = atoi(number_part)
- *     else:
- */
-    (__pyx_v_number_part[(__pyx_v_num_end - __pyx_v_num_start)]) = '\x00';
-
-    /* "brainpy\_c\composition.pyx":186
- *         memcpy(number_part, label + num_start, num_end - num_start)
- *         number_part[num_end - num_start] = '\0'
- *         isotope_num[0] = atoi(number_part)             # <<<<<<<<<<<<<<
- *     else:
- *         isotope_num[0] = 0
- */
-    (__pyx_v_isotope_num[0]) = atoi(__pyx_v_number_part);
-
-    /* "brainpy\_c\composition.pyx":183
- *             name_end += 1
- * 
- *     if num_start > 0:             # <<<<<<<<<<<<<<
- *         memcpy(number_part, label + num_start, num_end - num_start)
- *         number_part[num_end - num_start] = '\0'
- */
-    goto __pyx_L7;
-  }
-
-  /* "brainpy\_c\composition.pyx":188
- *         isotope_num[0] = atoi(number_part)
- *     else:
- *         isotope_num[0] = 0             # <<<<<<<<<<<<<<
- * 
- *     element_name[name_end] = '\0'
- */
-  /*else*/ {
-    (__pyx_v_isotope_num[0]) = 0;
-  }
-  __pyx_L7:;
-
-  /* "brainpy\_c\composition.pyx":190
- *         isotope_num[0] = 0
- * 
- *     element_name[name_end] = '\0'             # <<<<<<<<<<<<<<
- *     memcpy(element_name, label, name_end)
+  /* "brainpy\_c\composition.pyx":222
+ *     isotope_map = <IsotopeMap*>malloc(sizeof(IsotopeMap))
+ *     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
+ *     isotope_map.size = 1             # <<<<<<<<<<<<<<
+ *     out.isotopes = isotope_map
  * 
  */
-  (__pyx_v_element_name[__pyx_v_name_end]) = '\x00';
+  __pyx_v_isotope_map->size = 1;
 
-  /* "brainpy\_c\composition.pyx":191
+  /* "brainpy\_c\composition.pyx":223
+ *     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
+ *     isotope_map.size = 1
+ *     out.isotopes = isotope_map             # <<<<<<<<<<<<<<
  * 
- *     element_name[name_end] = '\0'
- *     memcpy(element_name, label, name_end)             # <<<<<<<<<<<<<<
- * 
- *     return element_name
+ *     reference = get_isotope_by_neutron_count(element.isotopes, neutron_count)
  */
-  memcpy(__pyx_v_element_name, __pyx_v_label, __pyx_v_name_end);
+  __pyx_v_out->isotopes = __pyx_v_isotope_map;
 
-  /* "brainpy\_c\composition.pyx":193
- *     memcpy(element_name, label, name_end)
+  /* "brainpy\_c\composition.pyx":225
+ *     out.isotopes = isotope_map
  * 
- *     return element_name             # <<<<<<<<<<<<<<
- * 
- * cdef size_t hash_string(char *str) nogil:
+ *     reference = get_isotope_by_neutron_count(element.isotopes, neutron_count)             # <<<<<<<<<<<<<<
+ *     isotope_map.bins[0].mass = reference.mass
+ *     isotope_map.bins[0].abundance = 1.0
  */
-  __pyx_r = __pyx_v_element_name;
+  __pyx_v_reference = __pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_count(__pyx_v_element->isotopes, __pyx_v_neutron_count);
+
+  /* "brainpy\_c\composition.pyx":226
+ * 
+ *     reference = get_isotope_by_neutron_count(element.isotopes, neutron_count)
+ *     isotope_map.bins[0].mass = reference.mass             # <<<<<<<<<<<<<<
+ *     isotope_map.bins[0].abundance = 1.0
+ *     isotope_map.bins[0].neutron_shift = 0
+ */
+  __pyx_t_1 = __pyx_v_reference->mass;
+  (__pyx_v_isotope_map->bins[0]).mass = __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":227
+ *     reference = get_isotope_by_neutron_count(element.isotopes, neutron_count)
+ *     isotope_map.bins[0].mass = reference.mass
+ *     isotope_map.bins[0].abundance = 1.0             # <<<<<<<<<<<<<<
+ *     isotope_map.bins[0].neutron_shift = 0
+ *     isotope_map.bins[0].neutrons = neutron_count
+ */
+  (__pyx_v_isotope_map->bins[0]).abundance = 1.0;
+
+  /* "brainpy\_c\composition.pyx":228
+ *     isotope_map.bins[0].mass = reference.mass
+ *     isotope_map.bins[0].abundance = 1.0
+ *     isotope_map.bins[0].neutron_shift = 0             # <<<<<<<<<<<<<<
+ *     isotope_map.bins[0].neutrons = neutron_count
+ *     out.symbol = <char*>malloc(sizeof(char) * 10)
+ */
+  (__pyx_v_isotope_map->bins[0]).neutron_shift = 0;
+
+  /* "brainpy\_c\composition.pyx":229
+ *     isotope_map.bins[0].abundance = 1.0
+ *     isotope_map.bins[0].neutron_shift = 0
+ *     isotope_map.bins[0].neutrons = neutron_count             # <<<<<<<<<<<<<<
+ *     out.symbol = <char*>malloc(sizeof(char) * 10)
+ *     _make_isotope_string(element, reference, out.symbol)
+ */
+  (__pyx_v_isotope_map->bins[0]).neutrons = __pyx_v_neutron_count;
+
+  /* "brainpy\_c\composition.pyx":230
+ *     isotope_map.bins[0].neutron_shift = 0
+ *     isotope_map.bins[0].neutrons = neutron_count
+ *     out.symbol = <char*>malloc(sizeof(char) * 10)             # <<<<<<<<<<<<<<
+ *     _make_isotope_string(element, reference, out.symbol)
+ * 
+ */
+  __pyx_v_out->symbol = ((char *)malloc(((sizeof(char)) * 10)));
+
+  /* "brainpy\_c\composition.pyx":231
+ *     isotope_map.bins[0].neutrons = neutron_count
+ *     out.symbol = <char*>malloc(sizeof(char) * 10)
+ *     _make_isotope_string(element, reference, out.symbol)             # <<<<<<<<<<<<<<
+ * 
+ *     return out
+ */
+  __pyx_f_7brainpy_2_c_11composition__make_isotope_string(__pyx_v_element, __pyx_v_reference, __pyx_v_out->symbol);
+
+  /* "brainpy\_c\composition.pyx":233
+ *     _make_isotope_string(element, reference, out.symbol)
+ * 
+ *     return out             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_out;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":153
+  /* "brainpy\_c\composition.pyx":211
  *     free(element)
  * 
- * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:             # <<<<<<<<<<<<<<
+ * cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
- *         size_t i = 0
+ *         int i
  */
 
   /* function exit code */
@@ -3084,103 +3352,103 @@ static char *__pyx_f_7brainpy_2_c_11composition__parse_isotope_string(char *__py
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":195
- *     return element_name
+/* "brainpy\_c\composition.pyx":239
+ * # ElementHashTable and ElementHashBucket Methods
  * 
- * cdef size_t hash_string(char *str) nogil:             # <<<<<<<<<<<<<<
+ * cdef size_t hash_string(char *string_) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
- *         size_t hash
+ *         size_t hash_value
  */
 
-static size_t __pyx_f_7brainpy_2_c_11composition_hash_string(char *__pyx_v_str) {
-  size_t __pyx_v_hash;
+static size_t __pyx_f_7brainpy_2_c_11composition_hash_string(char *__pyx_v_string_) {
+  size_t __pyx_v_hash_value;
   size_t __pyx_v_i;
   int __pyx_v_c;
   size_t __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":200
+  /* "brainpy\_c\composition.pyx":244
  *         size_t i
  *         int c
- *     hash = 5381             # <<<<<<<<<<<<<<
+ *     hash_value = 5381             # <<<<<<<<<<<<<<
  *     i = 0
- *     c = str[i]
+ *     c = string_[i]
  */
-  __pyx_v_hash = 0x1505;
+  __pyx_v_hash_value = 0x1505;
 
-  /* "brainpy\_c\composition.pyx":201
+  /* "brainpy\_c\composition.pyx":245
  *         int c
- *     hash = 5381
+ *     hash_value = 5381
  *     i = 0             # <<<<<<<<<<<<<<
- *     c = str[i]
+ *     c = string_[i]
  *     while (c):
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":202
- *     hash = 5381
+  /* "brainpy\_c\composition.pyx":246
+ *     hash_value = 5381
  *     i = 0
- *     c = str[i]             # <<<<<<<<<<<<<<
+ *     c = string_[i]             # <<<<<<<<<<<<<<
  *     while (c):
- *         hash = ((hash << 5) + hash) + c
+ *         hash_value = ((hash_value << 5) + hash_value) + c
  */
-  __pyx_v_c = (__pyx_v_str[__pyx_v_i]);
+  __pyx_v_c = (__pyx_v_string_[__pyx_v_i]);
 
-  /* "brainpy\_c\composition.pyx":203
+  /* "brainpy\_c\composition.pyx":247
  *     i = 0
- *     c = str[i]
+ *     c = string_[i]
  *     while (c):             # <<<<<<<<<<<<<<
- *         hash = ((hash << 5) + hash) + c
+ *         hash_value = ((hash_value << 5) + hash_value) + c
  *         i += 1
  */
   while (1) {
     __pyx_t_1 = (__pyx_v_c != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":204
- *     c = str[i]
+    /* "brainpy\_c\composition.pyx":248
+ *     c = string_[i]
  *     while (c):
- *         hash = ((hash << 5) + hash) + c             # <<<<<<<<<<<<<<
+ *         hash_value = ((hash_value << 5) + hash_value) + c             # <<<<<<<<<<<<<<
  *         i += 1
- *         c = str[i]
+ *         c = string_[i]
  */
-    __pyx_v_hash = (((__pyx_v_hash << 5) + __pyx_v_hash) + __pyx_v_c);
+    __pyx_v_hash_value = (((__pyx_v_hash_value << 5) + __pyx_v_hash_value) + __pyx_v_c);
 
-    /* "brainpy\_c\composition.pyx":205
+    /* "brainpy\_c\composition.pyx":249
  *     while (c):
- *         hash = ((hash << 5) + hash) + c
+ *         hash_value = ((hash_value << 5) + hash_value) + c
  *         i += 1             # <<<<<<<<<<<<<<
- *         c = str[i]
- *     return hash;
+ *         c = string_[i]
+ *     return hash_value;
  */
     __pyx_v_i = (__pyx_v_i + 1);
 
-    /* "brainpy\_c\composition.pyx":206
- *         hash = ((hash << 5) + hash) + c
+    /* "brainpy\_c\composition.pyx":250
+ *         hash_value = ((hash_value << 5) + hash_value) + c
  *         i += 1
- *         c = str[i]             # <<<<<<<<<<<<<<
- *     return hash;
+ *         c = string_[i]             # <<<<<<<<<<<<<<
+ *     return hash_value;
  * 
  */
-    __pyx_v_c = (__pyx_v_str[__pyx_v_i]);
+    __pyx_v_c = (__pyx_v_string_[__pyx_v_i]);
   }
 
-  /* "brainpy\_c\composition.pyx":207
+  /* "brainpy\_c\composition.pyx":251
  *         i += 1
- *         c = str[i]
- *     return hash;             # <<<<<<<<<<<<<<
+ *         c = string_[i]
+ *     return hash_value;             # <<<<<<<<<<<<<<
  * 
- * cdef struct PeriodicTable:
+ * 
  */
-  __pyx_r = __pyx_v_hash;
+  __pyx_r = __pyx_v_hash_value;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":195
- *     return element_name
+  /* "brainpy\_c\composition.pyx":239
+ * # ElementHashTable and ElementHashBucket Methods
  * 
- * cdef size_t hash_string(char *str) nogil:             # <<<<<<<<<<<<<<
+ * cdef size_t hash_string(char *string_) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
- *         size_t hash
+ *         size_t hash_value
  */
 
   /* function exit code */
@@ -3188,21 +3456,625 @@ static size_t __pyx_f_7brainpy_2_c_11composition_hash_string(char *__pyx_v_str) 
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":213
- *     size_t size
+/* "brainpy\_c\composition.pyx":254
  * 
- * cdef PeriodicTable* make_periodic_table():             # <<<<<<<<<<<<<<
+ * 
+ * cdef ElementHashTable* make_element_hash_table(size_t size) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         ElementHashTable* table
+ */
+
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_f_7brainpy_2_c_11composition_make_element_hash_table(size_t __pyx_v_size) {
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_v_table;
+  size_t __pyx_v_i;
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_r;
+  size_t __pyx_t_1;
+  size_t __pyx_t_2;
+
+  /* "brainpy\_c\composition.pyx":259
+ *         size_t i
+ * 
+ *     table = <ElementHashTable*>malloc(sizeof(ElementHashTable))             # <<<<<<<<<<<<<<
+ *     table.buckets = <ElementHashBucket*>malloc(sizeof(ElementHashBucket) * size)
+ *     table.size = size
+ */
+  __pyx_v_table = ((struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable))));
+
+  /* "brainpy\_c\composition.pyx":260
+ * 
+ *     table = <ElementHashTable*>malloc(sizeof(ElementHashTable))
+ *     table.buckets = <ElementHashBucket*>malloc(sizeof(ElementHashBucket) * size)             # <<<<<<<<<<<<<<
+ *     table.size = size
+ * 
+ */
+  __pyx_v_table->buckets = ((struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *)malloc(((sizeof(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket)) * __pyx_v_size)));
+
+  /* "brainpy\_c\composition.pyx":261
+ *     table = <ElementHashTable*>malloc(sizeof(ElementHashTable))
+ *     table.buckets = <ElementHashBucket*>malloc(sizeof(ElementHashBucket) * size)
+ *     table.size = size             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(size):
+ */
+  __pyx_v_table->size = __pyx_v_size;
+
+  /* "brainpy\_c\composition.pyx":263
+ *     table.size = size
+ * 
+ *     for i in range(size):             # <<<<<<<<<<<<<<
+ *         table.buckets[i].size = 6
+ *         table.buckets[i].elements = <Element**>malloc(sizeof(Element*) * table.buckets[i].size)
+ */
+  __pyx_t_1 = __pyx_v_size;
+  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+    __pyx_v_i = __pyx_t_2;
+
+    /* "brainpy\_c\composition.pyx":264
+ * 
+ *     for i in range(size):
+ *         table.buckets[i].size = 6             # <<<<<<<<<<<<<<
+ *         table.buckets[i].elements = <Element**>malloc(sizeof(Element*) * table.buckets[i].size)
+ *         table.buckets[i].used = 0
+ */
+    (__pyx_v_table->buckets[__pyx_v_i]).size = 6;
+
+    /* "brainpy\_c\composition.pyx":265
+ *     for i in range(size):
+ *         table.buckets[i].size = 6
+ *         table.buckets[i].elements = <Element**>malloc(sizeof(Element*) * table.buckets[i].size)             # <<<<<<<<<<<<<<
+ *         table.buckets[i].used = 0
+ *     return table
+ */
+    (__pyx_v_table->buckets[__pyx_v_i]).elements = ((struct __pyx_t_7brainpy_2_c_11composition_Element **)malloc(((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Element *)) * (__pyx_v_table->buckets[__pyx_v_i]).size)));
+
+    /* "brainpy\_c\composition.pyx":266
+ *         table.buckets[i].size = 6
+ *         table.buckets[i].elements = <Element**>malloc(sizeof(Element*) * table.buckets[i].size)
+ *         table.buckets[i].used = 0             # <<<<<<<<<<<<<<
+ *     return table
+ * 
+ */
+    (__pyx_v_table->buckets[__pyx_v_i]).used = 0;
+  }
+
+  /* "brainpy\_c\composition.pyx":267
+ *         table.buckets[i].elements = <Element**>malloc(sizeof(Element*) * table.buckets[i].size)
+ *         table.buckets[i].used = 0
+ *     return table             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_table;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":254
+ * 
+ * 
+ * cdef ElementHashTable* make_element_hash_table(size_t size) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         ElementHashTable* table
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":270
+ * 
+ * 
+ * cdef int element_hash_bucket_resize(ElementHashBucket* bucket) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Element** elements
+ */
+
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_resize(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *__pyx_v_bucket) {
+  struct __pyx_t_7brainpy_2_c_11composition_Element **__pyx_v_elements;
+  size_t __pyx_v_new_size;
+  int __pyx_r;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":275
+ *         size_t new_size
+ * 
+ *     new_size = bucket.size * 2             # <<<<<<<<<<<<<<
+ *     elements = <Element**>realloc(bucket.elements, sizeof(Element*) * new_size)
+ *     if elements == NULL:
+ */
+  __pyx_v_new_size = (__pyx_v_bucket->size * 2);
+
+  /* "brainpy\_c\composition.pyx":276
+ * 
+ *     new_size = bucket.size * 2
+ *     elements = <Element**>realloc(bucket.elements, sizeof(Element*) * new_size)             # <<<<<<<<<<<<<<
+ *     if elements == NULL:
+ *         printf("element_hash_bucket_resize failed\n")
+ */
+  __pyx_v_elements = ((struct __pyx_t_7brainpy_2_c_11composition_Element **)realloc(__pyx_v_bucket->elements, ((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Element *)) * __pyx_v_new_size)));
+
+  /* "brainpy\_c\composition.pyx":277
+ *     new_size = bucket.size * 2
+ *     elements = <Element**>realloc(bucket.elements, sizeof(Element*) * new_size)
+ *     if elements == NULL:             # <<<<<<<<<<<<<<
+ *         printf("element_hash_bucket_resize failed\n")
+ *         return -1
+ */
+  __pyx_t_1 = ((__pyx_v_elements == NULL) != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\composition.pyx":278
+ *     elements = <Element**>realloc(bucket.elements, sizeof(Element*) * new_size)
+ *     if elements == NULL:
+ *         printf("element_hash_bucket_resize failed\n")             # <<<<<<<<<<<<<<
+ *         return -1
+ *     bucket.elements = elements
+ */
+    printf(__pyx_k_element_hash_bucket_resize_faile);
+
+    /* "brainpy\_c\composition.pyx":279
+ *     if elements == NULL:
+ *         printf("element_hash_bucket_resize failed\n")
+ *         return -1             # <<<<<<<<<<<<<<
+ *     bucket.elements = elements
+ *     return 0
+ */
+    __pyx_r = -1;
+    goto __pyx_L0;
+
+    /* "brainpy\_c\composition.pyx":277
+ *     new_size = bucket.size * 2
+ *     elements = <Element**>realloc(bucket.elements, sizeof(Element*) * new_size)
+ *     if elements == NULL:             # <<<<<<<<<<<<<<
+ *         printf("element_hash_bucket_resize failed\n")
+ *         return -1
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":280
+ *         printf("element_hash_bucket_resize failed\n")
+ *         return -1
+ *     bucket.elements = elements             # <<<<<<<<<<<<<<
+ *     return 0
+ * 
+ */
+  __pyx_v_bucket->elements = __pyx_v_elements;
+
+  /* "brainpy\_c\composition.pyx":281
+ *         return -1
+ *     bucket.elements = elements
+ *     return 0             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = 0;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":270
+ * 
+ * 
+ * cdef int element_hash_bucket_resize(ElementHashBucket* bucket) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Element** elements
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":284
+ * 
+ * 
+ * cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_insert(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *__pyx_v_bucket, struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
+  int __pyx_v_status;
+  int __pyx_r;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":289
+ *         int status
+ *         Element* el
+ *     if (bucket.used + 1) == bucket.size:             # <<<<<<<<<<<<<<
+ *         status = element_hash_bucket_resize(bucket)
+ *         if status != 0:
+ */
+  __pyx_t_1 = (((__pyx_v_bucket->used + 1) == __pyx_v_bucket->size) != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\composition.pyx":290
+ *         Element* el
+ *     if (bucket.used + 1) == bucket.size:
+ *         status = element_hash_bucket_resize(bucket)             # <<<<<<<<<<<<<<
+ *         if status != 0:
+ *             printf("element_hash_bucket_insert failed with %s\n", element.symbol)
+ */
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_resize(__pyx_v_bucket);
+
+    /* "brainpy\_c\composition.pyx":291
+ *     if (bucket.used + 1) == bucket.size:
+ *         status = element_hash_bucket_resize(bucket)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("element_hash_bucket_insert failed with %s\n", element.symbol)
+ *             return -1
+ */
+    __pyx_t_1 = ((__pyx_v_status != 0) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\composition.pyx":292
+ *         status = element_hash_bucket_resize(bucket)
+ *         if status != 0:
+ *             printf("element_hash_bucket_insert failed with %s\n", element.symbol)             # <<<<<<<<<<<<<<
+ *             return -1
+ *     # printf("Inserting %s into bucket with total capacity %d\n", element.symbol, bucket.size)
+ */
+      printf(__pyx_k_element_hash_bucket_insert_faile, __pyx_v_element->symbol);
+
+      /* "brainpy\_c\composition.pyx":293
+ *         if status != 0:
+ *             printf("element_hash_bucket_insert failed with %s\n", element.symbol)
+ *             return -1             # <<<<<<<<<<<<<<
+ *     # printf("Inserting %s into bucket with total capacity %d\n", element.symbol, bucket.size)
+ *     bucket.elements[bucket.used] = element
+ */
+      __pyx_r = -1;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":291
+ *     if (bucket.used + 1) == bucket.size:
+ *         status = element_hash_bucket_resize(bucket)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("element_hash_bucket_insert failed with %s\n", element.symbol)
+ *             return -1
+ */
+    }
+
+    /* "brainpy\_c\composition.pyx":289
+ *         int status
+ *         Element* el
+ *     if (bucket.used + 1) == bucket.size:             # <<<<<<<<<<<<<<
+ *         status = element_hash_bucket_resize(bucket)
+ *         if status != 0:
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":295
+ *             return -1
+ *     # printf("Inserting %s into bucket with total capacity %d\n", element.symbol, bucket.size)
+ *     bucket.elements[bucket.used] = element             # <<<<<<<<<<<<<<
+ *     # printf("Element %s put in slot %d\n", bucket.elements[bucket.used].symbol, bucket.used)
+ *     bucket.used += 1
+ */
+  (__pyx_v_bucket->elements[__pyx_v_bucket->used]) = __pyx_v_element;
+
+  /* "brainpy\_c\composition.pyx":297
+ *     bucket.elements[bucket.used] = element
+ *     # printf("Element %s put in slot %d\n", bucket.elements[bucket.used].symbol, bucket.used)
+ *     bucket.used += 1             # <<<<<<<<<<<<<<
+ *     return 0
+ * 
+ */
+  __pyx_v_bucket->used = (__pyx_v_bucket->used + 1);
+
+  /* "brainpy\_c\composition.pyx":298
+ *     # printf("Element %s put in slot %d\n", bucket.elements[bucket.used].symbol, bucket.used)
+ *     bucket.used += 1
+ *     return 0             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = 0;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":284
+ * 
+ * 
+ * cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":301
+ * 
+ * 
+ * cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Element** out) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_find(struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *__pyx_v_bucket, char *__pyx_v_symbol, struct __pyx_t_7brainpy_2_c_11composition_Element **__pyx_v_out) {
+  size_t __pyx_v_i;
+  int __pyx_r;
+  size_t __pyx_t_1;
+  size_t __pyx_t_2;
+  int __pyx_t_3;
+
+  /* "brainpy\_c\composition.pyx":307
+ *     # printf("Searching bucket with capacity %d, %d used\n", bucket.size, bucket.used)
+ * 
+ *     for i in range(bucket.used):             # <<<<<<<<<<<<<<
+ *         # printf("Checking slot %d with element %s\n", i, bucket.elements[i].symbol)
+ *         if strcmp(bucket.elements[i].symbol, symbol) == 0:
+ */
+  __pyx_t_1 = __pyx_v_bucket->used;
+  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+    __pyx_v_i = __pyx_t_2;
+
+    /* "brainpy\_c\composition.pyx":309
+ *     for i in range(bucket.used):
+ *         # printf("Checking slot %d with element %s\n", i, bucket.elements[i].symbol)
+ *         if strcmp(bucket.elements[i].symbol, symbol) == 0:             # <<<<<<<<<<<<<<
+ *             out[0] = bucket.elements[i]
+ *             return 0
+ */
+    __pyx_t_3 = ((strcmp((__pyx_v_bucket->elements[__pyx_v_i])->symbol, __pyx_v_symbol) == 0) != 0);
+    if (__pyx_t_3) {
+
+      /* "brainpy\_c\composition.pyx":310
+ *         # printf("Checking slot %d with element %s\n", i, bucket.elements[i].symbol)
+ *         if strcmp(bucket.elements[i].symbol, symbol) == 0:
+ *             out[0] = bucket.elements[i]             # <<<<<<<<<<<<<<
+ *             return 0
+ *     return -1
+ */
+      (__pyx_v_out[0]) = (__pyx_v_bucket->elements[__pyx_v_i]);
+
+      /* "brainpy\_c\composition.pyx":311
+ *         if strcmp(bucket.elements[i].symbol, symbol) == 0:
+ *             out[0] = bucket.elements[i]
+ *             return 0             # <<<<<<<<<<<<<<
+ *     return -1
+ * 
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":309
+ *     for i in range(bucket.used):
+ *         # printf("Checking slot %d with element %s\n", i, bucket.elements[i].symbol)
+ *         if strcmp(bucket.elements[i].symbol, symbol) == 0:             # <<<<<<<<<<<<<<
+ *             out[0] = bucket.elements[i]
+ *             return 0
+ */
+    }
+  }
+
+  /* "brainpy\_c\composition.pyx":312
+ *             out[0] = bucket.elements[i]
+ *             return 0
+ *     return -1             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = -1;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":301
+ * 
+ * 
+ * cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Element** out) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":315
+ * 
+ * 
+ * cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element** out) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t hash_value
+ */
+
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_v_table, char *__pyx_v_symbol, struct __pyx_t_7brainpy_2_c_11composition_Element **__pyx_v_out) {
+  size_t __pyx_v_hash_value;
+  size_t __pyx_v_position;
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket __pyx_v_bucket;
+  int __pyx_v_status;
+  int __pyx_r;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "brainpy\_c\composition.pyx":322
+ *         int status
+ * 
+ *     hash_value = hash_string(symbol)             # <<<<<<<<<<<<<<
+ *     position = hash_value % table.size
+ *     bucket = (table.buckets[position])
+ */
+  __pyx_v_hash_value = __pyx_f_7brainpy_2_c_11composition_hash_string(__pyx_v_symbol);
+
+  /* "brainpy\_c\composition.pyx":323
+ * 
+ *     hash_value = hash_string(symbol)
+ *     position = hash_value % table.size             # <<<<<<<<<<<<<<
+ *     bucket = (table.buckets[position])
+ *     # printf("Symbol %s goes in bucket %d\n", symbol, position)
+ */
+  if (unlikely(__pyx_v_table->size == 0)) {
+    #ifdef WITH_THREAD
+    PyGILState_STATE __pyx_gilstate_save = PyGILState_Ensure();
+    #endif
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    #ifdef WITH_THREAD
+    PyGILState_Release(__pyx_gilstate_save);
+    #endif
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 323; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_v_position = (__pyx_v_hash_value % __pyx_v_table->size);
+
+  /* "brainpy\_c\composition.pyx":324
+ *     hash_value = hash_string(symbol)
+ *     position = hash_value % table.size
+ *     bucket = (table.buckets[position])             # <<<<<<<<<<<<<<
+ *     # printf("Symbol %s goes in bucket %d\n", symbol, position)
+ *     status = element_hash_bucket_find(&bucket, symbol, out)
+ */
+  __pyx_v_bucket = (__pyx_v_table->buckets[__pyx_v_position]);
+
+  /* "brainpy\_c\composition.pyx":326
+ *     bucket = (table.buckets[position])
+ *     # printf("Symbol %s goes in bucket %d\n", symbol, position)
+ *     status = element_hash_bucket_find(&bucket, symbol, out)             # <<<<<<<<<<<<<<
+ *     return status
+ * 
+ */
+  __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_find((&__pyx_v_bucket), __pyx_v_symbol, __pyx_v_out);
+
+  /* "brainpy\_c\composition.pyx":327
+ *     # printf("Symbol %s goes in bucket %d\n", symbol, position)
+ *     status = element_hash_bucket_find(&bucket, symbol, out)
+ *     return status             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_status;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":315
+ * 
+ * 
+ * cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element** out) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t hash_value
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("brainpy._c.composition.element_hash_table_get", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
+  __pyx_r = 0;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":330
+ * 
+ * 
+ * cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t hash_value
+ */
+
+static int __pyx_f_7brainpy_2_c_11composition_element_hash_table_put(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_v_table, struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element) {
+  size_t __pyx_v_hash_value;
+  size_t __pyx_v_position;
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket __pyx_v_bucket;
+  int __pyx_v_status;
+  int __pyx_r;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "brainpy\_c\composition.pyx":337
+ *         int status
+ * 
+ *     hash_value = hash_string(element.symbol)             # <<<<<<<<<<<<<<
+ *     position = hash_value % table.size
+ *     # printf("Symbol %s goes in bucket %d\n", element.symbol, position)
+ */
+  __pyx_v_hash_value = __pyx_f_7brainpy_2_c_11composition_hash_string(__pyx_v_element->symbol);
+
+  /* "brainpy\_c\composition.pyx":338
+ * 
+ *     hash_value = hash_string(element.symbol)
+ *     position = hash_value % table.size             # <<<<<<<<<<<<<<
+ *     # printf("Symbol %s goes in bucket %d\n", element.symbol, position)
+ *     bucket = (table.buckets[position])
+ */
+  if (unlikely(__pyx_v_table->size == 0)) {
+    #ifdef WITH_THREAD
+    PyGILState_STATE __pyx_gilstate_save = PyGILState_Ensure();
+    #endif
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    #ifdef WITH_THREAD
+    PyGILState_Release(__pyx_gilstate_save);
+    #endif
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 338; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_v_position = (__pyx_v_hash_value % __pyx_v_table->size);
+
+  /* "brainpy\_c\composition.pyx":340
+ *     position = hash_value % table.size
+ *     # printf("Symbol %s goes in bucket %d\n", element.symbol, position)
+ *     bucket = (table.buckets[position])             # <<<<<<<<<<<<<<
+ *     status = element_hash_bucket_insert(&bucket, element)
+ *     table.buckets[position] = bucket
+ */
+  __pyx_v_bucket = (__pyx_v_table->buckets[__pyx_v_position]);
+
+  /* "brainpy\_c\composition.pyx":341
+ *     # printf("Symbol %s goes in bucket %d\n", element.symbol, position)
+ *     bucket = (table.buckets[position])
+ *     status = element_hash_bucket_insert(&bucket, element)             # <<<<<<<<<<<<<<
+ *     table.buckets[position] = bucket
+ *     return status
+ */
+  __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_bucket_insert((&__pyx_v_bucket), __pyx_v_element);
+
+  /* "brainpy\_c\composition.pyx":342
+ *     bucket = (table.buckets[position])
+ *     status = element_hash_bucket_insert(&bucket, element)
+ *     table.buckets[position] = bucket             # <<<<<<<<<<<<<<
+ *     return status
+ * 
+ */
+  (__pyx_v_table->buckets[__pyx_v_position]) = __pyx_v_bucket;
+
+  /* "brainpy\_c\composition.pyx":343
+ *     status = element_hash_bucket_insert(&bucket, element)
+ *     table.buckets[position] = bucket
+ *     return status             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_status;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":330
+ * 
+ * 
+ * cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t hash_value
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("brainpy._c.composition.element_hash_table_put", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
+  __pyx_r = 0;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":346
+ * 
+ * 
+ * cdef ElementHashTable* make_element_hash_table_populated(size_t size):             # <<<<<<<<<<<<<<
  *     cdef:
  *         Element* element
  */
 
-static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_f_7brainpy_2_c_11composition_make_periodic_table(void) {
-  struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_v_table;
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_f_7brainpy_2_c_11composition_make_element_hash_table_populated(size_t __pyx_v_size) {
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element;
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_out_test;
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_v_table;
   PyObject *__pyx_v_pk = 0;
   char *__pyx_v_k;
-  PyObject *__pyx_v_used = 0;
-  size_t __pyx_v_i;
-  struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_r;
+  int __pyx_v_status;
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *__pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -3211,83 +4083,34 @@ static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_f_7brainpy
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
   char *__pyx_t_7;
-  size_t __pyx_t_8;
-  int __pyx_t_9;
-  int __pyx_t_10;
-  int __pyx_t_11;
+  int __pyx_t_8;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("make_periodic_table", 0);
+  __Pyx_RefNannySetupContext("make_element_hash_table_populated", 0);
 
-  /* "brainpy\_c\composition.pyx":222
- *         size_t i
+  /* "brainpy\_c\composition.pyx":356
+ *         int status
  * 
- *     used = set()             # <<<<<<<<<<<<<<
- *     table = <PeriodicTable*>malloc(sizeof(PeriodicTable))
- *     table.elements = <Element**>malloc(len(nist_mass) * 2 * sizeof(Element*))
- */
-  __pyx_t_1 = PySet_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_used = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "brainpy\_c\composition.pyx":223
- * 
- *     used = set()
- *     table = <PeriodicTable*>malloc(sizeof(PeriodicTable))             # <<<<<<<<<<<<<<
- *     table.elements = <Element**>malloc(len(nist_mass) * 2 * sizeof(Element*))
- *     table.size = len(nist_mass) * 2
- */
-  __pyx_v_table = ((struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable))));
-
-  /* "brainpy\_c\composition.pyx":224
- *     used = set()
- *     table = <PeriodicTable*>malloc(sizeof(PeriodicTable))
- *     table.elements = <Element**>malloc(len(nist_mass) * 2 * sizeof(Element*))             # <<<<<<<<<<<<<<
- *     table.size = len(nist_mass) * 2
- * 
- */
-  __pyx_t_1 = __pyx_v_7brainpy_2_c_11composition_nist_mass;
-  __Pyx_INCREF(__pyx_t_1);
-  if (unlikely(__pyx_t_1 == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_2 = PyDict_Size(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_table->elements = ((struct __pyx_t_7brainpy_2_c_11composition_Element **)malloc(((__pyx_t_2 * 2) * (sizeof(struct __pyx_t_7brainpy_2_c_11composition_Element *)))));
-
-  /* "brainpy\_c\composition.pyx":225
- *     table = <PeriodicTable*>malloc(sizeof(PeriodicTable))
- *     table.elements = <Element**>malloc(len(nist_mass) * 2 * sizeof(Element*))
- *     table.size = len(nist_mass) * 2             # <<<<<<<<<<<<<<
+ *     table = make_element_hash_table(size)             # <<<<<<<<<<<<<<
  * 
  *     for pk in nist_mass:
  */
-  __pyx_t_1 = __pyx_v_7brainpy_2_c_11composition_nist_mass;
-  __Pyx_INCREF(__pyx_t_1);
-  if (unlikely(__pyx_t_1 == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_2 = PyDict_Size(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_table->size = (__pyx_t_2 * 2);
+  __pyx_v_table = __pyx_f_7brainpy_2_c_11composition_make_element_hash_table(__pyx_v_size);
 
-  /* "brainpy\_c\composition.pyx":227
- *     table.size = len(nist_mass) * 2
+  /* "brainpy\_c\composition.pyx":358
+ *     table = make_element_hash_table(size)
  * 
  *     for pk in nist_mass:             # <<<<<<<<<<<<<<
  *         k = PyString_AsString(pk)
- *         i = hash_string(k) % table.size
+ *         element = make_element(k)
  */
   __pyx_t_2 = 0;
   if (unlikely(__pyx_v_7brainpy_2_c_11composition_nist_mass == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 358; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_5 = __Pyx_dict_iterator(__pyx_v_7brainpy_2_c_11composition_nist_mass, 1, ((PyObject *)NULL), (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_dict_iterator(__pyx_v_7brainpy_2_c_11composition_nist_mass, 1, ((PyObject *)NULL), (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 358; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_1);
   __pyx_t_1 = __pyx_t_5;
@@ -3295,176 +4118,121 @@ static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_f_7brainpy
   while (1) {
     __pyx_t_6 = __Pyx_dict_iter_next(__pyx_t_1, __pyx_t_3, &__pyx_t_2, &__pyx_t_5, NULL, NULL, __pyx_t_4);
     if (unlikely(__pyx_t_6 == 0)) break;
-    if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 358; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
-    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 358; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_XDECREF_SET(__pyx_v_pk, ((PyObject*)__pyx_t_5));
     __pyx_t_5 = 0;
 
-    /* "brainpy\_c\composition.pyx":228
+    /* "brainpy\_c\composition.pyx":359
  * 
  *     for pk in nist_mass:
  *         k = PyString_AsString(pk)             # <<<<<<<<<<<<<<
- *         i = hash_string(k) % table.size
- *         if i in used:
+ *         element = make_element(k)
+ *         status = element_hash_table_put(table, element)
  */
-    __pyx_t_7 = PyString_AsString(__pyx_v_pk); if (unlikely(__pyx_t_7 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = PyString_AsString(__pyx_v_pk); if (unlikely(__pyx_t_7 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 359; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_k = __pyx_t_7;
 
-    /* "brainpy\_c\composition.pyx":229
+    /* "brainpy\_c\composition.pyx":360
  *     for pk in nist_mass:
  *         k = PyString_AsString(pk)
- *         i = hash_string(k) % table.size             # <<<<<<<<<<<<<<
- *         if i in used:
- *             while True:
+ *         element = make_element(k)             # <<<<<<<<<<<<<<
+ *         status = element_hash_table_put(table, element)
+ *         if status != 0:
  */
-    __pyx_t_8 = __pyx_f_7brainpy_2_c_11composition_hash_string(__pyx_v_k);
-    if (unlikely(__pyx_v_table->size == 0)) {
-      PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 229; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_v_i = (__pyx_t_8 % __pyx_v_table->size);
+    __pyx_v_element = __pyx_f_7brainpy_2_c_11composition_make_element(__pyx_v_k);
 
-    /* "brainpy\_c\composition.pyx":230
+    /* "brainpy\_c\composition.pyx":361
  *         k = PyString_AsString(pk)
- *         i = hash_string(k) % table.size
- *         if i in used:             # <<<<<<<<<<<<<<
- *             while True:
- *                 i += 1
+ *         element = make_element(k)
+ *         status = element_hash_table_put(table, element)             # <<<<<<<<<<<<<<
+ *         if status != 0:
+ *             printf("element_hash_table_put exited with status %d\n", status)
  */
-    __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_9 = (__Pyx_PySequence_ContainsTF(__pyx_t_5, __pyx_v_used, Py_EQ)); if (unlikely(__pyx_t_9 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_10 = (__pyx_t_9 != 0);
-    if (__pyx_t_10) {
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_put(__pyx_v_table, __pyx_v_element);
 
-      /* "brainpy\_c\composition.pyx":231
- *         i = hash_string(k) % table.size
- *         if i in used:
- *             while True:             # <<<<<<<<<<<<<<
- *                 i += 1
- *                 if i >= table.size:
+    /* "brainpy\_c\composition.pyx":362
+ *         element = make_element(k)
+ *         status = element_hash_table_put(table, element)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("element_hash_table_put exited with status %d\n", status)
+ *         status = element_hash_table_get(table, k, &out_test)
  */
-      while (1) {
+    __pyx_t_8 = ((__pyx_v_status != 0) != 0);
+    if (__pyx_t_8) {
 
-        /* "brainpy\_c\composition.pyx":232
- *         if i in used:
- *             while True:
- *                 i += 1             # <<<<<<<<<<<<<<
- *                 if i >= table.size:
- *                     i = 0
+      /* "brainpy\_c\composition.pyx":363
+ *         status = element_hash_table_put(table, element)
+ *         if status != 0:
+ *             printf("element_hash_table_put exited with status %d\n", status)             # <<<<<<<<<<<<<<
+ *         status = element_hash_table_get(table, k, &out_test)
+ *         if status != 0:
  */
-        __pyx_v_i = (__pyx_v_i + 1);
+      printf(__pyx_k_element_hash_table_put_exited_wi, __pyx_v_status);
 
-        /* "brainpy\_c\composition.pyx":233
- *             while True:
- *                 i += 1
- *                 if i >= table.size:             # <<<<<<<<<<<<<<
- *                     i = 0
- *                 if i not in used:
- */
-        __pyx_t_10 = ((__pyx_v_i >= __pyx_v_table->size) != 0);
-        if (__pyx_t_10) {
-
-          /* "brainpy\_c\composition.pyx":234
- *                 i += 1
- *                 if i >= table.size:
- *                     i = 0             # <<<<<<<<<<<<<<
- *                 if i not in used:
- *                     break
- */
-          __pyx_v_i = 0;
-
-          /* "brainpy\_c\composition.pyx":233
- *             while True:
- *                 i += 1
- *                 if i >= table.size:             # <<<<<<<<<<<<<<
- *                     i = 0
- *                 if i not in used:
- */
-        }
-
-        /* "brainpy\_c\composition.pyx":235
- *                 if i >= table.size:
- *                     i = 0
- *                 if i not in used:             # <<<<<<<<<<<<<<
- *                     break
- * 
- */
-        __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 235; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_10 = (__Pyx_PySequence_ContainsTF(__pyx_t_5, __pyx_v_used, Py_NE)); if (unlikely(__pyx_t_10 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 235; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_9 = (__pyx_t_10 != 0);
-        if (__pyx_t_9) {
-
-          /* "brainpy\_c\composition.pyx":236
- *                     i = 0
- *                 if i not in used:
- *                     break             # <<<<<<<<<<<<<<
- * 
- *         table.elements[i] = make_element(k)
- */
-          goto __pyx_L7_break;
-
-          /* "brainpy\_c\composition.pyx":235
- *                 if i >= table.size:
- *                     i = 0
- *                 if i not in used:             # <<<<<<<<<<<<<<
- *                     break
- * 
- */
-        }
-      }
-      __pyx_L7_break:;
-
-      /* "brainpy\_c\composition.pyx":230
- *         k = PyString_AsString(pk)
- *         i = hash_string(k) % table.size
- *         if i in used:             # <<<<<<<<<<<<<<
- *             while True:
- *                 i += 1
+      /* "brainpy\_c\composition.pyx":362
+ *         element = make_element(k)
+ *         status = element_hash_table_put(table, element)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("element_hash_table_put exited with status %d\n", status)
+ *         status = element_hash_table_get(table, k, &out_test)
  */
     }
 
-    /* "brainpy\_c\composition.pyx":238
- *                     break
- * 
- *         table.elements[i] = make_element(k)             # <<<<<<<<<<<<<<
- *         used.add(i)
- *     return table
+    /* "brainpy\_c\composition.pyx":364
+ *         if status != 0:
+ *             printf("element_hash_table_put exited with status %d\n", status)
+ *         status = element_hash_table_get(table, k, &out_test)             # <<<<<<<<<<<<<<
+ *         if status != 0:
+ *             printf("element_hash_table_get exited with status %d\n", status)
  */
-    (__pyx_v_table->elements[__pyx_v_i]) = __pyx_f_7brainpy_2_c_11composition_make_element(__pyx_v_k);
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_table, __pyx_v_k, (&__pyx_v_out_test));
 
-    /* "brainpy\_c\composition.pyx":239
- * 
- *         table.elements[i] = make_element(k)
- *         used.add(i)             # <<<<<<<<<<<<<<
+    /* "brainpy\_c\composition.pyx":365
+ *             printf("element_hash_table_put exited with status %d\n", status)
+ *         status = element_hash_table_get(table, k, &out_test)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("element_hash_table_get exited with status %d\n", status)
+ *     return table
+ */
+    __pyx_t_8 = ((__pyx_v_status != 0) != 0);
+    if (__pyx_t_8) {
+
+      /* "brainpy\_c\composition.pyx":366
+ *         status = element_hash_table_get(table, k, &out_test)
+ *         if status != 0:
+ *             printf("element_hash_table_get exited with status %d\n", status)             # <<<<<<<<<<<<<<
  *     return table
  * 
  */
-    __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_v_i); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 239; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_11 = PySet_Add(__pyx_v_used, __pyx_t_5); if (unlikely(__pyx_t_11 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 239; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      printf(__pyx_k_element_hash_table_get_exited_wi, __pyx_v_status);
+
+      /* "brainpy\_c\composition.pyx":365
+ *             printf("element_hash_table_put exited with status %d\n", status)
+ *         status = element_hash_table_get(table, k, &out_test)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("element_hash_table_get exited with status %d\n", status)
+ *     return table
+ */
+    }
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":240
- *         table.elements[i] = make_element(k)
- *         used.add(i)
+  /* "brainpy\_c\composition.pyx":367
+ *         if status != 0:
+ *             printf("element_hash_table_get exited with status %d\n", status)
  *     return table             # <<<<<<<<<<<<<<
  * 
- * cdef int get_element_from_periodic_table(PeriodicTable* table, char* symbol, int* out) nogil:
+ * 
  */
   __pyx_r = __pyx_v_table;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":213
- *     size_t size
+  /* "brainpy\_c\composition.pyx":346
  * 
- * cdef PeriodicTable* make_periodic_table():             # <<<<<<<<<<<<<<
+ * 
+ * cdef ElementHashTable* make_element_hash_table_populated(size_t size):             # <<<<<<<<<<<<<<
  *     cdef:
  *         Element* element
  */
@@ -3473,366 +4241,27 @@ static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_f_7brainpy
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_WriteUnraisable("brainpy._c.composition.make_periodic_table", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
+  __Pyx_WriteUnraisable("brainpy._c.composition.make_element_hash_table_populated", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_pk);
-  __Pyx_XDECREF(__pyx_v_used);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":242
- *     return table
- * 
- * cdef int get_element_from_periodic_table(PeriodicTable* table, char* symbol, int* out) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i, j
- */
-
-static int __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table(struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_v_table, char *__pyx_v_symbol, int *__pyx_v_out) {
-  size_t __pyx_v_i;
-  size_t __pyx_v_j;
-  int __pyx_r;
-  size_t __pyx_t_1;
-  int __pyx_t_2;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-
-  /* "brainpy\_c\composition.pyx":245
- *     cdef:
- *         size_t i, j
- *     j = 0             # <<<<<<<<<<<<<<
- *     i = hash_string(symbol) % table.size
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- */
-  __pyx_v_j = 0;
-
-  /* "brainpy\_c\composition.pyx":246
- *         size_t i, j
- *     j = 0
- *     i = hash_string(symbol) % table.size             # <<<<<<<<<<<<<<
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- *         i += 1
- */
-  __pyx_t_1 = __pyx_f_7brainpy_2_c_11composition_hash_string(__pyx_v_symbol);
-  if (unlikely(__pyx_v_table->size == 0)) {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = PyGILState_Ensure();
-    #endif
-    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    #ifdef WITH_THREAD
-    PyGILState_Release(__pyx_gilstate_save);
-    #endif
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 246; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_v_i = (__pyx_t_1 % __pyx_v_table->size);
-
-  /* "brainpy\_c\composition.pyx":247
- *     j = 0
- *     i = hash_string(symbol) % table.size
- *     while strcmp(table.elements[i].symbol, symbol) != 0:             # <<<<<<<<<<<<<<
- *         i += 1
- *         j += 1
- */
-  while (1) {
-    __pyx_t_2 = ((strcmp((__pyx_v_table->elements[__pyx_v_i])->symbol, __pyx_v_symbol) != 0) != 0);
-    if (!__pyx_t_2) break;
-
-    /* "brainpy\_c\composition.pyx":248
- *     i = hash_string(symbol) % table.size
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- *         i += 1             # <<<<<<<<<<<<<<
- *         j += 1
- *         if i >= table.size:
- */
-    __pyx_v_i = (__pyx_v_i + 1);
-
-    /* "brainpy\_c\composition.pyx":249
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- *         i += 1
- *         j += 1             # <<<<<<<<<<<<<<
- *         if i >= table.size:
- *             i = 0
- */
-    __pyx_v_j = (__pyx_v_j + 1);
-
-    /* "brainpy\_c\composition.pyx":250
- *         i += 1
- *         j += 1
- *         if i >= table.size:             # <<<<<<<<<<<<<<
- *             i = 0
- *         if j > table.size:
- */
-    __pyx_t_2 = ((__pyx_v_i >= __pyx_v_table->size) != 0);
-    if (__pyx_t_2) {
-
-      /* "brainpy\_c\composition.pyx":251
- *         j += 1
- *         if i >= table.size:
- *             i = 0             # <<<<<<<<<<<<<<
- *         if j > table.size:
- *             return -1
- */
-      __pyx_v_i = 0;
-
-      /* "brainpy\_c\composition.pyx":250
- *         i += 1
- *         j += 1
- *         if i >= table.size:             # <<<<<<<<<<<<<<
- *             i = 0
- *         if j > table.size:
- */
-    }
-
-    /* "brainpy\_c\composition.pyx":252
- *         if i >= table.size:
- *             i = 0
- *         if j > table.size:             # <<<<<<<<<<<<<<
- *             return -1
- *     out[0] = i
- */
-    __pyx_t_2 = ((__pyx_v_j > __pyx_v_table->size) != 0);
-    if (__pyx_t_2) {
-
-      /* "brainpy\_c\composition.pyx":253
- *             i = 0
- *         if j > table.size:
- *             return -1             # <<<<<<<<<<<<<<
- *     out[0] = i
- *     return 0
- */
-      __pyx_r = -1;
-      goto __pyx_L0;
-
-      /* "brainpy\_c\composition.pyx":252
- *         if i >= table.size:
- *             i = 0
- *         if j > table.size:             # <<<<<<<<<<<<<<
- *             return -1
- *     out[0] = i
- */
-    }
-  }
-
-  /* "brainpy\_c\composition.pyx":254
- *         if j > table.size:
- *             return -1
- *     out[0] = i             # <<<<<<<<<<<<<<
- *     return 0
- * 
- */
-  (__pyx_v_out[0]) = __pyx_v_i;
-
-  /* "brainpy\_c\composition.pyx":255
- *             return -1
- *     out[0] = i
- *     return 0             # <<<<<<<<<<<<<<
- * 
- * cdef int get_element_from_periodic_table2(PeriodicTable* table, char* symbol, Element** out) nogil:
- */
-  __pyx_r = 0;
-  goto __pyx_L0;
-
-  /* "brainpy\_c\composition.pyx":242
- *     return table
- * 
- * cdef int get_element_from_periodic_table(PeriodicTable* table, char* symbol, int* out) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i, j
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_WriteUnraisable("brainpy._c.composition.get_element_from_periodic_table", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
-  __pyx_r = 0;
-  __pyx_L0:;
-  return __pyx_r;
-}
-
-/* "brainpy\_c\composition.pyx":257
- *     return 0
- * 
- * cdef int get_element_from_periodic_table2(PeriodicTable* table, char* symbol, Element** out) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i, j
- */
-
-static int __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *__pyx_v_table, char *__pyx_v_symbol, struct __pyx_t_7brainpy_2_c_11composition_Element **__pyx_v_out) {
-  size_t __pyx_v_i;
-  size_t __pyx_v_j;
-  int __pyx_r;
-  size_t __pyx_t_1;
-  int __pyx_t_2;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-
-  /* "brainpy\_c\composition.pyx":260
- *     cdef:
- *         size_t i, j
- *     j = 0             # <<<<<<<<<<<<<<
- *     i = hash_string(symbol) % table.size
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- */
-  __pyx_v_j = 0;
-
-  /* "brainpy\_c\composition.pyx":261
- *         size_t i, j
- *     j = 0
- *     i = hash_string(symbol) % table.size             # <<<<<<<<<<<<<<
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- *         i += 1
- */
-  __pyx_t_1 = __pyx_f_7brainpy_2_c_11composition_hash_string(__pyx_v_symbol);
-  if (unlikely(__pyx_v_table->size == 0)) {
-    #ifdef WITH_THREAD
-    PyGILState_STATE __pyx_gilstate_save = PyGILState_Ensure();
-    #endif
-    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-    #ifdef WITH_THREAD
-    PyGILState_Release(__pyx_gilstate_save);
-    #endif
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 261; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_v_i = (__pyx_t_1 % __pyx_v_table->size);
-
-  /* "brainpy\_c\composition.pyx":262
- *     j = 0
- *     i = hash_string(symbol) % table.size
- *     while strcmp(table.elements[i].symbol, symbol) != 0:             # <<<<<<<<<<<<<<
- *         i += 1
- *         j += 1
- */
-  while (1) {
-    __pyx_t_2 = ((strcmp((__pyx_v_table->elements[__pyx_v_i])->symbol, __pyx_v_symbol) != 0) != 0);
-    if (!__pyx_t_2) break;
-
-    /* "brainpy\_c\composition.pyx":263
- *     i = hash_string(symbol) % table.size
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- *         i += 1             # <<<<<<<<<<<<<<
- *         j += 1
- *         if i >= table.size:
- */
-    __pyx_v_i = (__pyx_v_i + 1);
-
-    /* "brainpy\_c\composition.pyx":264
- *     while strcmp(table.elements[i].symbol, symbol) != 0:
- *         i += 1
- *         j += 1             # <<<<<<<<<<<<<<
- *         if i >= table.size:
- *             i = 0
- */
-    __pyx_v_j = (__pyx_v_j + 1);
-
-    /* "brainpy\_c\composition.pyx":265
- *         i += 1
- *         j += 1
- *         if i >= table.size:             # <<<<<<<<<<<<<<
- *             i = 0
- *         if j > table.size:
- */
-    __pyx_t_2 = ((__pyx_v_i >= __pyx_v_table->size) != 0);
-    if (__pyx_t_2) {
-
-      /* "brainpy\_c\composition.pyx":266
- *         j += 1
- *         if i >= table.size:
- *             i = 0             # <<<<<<<<<<<<<<
- *         if j > table.size:
- *             return -1
- */
-      __pyx_v_i = 0;
-
-      /* "brainpy\_c\composition.pyx":265
- *         i += 1
- *         j += 1
- *         if i >= table.size:             # <<<<<<<<<<<<<<
- *             i = 0
- *         if j > table.size:
- */
-    }
-
-    /* "brainpy\_c\composition.pyx":267
- *         if i >= table.size:
- *             i = 0
- *         if j > table.size:             # <<<<<<<<<<<<<<
- *             return -1
- * 
- */
-    __pyx_t_2 = ((__pyx_v_j > __pyx_v_table->size) != 0);
-    if (__pyx_t_2) {
-
-      /* "brainpy\_c\composition.pyx":268
- *             i = 0
- *         if j > table.size:
- *             return -1             # <<<<<<<<<<<<<<
- * 
- *     out[0] = table.elements[i]
- */
-      __pyx_r = -1;
-      goto __pyx_L0;
-
-      /* "brainpy\_c\composition.pyx":267
- *         if i >= table.size:
- *             i = 0
- *         if j > table.size:             # <<<<<<<<<<<<<<
- *             return -1
- * 
- */
-    }
-  }
-
-  /* "brainpy\_c\composition.pyx":270
- *             return -1
- * 
- *     out[0] = table.elements[i]             # <<<<<<<<<<<<<<
- *     return 0
- * 
- */
-  (__pyx_v_out[0]) = (__pyx_v_table->elements[__pyx_v_i]);
-
-  /* "brainpy\_c\composition.pyx":271
- * 
- *     out[0] = table.elements[i]
- *     return 0             # <<<<<<<<<<<<<<
- * 
- * cdef PeriodicTable* _PeriodicTable
- */
-  __pyx_r = 0;
-  goto __pyx_L0;
-
-  /* "brainpy\_c\composition.pyx":257
- *     return 0
- * 
- * cdef int get_element_from_periodic_table2(PeriodicTable* table, char* symbol, Element** out) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i, j
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_WriteUnraisable("brainpy._c.composition.get_element_from_periodic_table2", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
-  __pyx_r = 0;
-  __pyx_L0:;
-  return __pyx_r;
-}
-
-/* "brainpy\_c\composition.pyx":282
- *     size_t used
+/* "brainpy\_c\composition.pyx":376
+ * # Composition Methods
  * 
  * cdef Composition* make_composition() nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         Composition* composition
+ *     '''
+ *     Create a new, empty Composition struct
  */
 
 static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2_c_11composition_make_composition(void) {
   struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition;
   struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_r;
 
-  /* "brainpy\_c\composition.pyx":285
+  /* "brainpy\_c\composition.pyx":382
  *     cdef:
  *         Composition* composition
  *     composition = <Composition*>malloc(sizeof(Composition))             # <<<<<<<<<<<<<<
@@ -3841,7 +4270,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_composition = ((struct __pyx_t_7brainpy_2_c_11composition_Composition *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Composition))));
 
-  /* "brainpy\_c\composition.pyx":286
+  /* "brainpy\_c\composition.pyx":383
  *         Composition* composition
  *     composition = <Composition*>malloc(sizeof(Composition))
  *     composition.elements = <char**>malloc(sizeof(char*) * 7)             # <<<<<<<<<<<<<<
@@ -3850,7 +4279,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_composition->elements = ((char **)malloc(((sizeof(char *)) * 7)));
 
-  /* "brainpy\_c\composition.pyx":287
+  /* "brainpy\_c\composition.pyx":384
  *     composition = <Composition*>malloc(sizeof(Composition))
  *     composition.elements = <char**>malloc(sizeof(char*) * 7)
  *     composition.counts = <count_type*>malloc(sizeof(count_type) * 7)             # <<<<<<<<<<<<<<
@@ -3859,7 +4288,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_composition->counts = ((__pyx_t_7brainpy_2_c_11composition_count_type *)malloc(((sizeof(__pyx_t_7brainpy_2_c_11composition_count_type)) * 7)));
 
-  /* "brainpy\_c\composition.pyx":288
+  /* "brainpy\_c\composition.pyx":385
  *     composition.elements = <char**>malloc(sizeof(char*) * 7)
  *     composition.counts = <count_type*>malloc(sizeof(count_type) * 7)
  *     composition.size = 7             # <<<<<<<<<<<<<<
@@ -3868,7 +4297,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_composition->size = 7;
 
-  /* "brainpy\_c\composition.pyx":289
+  /* "brainpy\_c\composition.pyx":386
  *     composition.counts = <count_type*>malloc(sizeof(count_type) * 7)
  *     composition.size = 7
  *     composition.used = 0             # <<<<<<<<<<<<<<
@@ -3877,22 +4306,22 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_composition->used = 0;
 
-  /* "brainpy\_c\composition.pyx":290
+  /* "brainpy\_c\composition.pyx":387
  *     composition.size = 7
  *     composition.used = 0
  *     return composition             # <<<<<<<<<<<<<<
  * 
- * cdef Composition* copy_composition(Composition* composition) nogil:
+ * cdef int composition_eq(Composition* composition_1, Composition* composition_2) nogil:
  */
   __pyx_r = __pyx_v_composition;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":282
- *     size_t used
+  /* "brainpy\_c\composition.pyx":376
+ * # Composition Methods
  * 
  * cdef Composition* make_composition() nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         Composition* composition
+ *     '''
+ *     Create a new, empty Composition struct
  */
 
   /* function exit code */
@@ -3900,12 +4329,225 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":292
+/* "brainpy\_c\composition.pyx":389
  *     return composition
  * 
+ * cdef int composition_eq(Composition* composition_1, Composition* composition_2) nogil:             # <<<<<<<<<<<<<<
+ *     '''
+ *     Test two Composition instances for element-wise equality
+ */
+
+static int __pyx_f_7brainpy_2_c_11composition_composition_eq(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition_1, struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition_2) {
+  int __pyx_v_status;
+  size_t __pyx_v_i;
+  char *__pyx_v_symbol;
+  __pyx_t_7brainpy_2_c_11composition_count_type __pyx_v_value_1;
+  __pyx_t_7brainpy_2_c_11composition_count_type __pyx_v_value_2;
+  int __pyx_r;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":399
+ *         count_type value_1, value_2
+ * 
+ *     if composition_1.used != composition_2.used:             # <<<<<<<<<<<<<<
+ *         return 0
+ *     i = 0
+ */
+  __pyx_t_1 = ((__pyx_v_composition_1->used != __pyx_v_composition_2->used) != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\composition.pyx":400
+ * 
+ *     if composition_1.used != composition_2.used:
+ *         return 0             # <<<<<<<<<<<<<<
+ *     i = 0
+ *     while i < composition_2.used:
+ */
+    __pyx_r = 0;
+    goto __pyx_L0;
+
+    /* "brainpy\_c\composition.pyx":399
+ *         count_type value_1, value_2
+ * 
+ *     if composition_1.used != composition_2.used:             # <<<<<<<<<<<<<<
+ *         return 0
+ *     i = 0
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":401
+ *     if composition_1.used != composition_2.used:
+ *         return 0
+ *     i = 0             # <<<<<<<<<<<<<<
+ *     while i < composition_2.used:
+ *         symbol = composition_2.elements[i]
+ */
+  __pyx_v_i = 0;
+
+  /* "brainpy\_c\composition.pyx":402
+ *         return 0
+ *     i = 0
+ *     while i < composition_2.used:             # <<<<<<<<<<<<<<
+ *         symbol = composition_2.elements[i]
+ *         status = composition_get_element_count(composition_2, symbol, &value_2)
+ */
+  while (1) {
+    __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition_2->used) != 0);
+    if (!__pyx_t_1) break;
+
+    /* "brainpy\_c\composition.pyx":403
+ *     i = 0
+ *     while i < composition_2.used:
+ *         symbol = composition_2.elements[i]             # <<<<<<<<<<<<<<
+ *         status = composition_get_element_count(composition_2, symbol, &value_2)
+ *         if status != 0:
+ */
+    __pyx_v_symbol = (__pyx_v_composition_2->elements[__pyx_v_i]);
+
+    /* "brainpy\_c\composition.pyx":404
+ *     while i < composition_2.used:
+ *         symbol = composition_2.elements[i]
+ *         status = composition_get_element_count(composition_2, symbol, &value_2)             # <<<<<<<<<<<<<<
+ *         if status != 0:
+ *             return 0
+ */
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_composition_2, __pyx_v_symbol, (&__pyx_v_value_2));
+
+    /* "brainpy\_c\composition.pyx":405
+ *         symbol = composition_2.elements[i]
+ *         status = composition_get_element_count(composition_2, symbol, &value_2)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             return 0
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)
+ */
+    __pyx_t_1 = ((__pyx_v_status != 0) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\composition.pyx":406
+ *         status = composition_get_element_count(composition_2, symbol, &value_2)
+ *         if status != 0:
+ *             return 0             # <<<<<<<<<<<<<<
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)
+ *         if status != 0:
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":405
+ *         symbol = composition_2.elements[i]
+ *         status = composition_get_element_count(composition_2, symbol, &value_2)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             return 0
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)
+ */
+    }
+
+    /* "brainpy\_c\composition.pyx":407
+ *         if status != 0:
+ *             return 0
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)             # <<<<<<<<<<<<<<
+ *         if status != 0:
+ *             return 0
+ */
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_composition_1, __pyx_v_symbol, (&__pyx_v_value_1));
+
+    /* "brainpy\_c\composition.pyx":408
+ *             return 0
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             return 0
+ *         if value_1 != value_2:
+ */
+    __pyx_t_1 = ((__pyx_v_status != 0) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\composition.pyx":409
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)
+ *         if status != 0:
+ *             return 0             # <<<<<<<<<<<<<<
+ *         if value_1 != value_2:
+ *             return 0
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":408
+ *             return 0
+ *         status = composition_get_element_count(composition_1, symbol, &value_1)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             return 0
+ *         if value_1 != value_2:
+ */
+    }
+
+    /* "brainpy\_c\composition.pyx":410
+ *         if status != 0:
+ *             return 0
+ *         if value_1 != value_2:             # <<<<<<<<<<<<<<
+ *             return 0
+ *         i += 1
+ */
+    __pyx_t_1 = ((__pyx_v_value_1 != __pyx_v_value_2) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\composition.pyx":411
+ *             return 0
+ *         if value_1 != value_2:
+ *             return 0             # <<<<<<<<<<<<<<
+ *         i += 1
+ * 
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":410
+ *         if status != 0:
+ *             return 0
+ *         if value_1 != value_2:             # <<<<<<<<<<<<<<
+ *             return 0
+ *         i += 1
+ */
+    }
+
+    /* "brainpy\_c\composition.pyx":412
+ *         if value_1 != value_2:
+ *             return 0
+ *         i += 1             # <<<<<<<<<<<<<<
+ * 
+ *     return 1
+ */
+    __pyx_v_i = (__pyx_v_i + 1);
+  }
+
+  /* "brainpy\_c\composition.pyx":414
+ *         i += 1
+ * 
+ *     return 1             # <<<<<<<<<<<<<<
+ * 
+ * cdef Composition* copy_composition(Composition* composition) nogil:
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":389
+ *     return composition
+ * 
+ * cdef int composition_eq(Composition* composition_1, Composition* composition_2) nogil:             # <<<<<<<<<<<<<<
+ *     '''
+ *     Test two Composition instances for element-wise equality
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":416
+ *     return 1
+ * 
  * cdef Composition* copy_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         Composition* result
+ *     '''
+ *     Create a new Composition instance whose element counts are copied from
  */
 
 static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2_c_11composition_copy_composition(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition) {
@@ -3916,7 +4558,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   size_t __pyx_t_1;
   int __pyx_t_2;
 
-  /* "brainpy\_c\composition.pyx":297
+  /* "brainpy\_c\composition.pyx":425
  *         int status
  *         size_t i
  *     result = <Composition*>malloc(sizeof(Composition))             # <<<<<<<<<<<<<<
@@ -3925,7 +4567,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_11composition_Composition *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_11composition_Composition))));
 
-  /* "brainpy\_c\composition.pyx":298
+  /* "brainpy\_c\composition.pyx":426
  *         size_t i
  *     result = <Composition*>malloc(sizeof(Composition))
  *     result.elements = <char**>malloc(sizeof(char*) * composition.size)             # <<<<<<<<<<<<<<
@@ -3934,7 +4576,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result->elements = ((char **)malloc(((sizeof(char *)) * __pyx_v_composition->size)));
 
-  /* "brainpy\_c\composition.pyx":299
+  /* "brainpy\_c\composition.pyx":427
  *     result = <Composition*>malloc(sizeof(Composition))
  *     result.elements = <char**>malloc(sizeof(char*) * composition.size)
  *     result.counts = <count_type*>malloc(sizeof(count_type) * composition.size)             # <<<<<<<<<<<<<<
@@ -3943,7 +4585,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result->counts = ((__pyx_t_7brainpy_2_c_11composition_count_type *)malloc(((sizeof(__pyx_t_7brainpy_2_c_11composition_count_type)) * __pyx_v_composition->size)));
 
-  /* "brainpy\_c\composition.pyx":300
+  /* "brainpy\_c\composition.pyx":428
  *     result.elements = <char**>malloc(sizeof(char*) * composition.size)
  *     result.counts = <count_type*>malloc(sizeof(count_type) * composition.size)
  *     result.size = composition.size             # <<<<<<<<<<<<<<
@@ -3953,7 +4595,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   __pyx_t_1 = __pyx_v_composition->size;
   __pyx_v_result->size = __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":301
+  /* "brainpy\_c\composition.pyx":429
  *     result.counts = <count_type*>malloc(sizeof(count_type) * composition.size)
  *     result.size = composition.size
  *     result.used = 0             # <<<<<<<<<<<<<<
@@ -3962,7 +4604,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result->used = 0;
 
-  /* "brainpy\_c\composition.pyx":303
+  /* "brainpy\_c\composition.pyx":431
  *     result.used = 0
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -3971,7 +4613,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":304
+  /* "brainpy\_c\composition.pyx":432
  * 
  *     i = 0
  *     while i < composition.used:             # <<<<<<<<<<<<<<
@@ -3982,7 +4624,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_t_2 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_c\composition.pyx":305
+    /* "brainpy\_c\composition.pyx":433
  *     i = 0
  *     while i < composition.used:
  *         status = composition_set_element_count(result, composition.elements[i], composition.counts[i])             # <<<<<<<<<<<<<<
@@ -3991,7 +4633,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
     __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(__pyx_v_result, (__pyx_v_composition->elements[__pyx_v_i]), (__pyx_v_composition->counts[__pyx_v_i]));
 
-    /* "brainpy\_c\composition.pyx":306
+    /* "brainpy\_c\composition.pyx":434
  *     while i < composition.used:
  *         status = composition_set_element_count(result, composition.elements[i], composition.counts[i])
  *         i += 1             # <<<<<<<<<<<<<<
@@ -4001,7 +4643,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":307
+  /* "brainpy\_c\composition.pyx":435
  *         status = composition_set_element_count(result, composition.elements[i], composition.counts[i])
  *         i += 1
  *     return result             # <<<<<<<<<<<<<<
@@ -4011,12 +4653,12 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":292
- *     return composition
+  /* "brainpy\_c\composition.pyx":416
+ *     return 1
  * 
  * cdef Composition* copy_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         Composition* result
+ *     '''
+ *     Create a new Composition instance whose element counts are copied from
  */
 
   /* function exit code */
@@ -4024,7 +4666,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":309
+/* "brainpy\_c\composition.pyx":437
  *     return result
  * 
  * cdef void print_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
@@ -4036,7 +4678,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
   size_t __pyx_v_i;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":313
+  /* "brainpy\_c\composition.pyx":441
  *         size_t i
  *         int status
  *     i = 0             # <<<<<<<<<<<<<<
@@ -4045,7 +4687,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":314
+  /* "brainpy\_c\composition.pyx":442
  *         int status
  *     i = 0
  *     printf("Addr %d %d\n", <int>composition, <int>(composition.elements))             # <<<<<<<<<<<<<<
@@ -4054,7 +4696,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
  */
   printf(__pyx_k_Addr_d_d, ((int)__pyx_v_composition), ((int)__pyx_v_composition->elements));
 
-  /* "brainpy\_c\composition.pyx":315
+  /* "brainpy\_c\composition.pyx":443
  *     i = 0
  *     printf("Addr %d %d\n", <int>composition, <int>(composition.elements))
  *     printf("Size: %d, Used: %d\n", composition.size, composition.used)             # <<<<<<<<<<<<<<
@@ -4063,7 +4705,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
  */
   printf(__pyx_k_Size_d_Used_d, __pyx_v_composition->size, __pyx_v_composition->used);
 
-  /* "brainpy\_c\composition.pyx":316
+  /* "brainpy\_c\composition.pyx":444
  *     printf("Addr %d %d\n", <int>composition, <int>(composition.elements))
  *     printf("Size: %d, Used: %d\n", composition.size, composition.used)
  *     printf("{\n")             # <<<<<<<<<<<<<<
@@ -4072,7 +4714,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
  */
   printf(__pyx_k__3);
 
-  /* "brainpy\_c\composition.pyx":317
+  /* "brainpy\_c\composition.pyx":445
  *     printf("Size: %d, Used: %d\n", composition.size, composition.used)
  *     printf("{\n")
  *     while i < composition.used:             # <<<<<<<<<<<<<<
@@ -4083,16 +4725,16 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":318
+    /* "brainpy\_c\composition.pyx":446
  *     printf("{\n")
  *     while i < composition.used:
  *         printf("  %s: %d\n", composition.elements[i], composition.counts[i])             # <<<<<<<<<<<<<<
  *         i += 1
  *     printf("}\n\n")
  */
-    printf(__pyx_k_s_d, (__pyx_v_composition->elements[__pyx_v_i]), (__pyx_v_composition->counts[__pyx_v_i]));
+    printf(__pyx_k_s_d_2, (__pyx_v_composition->elements[__pyx_v_i]), (__pyx_v_composition->counts[__pyx_v_i]));
 
-    /* "brainpy\_c\composition.pyx":319
+    /* "brainpy\_c\composition.pyx":447
  *     while i < composition.used:
  *         printf("  %s: %d\n", composition.elements[i], composition.counts[i])
  *         i += 1             # <<<<<<<<<<<<<<
@@ -4102,7 +4744,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":320
+  /* "brainpy\_c\composition.pyx":448
  *         printf("  %s: %d\n", composition.elements[i], composition.counts[i])
  *         i += 1
  *     printf("}\n\n")             # <<<<<<<<<<<<<<
@@ -4111,7 +4753,7 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
  */
   printf(__pyx_k__4);
 
-  /* "brainpy\_c\composition.pyx":309
+  /* "brainpy\_c\composition.pyx":437
  *     return result
  * 
  * cdef void print_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
@@ -4122,12 +4764,12 @@ static void __pyx_f_7brainpy_2_c_11composition_print_composition(struct __pyx_t_
   /* function exit code */
 }
 
-/* "brainpy\_c\composition.pyx":322
+/* "brainpy\_c\composition.pyx":450
  *     printf("}\n\n")
  * 
  * cdef int composition_set_element_count(Composition* composition, char* element, count_type count) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
+ *     '''
+ *     Set the count for `element` in `composition`
  */
 
 static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition, char *__pyx_v_element, __pyx_t_7brainpy_2_c_11composition_count_type __pyx_v_count) {
@@ -4137,7 +4779,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":327
+  /* "brainpy\_c\composition.pyx":463
  *         int status
  *         bint done
  *     done = False             # <<<<<<<<<<<<<<
@@ -4146,7 +4788,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
   __pyx_v_done = 0;
 
-  /* "brainpy\_c\composition.pyx":328
+  /* "brainpy\_c\composition.pyx":464
  *         bint done
  *     done = False
  *     i = 0             # <<<<<<<<<<<<<<
@@ -4155,7 +4797,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":329
+  /* "brainpy\_c\composition.pyx":465
  *     done = False
  *     i = 0
  *     while (i < composition.used):             # <<<<<<<<<<<<<<
@@ -4166,7 +4808,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":330
+    /* "brainpy\_c\composition.pyx":466
  *     i = 0
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:             # <<<<<<<<<<<<<<
@@ -4176,7 +4818,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
     __pyx_t_1 = ((strcmp(__pyx_v_element, (__pyx_v_composition->elements[__pyx_v_i])) == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":331
+      /* "brainpy\_c\composition.pyx":467
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:
  *             done = True             # <<<<<<<<<<<<<<
@@ -4185,7 +4827,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
       __pyx_v_done = 1;
 
-      /* "brainpy\_c\composition.pyx":332
+      /* "brainpy\_c\composition.pyx":468
  *         if strcmp(element, composition.elements[i]) == 0:
  *             done = True
  *             composition.counts[i] = count             # <<<<<<<<<<<<<<
@@ -4194,7 +4836,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
       (__pyx_v_composition->counts[__pyx_v_i]) = __pyx_v_count;
 
-      /* "brainpy\_c\composition.pyx":333
+      /* "brainpy\_c\composition.pyx":469
  *             done = True
  *             composition.counts[i] = count
  *             return 0             # <<<<<<<<<<<<<<
@@ -4204,7 +4846,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
       __pyx_r = 0;
       goto __pyx_L0;
 
-      /* "brainpy\_c\composition.pyx":330
+      /* "brainpy\_c\composition.pyx":466
  *     i = 0
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:             # <<<<<<<<<<<<<<
@@ -4213,7 +4855,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
     }
 
-    /* "brainpy\_c\composition.pyx":334
+    /* "brainpy\_c\composition.pyx":470
  *             composition.counts[i] = count
  *             return 0
  *         i += 1             # <<<<<<<<<<<<<<
@@ -4223,7 +4865,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":336
+  /* "brainpy\_c\composition.pyx":472
  *         i += 1
  * 
  *     if not done:             # <<<<<<<<<<<<<<
@@ -4233,7 +4875,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
   __pyx_t_1 = ((!(__pyx_v_done != 0)) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":337
+    /* "brainpy\_c\composition.pyx":473
  * 
  *     if not done:
  *         composition.used += 1             # <<<<<<<<<<<<<<
@@ -4242,7 +4884,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
     __pyx_v_composition->used = (__pyx_v_composition->used + 1);
 
-    /* "brainpy\_c\composition.pyx":338
+    /* "brainpy\_c\composition.pyx":474
  *     if not done:
  *         composition.used += 1
  *         if composition.used >= composition.size:             # <<<<<<<<<<<<<<
@@ -4252,7 +4894,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
     __pyx_t_1 = ((__pyx_v_composition->used >= __pyx_v_composition->size) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":339
+      /* "brainpy\_c\composition.pyx":475
  *         composition.used += 1
  *         if composition.used >= composition.size:
  *             status = composition_resize(composition)             # <<<<<<<<<<<<<<
@@ -4261,7 +4903,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
       __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_resize(__pyx_v_composition);
 
-      /* "brainpy\_c\composition.pyx":340
+      /* "brainpy\_c\composition.pyx":476
  *         if composition.used >= composition.size:
  *             status = composition_resize(composition)
  *             if status != 0:             # <<<<<<<<<<<<<<
@@ -4271,7 +4913,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
       __pyx_t_1 = ((__pyx_v_status != 0) != 0);
       if (__pyx_t_1) {
 
-        /* "brainpy\_c\composition.pyx":341
+        /* "brainpy\_c\composition.pyx":477
  *             status = composition_resize(composition)
  *             if status != 0:
  *                 return -1             # <<<<<<<<<<<<<<
@@ -4281,7 +4923,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
         __pyx_r = -1;
         goto __pyx_L0;
 
-        /* "brainpy\_c\composition.pyx":340
+        /* "brainpy\_c\composition.pyx":476
  *         if composition.used >= composition.size:
  *             status = composition_resize(composition)
  *             if status != 0:             # <<<<<<<<<<<<<<
@@ -4290,7 +4932,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
       }
 
-      /* "brainpy\_c\composition.pyx":338
+      /* "brainpy\_c\composition.pyx":474
  *     if not done:
  *         composition.used += 1
  *         if composition.used >= composition.size:             # <<<<<<<<<<<<<<
@@ -4299,7 +4941,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
     }
 
-    /* "brainpy\_c\composition.pyx":342
+    /* "brainpy\_c\composition.pyx":478
  *             if status != 0:
  *                 return -1
  *         composition.elements[i] = element             # <<<<<<<<<<<<<<
@@ -4308,7 +4950,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
     (__pyx_v_composition->elements[__pyx_v_i]) = __pyx_v_element;
 
-    /* "brainpy\_c\composition.pyx":343
+    /* "brainpy\_c\composition.pyx":479
  *                 return -1
  *         composition.elements[i] = element
  *         composition.counts[i] = count             # <<<<<<<<<<<<<<
@@ -4317,7 +4959,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
     (__pyx_v_composition->counts[__pyx_v_i]) = __pyx_v_count;
 
-    /* "brainpy\_c\composition.pyx":344
+    /* "brainpy\_c\composition.pyx":480
  *         composition.elements[i] = element
  *         composition.counts[i] = count
  *         return 0             # <<<<<<<<<<<<<<
@@ -4327,7 +4969,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "brainpy\_c\composition.pyx":336
+    /* "brainpy\_c\composition.pyx":472
  *         i += 1
  * 
  *     if not done:             # <<<<<<<<<<<<<<
@@ -4336,7 +4978,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
  */
   }
 
-  /* "brainpy\_c\composition.pyx":345
+  /* "brainpy\_c\composition.pyx":481
  *         composition.counts[i] = count
  *         return 0
  *     return 1             # <<<<<<<<<<<<<<
@@ -4346,12 +4988,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
   __pyx_r = 1;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":322
+  /* "brainpy\_c\composition.pyx":450
  *     printf("}\n\n")
  * 
  * cdef int composition_set_element_count(Composition* composition, char* element, count_type count) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
+ *     '''
+ *     Set the count for `element` in `composition`
  */
 
   /* function exit code */
@@ -4359,12 +5001,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(stru
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":347
+/* "brainpy\_c\composition.pyx":483
  *     return 1
  * 
  * cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
+ *     '''
+ *     Get the count of `element` in `composition`. The count is 0 if `element` is not in `composition`
  */
 
 static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition, char *__pyx_v_element, __pyx_t_7brainpy_2_c_11composition_count_type *__pyx_v_count) {
@@ -4373,7 +5015,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":352
+  /* "brainpy\_c\composition.pyx":494
  *         int status
  *         bint done
  *     done = False             # <<<<<<<<<<<<<<
@@ -4382,7 +5024,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
   __pyx_v_done = 0;
 
-  /* "brainpy\_c\composition.pyx":353
+  /* "brainpy\_c\composition.pyx":495
  *         bint done
  *     done = False
  *     i = 0             # <<<<<<<<<<<<<<
@@ -4391,7 +5033,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":354
+  /* "brainpy\_c\composition.pyx":496
  *     done = False
  *     i = 0
  *     while (i < composition.used):             # <<<<<<<<<<<<<<
@@ -4402,7 +5044,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":355
+    /* "brainpy\_c\composition.pyx":497
  *     i = 0
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:             # <<<<<<<<<<<<<<
@@ -4412,7 +5054,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
     __pyx_t_1 = ((strcmp(__pyx_v_element, (__pyx_v_composition->elements[__pyx_v_i])) == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":356
+      /* "brainpy\_c\composition.pyx":498
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:
  *             done = True             # <<<<<<<<<<<<<<
@@ -4421,7 +5063,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
       __pyx_v_done = 1;
 
-      /* "brainpy\_c\composition.pyx":357
+      /* "brainpy\_c\composition.pyx":499
  *         if strcmp(element, composition.elements[i]) == 0:
  *             done = True
  *             count[0] = composition.counts[i]             # <<<<<<<<<<<<<<
@@ -4430,7 +5072,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
       (__pyx_v_count[0]) = (__pyx_v_composition->counts[__pyx_v_i]);
 
-      /* "brainpy\_c\composition.pyx":358
+      /* "brainpy\_c\composition.pyx":500
  *             done = True
  *             count[0] = composition.counts[i]
  *             return 0             # <<<<<<<<<<<<<<
@@ -4440,7 +5082,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
       __pyx_r = 0;
       goto __pyx_L0;
 
-      /* "brainpy\_c\composition.pyx":355
+      /* "brainpy\_c\composition.pyx":497
  *     i = 0
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:             # <<<<<<<<<<<<<<
@@ -4449,7 +5091,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
     }
 
-    /* "brainpy\_c\composition.pyx":359
+    /* "brainpy\_c\composition.pyx":501
  *             count[0] = composition.counts[i]
  *             return 0
  *         i += 1             # <<<<<<<<<<<<<<
@@ -4459,7 +5101,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":361
+  /* "brainpy\_c\composition.pyx":503
  *         i += 1
  * 
  *     if not done:             # <<<<<<<<<<<<<<
@@ -4469,7 +5111,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
   __pyx_t_1 = ((!(__pyx_v_done != 0)) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":362
+    /* "brainpy\_c\composition.pyx":504
  * 
  *     if not done:
  *         count[0] = 0             # <<<<<<<<<<<<<<
@@ -4478,7 +5120,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
     (__pyx_v_count[0]) = 0;
 
-    /* "brainpy\_c\composition.pyx":361
+    /* "brainpy\_c\composition.pyx":503
  *         i += 1
  * 
  *     if not done:             # <<<<<<<<<<<<<<
@@ -4487,7 +5129,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
  */
   }
 
-  /* "brainpy\_c\composition.pyx":363
+  /* "brainpy\_c\composition.pyx":505
  *     if not done:
  *         count[0] = 0
  *     return 0             # <<<<<<<<<<<<<<
@@ -4497,12 +5139,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":347
+  /* "brainpy\_c\composition.pyx":483
  *     return 1
  * 
  * cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
+ *     '''
+ *     Get the count of `element` in `composition`. The count is 0 if `element` is not in `composition`
  */
 
   /* function exit code */
@@ -4510,12 +5152,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(stru
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":365
+/* "brainpy\_c\composition.pyx":507
  *     return 0
  * 
  * cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
+ *     '''
+ *     Increase the count for `element` in `composition` by `increment`.
  */
 
 static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition, char *__pyx_v_element, __pyx_t_7brainpy_2_c_11composition_count_type __pyx_v_increment) {
@@ -4526,7 +5168,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
   int __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\composition.pyx":370
+  /* "brainpy\_c\composition.pyx":520
  *         int status
  *         bint done
  *     done = False             # <<<<<<<<<<<<<<
@@ -4535,7 +5177,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
   __pyx_v_done = 0;
 
-  /* "brainpy\_c\composition.pyx":371
+  /* "brainpy\_c\composition.pyx":521
  *         bint done
  *     done = False
  *     i = 0             # <<<<<<<<<<<<<<
@@ -4544,7 +5186,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":372
+  /* "brainpy\_c\composition.pyx":522
  *     done = False
  *     i = 0
  *     while (i < composition.used):             # <<<<<<<<<<<<<<
@@ -4555,7 +5197,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":373
+    /* "brainpy\_c\composition.pyx":523
  *     i = 0
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:             # <<<<<<<<<<<<<<
@@ -4565,7 +5207,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
     __pyx_t_1 = ((strcmp(__pyx_v_element, (__pyx_v_composition->elements[__pyx_v_i])) == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":374
+      /* "brainpy\_c\composition.pyx":524
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:
  *             done = True             # <<<<<<<<<<<<<<
@@ -4574,7 +5216,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
       __pyx_v_done = 1;
 
-      /* "brainpy\_c\composition.pyx":375
+      /* "brainpy\_c\composition.pyx":525
  *         if strcmp(element, composition.elements[i]) == 0:
  *             done = True
  *             composition.counts[i] += increment             # <<<<<<<<<<<<<<
@@ -4584,7 +5226,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
       __pyx_t_2 = __pyx_v_i;
       (__pyx_v_composition->counts[__pyx_t_2]) = ((__pyx_v_composition->counts[__pyx_t_2]) + __pyx_v_increment);
 
-      /* "brainpy\_c\composition.pyx":376
+      /* "brainpy\_c\composition.pyx":526
  *             done = True
  *             composition.counts[i] += increment
  *             return 0             # <<<<<<<<<<<<<<
@@ -4594,7 +5236,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
       __pyx_r = 0;
       goto __pyx_L0;
 
-      /* "brainpy\_c\composition.pyx":373
+      /* "brainpy\_c\composition.pyx":523
  *     i = 0
  *     while (i < composition.used):
  *         if strcmp(element, composition.elements[i]) == 0:             # <<<<<<<<<<<<<<
@@ -4603,7 +5245,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
     }
 
-    /* "brainpy\_c\composition.pyx":377
+    /* "brainpy\_c\composition.pyx":527
  *             composition.counts[i] += increment
  *             return 0
  *         i += 1             # <<<<<<<<<<<<<<
@@ -4613,7 +5255,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":379
+  /* "brainpy\_c\composition.pyx":529
  *         i += 1
  * 
  *     if not done:             # <<<<<<<<<<<<<<
@@ -4623,7 +5265,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
   __pyx_t_1 = ((!(__pyx_v_done != 0)) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":380
+    /* "brainpy\_c\composition.pyx":530
  * 
  *     if not done:
  *         composition.used += 1             # <<<<<<<<<<<<<<
@@ -4632,7 +5274,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
     __pyx_v_composition->used = (__pyx_v_composition->used + 1);
 
-    /* "brainpy\_c\composition.pyx":381
+    /* "brainpy\_c\composition.pyx":531
  *     if not done:
  *         composition.used += 1
  *         if composition.used >= composition.size:             # <<<<<<<<<<<<<<
@@ -4642,7 +5284,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
     __pyx_t_1 = ((__pyx_v_composition->used >= __pyx_v_composition->size) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":382
+      /* "brainpy\_c\composition.pyx":532
  *         composition.used += 1
  *         if composition.used >= composition.size:
  *             status = composition_resize(composition)             # <<<<<<<<<<<<<<
@@ -4651,7 +5293,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
       __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_resize(__pyx_v_composition);
 
-      /* "brainpy\_c\composition.pyx":383
+      /* "brainpy\_c\composition.pyx":533
  *         if composition.used >= composition.size:
  *             status = composition_resize(composition)
  *             if status != 0:             # <<<<<<<<<<<<<<
@@ -4661,7 +5303,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
       __pyx_t_1 = ((__pyx_v_status != 0) != 0);
       if (__pyx_t_1) {
 
-        /* "brainpy\_c\composition.pyx":384
+        /* "brainpy\_c\composition.pyx":534
  *             status = composition_resize(composition)
  *             if status != 0:
  *                 return -1             # <<<<<<<<<<<<<<
@@ -4671,7 +5313,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
         __pyx_r = -1;
         goto __pyx_L0;
 
-        /* "brainpy\_c\composition.pyx":383
+        /* "brainpy\_c\composition.pyx":533
  *         if composition.used >= composition.size:
  *             status = composition_resize(composition)
  *             if status != 0:             # <<<<<<<<<<<<<<
@@ -4680,7 +5322,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
       }
 
-      /* "brainpy\_c\composition.pyx":381
+      /* "brainpy\_c\composition.pyx":531
  *     if not done:
  *         composition.used += 1
  *         if composition.used >= composition.size:             # <<<<<<<<<<<<<<
@@ -4689,7 +5331,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
     }
 
-    /* "brainpy\_c\composition.pyx":385
+    /* "brainpy\_c\composition.pyx":535
  *             if status != 0:
  *                 return -1
  *         composition.elements[i] = element             # <<<<<<<<<<<<<<
@@ -4698,7 +5340,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
     (__pyx_v_composition->elements[__pyx_v_i]) = __pyx_v_element;
 
-    /* "brainpy\_c\composition.pyx":386
+    /* "brainpy\_c\composition.pyx":536
  *                 return -1
  *         composition.elements[i] = element
  *         composition.counts[i] = increment             # <<<<<<<<<<<<<<
@@ -4707,7 +5349,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
     (__pyx_v_composition->counts[__pyx_v_i]) = __pyx_v_increment;
 
-    /* "brainpy\_c\composition.pyx":387
+    /* "brainpy\_c\composition.pyx":537
  *         composition.elements[i] = element
  *         composition.counts[i] = increment
  *         return 0             # <<<<<<<<<<<<<<
@@ -4717,7 +5359,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "brainpy\_c\composition.pyx":379
+    /* "brainpy\_c\composition.pyx":529
  *         i += 1
  * 
  *     if not done:             # <<<<<<<<<<<<<<
@@ -4726,7 +5368,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
  */
   }
 
-  /* "brainpy\_c\composition.pyx":388
+  /* "brainpy\_c\composition.pyx":538
  *         composition.counts[i] = increment
  *         return 0
  *     return 1             # <<<<<<<<<<<<<<
@@ -4736,12 +5378,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
   __pyx_r = 1;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":365
+  /* "brainpy\_c\composition.pyx":507
  *     return 0
  * 
  * cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
+ *     '''
+ *     Increase the count for `element` in `composition` by `increment`.
  */
 
   /* function exit code */
@@ -4749,29 +5391,29 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(stru
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":390
+/* "brainpy\_c\composition.pyx":540
  *     return 1
  * 
  * cdef int composition_resize(Composition* composition) nogil:             # <<<<<<<<<<<<<<
- *     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)
- *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
+ *     '''
+ *     Increases the size of the parallel arrays in `composition`, doubling them in length
  */
 
 static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition) {
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":391
- * 
- * cdef int composition_resize(Composition* composition) nogil:
+  /* "brainpy\_c\composition.pyx":548
+ *     -1: Failure due to Out-of-Memory
+ *     '''
  *     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)             # <<<<<<<<<<<<<<
  *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
  *     composition.size *= 2
  */
   __pyx_v_composition->elements = ((char **)realloc(__pyx_v_composition->elements, (((sizeof(char *)) * __pyx_v_composition->size) * 2)));
 
-  /* "brainpy\_c\composition.pyx":392
- * cdef int composition_resize(Composition* composition) nogil:
+  /* "brainpy\_c\composition.pyx":549
+ *     '''
  *     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)
  *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)             # <<<<<<<<<<<<<<
  *     composition.size *= 2
@@ -4779,7 +5421,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
  */
   __pyx_v_composition->counts = ((__pyx_t_7brainpy_2_c_11composition_count_type *)realloc(__pyx_v_composition->counts, (((sizeof(__pyx_t_7brainpy_2_c_11composition_count_type)) * __pyx_v_composition->size) * 2)));
 
-  /* "brainpy\_c\composition.pyx":393
+  /* "brainpy\_c\composition.pyx":550
  *     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)
  *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
  *     composition.size *= 2             # <<<<<<<<<<<<<<
@@ -4788,7 +5430,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
  */
   __pyx_v_composition->size = (__pyx_v_composition->size * 2);
 
-  /* "brainpy\_c\composition.pyx":394
+  /* "brainpy\_c\composition.pyx":551
  *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
  *     composition.size *= 2
  *     if composition.counts == NULL:             # <<<<<<<<<<<<<<
@@ -4798,7 +5440,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
   __pyx_t_1 = ((__pyx_v_composition->counts == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":395
+    /* "brainpy\_c\composition.pyx":552
  *     composition.size *= 2
  *     if composition.counts == NULL:
  *         return -1             # <<<<<<<<<<<<<<
@@ -4808,7 +5450,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
     __pyx_r = -1;
     goto __pyx_L0;
 
-    /* "brainpy\_c\composition.pyx":394
+    /* "brainpy\_c\composition.pyx":551
  *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
  *     composition.size *= 2
  *     if composition.counts == NULL:             # <<<<<<<<<<<<<<
@@ -4817,7 +5459,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
  */
   }
 
-  /* "brainpy\_c\composition.pyx":396
+  /* "brainpy\_c\composition.pyx":553
  *     if composition.counts == NULL:
  *         return -1
  *     return 0             # <<<<<<<<<<<<<<
@@ -4827,12 +5469,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":390
+  /* "brainpy\_c\composition.pyx":540
  *     return 1
  * 
  * cdef int composition_resize(Composition* composition) nogil:             # <<<<<<<<<<<<<<
- *     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)
- *     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
+ *     '''
+ *     Increases the size of the parallel arrays in `composition`, doubling them in length
  */
 
   /* function exit code */
@@ -4840,12 +5482,12 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_resize(struct __pyx_t_
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":398
+/* "brainpy\_c\composition.pyx":555
  *     return 0
  * 
  * cdef double composition_mass(Composition* composition) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         double mass
+ *     '''
+ *     Calculates the monoisotopic mass of `composition`
  */
 
 static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition) {
@@ -4854,13 +5496,13 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
   char *__pyx_v_element_label;
   char __pyx_v_element_name[10];
   int __pyx_v_isotope_number;
-  CYTHON_UNUSED int __pyx_v_index;
+  int __pyx_v_status;
   size_t __pyx_v_i;
   double __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":407
- *         int index
+  /* "brainpy\_c\composition.pyx":567
+ *         int status
  *         size_t i
  *     i = 0             # <<<<<<<<<<<<<<
  *     while i < composition.used:
@@ -4868,7 +5510,7 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":408
+  /* "brainpy\_c\composition.pyx":568
  *         size_t i
  *     i = 0
  *     while i < composition.used:             # <<<<<<<<<<<<<<
@@ -4879,36 +5521,64 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":409
+    /* "brainpy\_c\composition.pyx":569
  *     i = 0
  *     while i < composition.used:
  *         element_label = composition.elements[i]             # <<<<<<<<<<<<<<
  *         _parse_isotope_string(element_label, &isotope_number, element_name)
- *         index = get_element_from_periodic_table2(_PeriodicTable, element_name, &element)
+ *         status = element_hash_table_get(_ElementTable, element_name, &element)
  */
     __pyx_v_element_label = (__pyx_v_composition->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":410
+    /* "brainpy\_c\composition.pyx":570
  *     while i < composition.used:
  *         element_label = composition.elements[i]
  *         _parse_isotope_string(element_label, &isotope_number, element_name)             # <<<<<<<<<<<<<<
- *         index = get_element_from_periodic_table2(_PeriodicTable, element_name, &element)
- *         if isotope_number == 0:
+ *         status = element_hash_table_get(_ElementTable, element_name, &element)
+ *         if status != 0:
  */
     __pyx_f_7brainpy_2_c_11composition__parse_isotope_string(__pyx_v_element_label, (&__pyx_v_isotope_number), __pyx_v_element_name);
 
-    /* "brainpy\_c\composition.pyx":411
+    /* "brainpy\_c\composition.pyx":571
  *         element_label = composition.elements[i]
  *         _parse_isotope_string(element_label, &isotope_number, element_name)
- *         index = get_element_from_periodic_table2(_PeriodicTable, element_name, &element)             # <<<<<<<<<<<<<<
+ *         status = element_hash_table_get(_ElementTable, element_name, &element)             # <<<<<<<<<<<<<<
+ *         if status != 0:
+ *             printf("Could not find element %s\n", element_label)
+ */
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element_name, (&__pyx_v_element));
+
+    /* "brainpy\_c\composition.pyx":572
+ *         _parse_isotope_string(element_label, &isotope_number, element_name)
+ *         status = element_hash_table_get(_ElementTable, element_name, &element)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("Could not find element %s\n", element_label)
+ *         if isotope_number == 0:
+ */
+    __pyx_t_1 = ((__pyx_v_status != 0) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\composition.pyx":573
+ *         status = element_hash_table_get(_ElementTable, element_name, &element)
+ *         if status != 0:
+ *             printf("Could not find element %s\n", element_label)             # <<<<<<<<<<<<<<
  *         if isotope_number == 0:
  *             mass += element_monoisotopic_mass(element) * composition.counts[i]
  */
-    __pyx_v_index = __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(__pyx_v_7brainpy_2_c_11composition__PeriodicTable, __pyx_v_element_name, (&__pyx_v_element));
+      printf(__pyx_k_Could_not_find_element_s, __pyx_v_element_label);
 
-    /* "brainpy\_c\composition.pyx":412
+      /* "brainpy\_c\composition.pyx":572
  *         _parse_isotope_string(element_label, &isotope_number, element_name)
- *         index = get_element_from_periodic_table2(_PeriodicTable, element_name, &element)
+ *         status = element_hash_table_get(_ElementTable, element_name, &element)
+ *         if status != 0:             # <<<<<<<<<<<<<<
+ *             printf("Could not find element %s\n", element_label)
+ *         if isotope_number == 0:
+ */
+    }
+
+    /* "brainpy\_c\composition.pyx":574
+ *         if status != 0:
+ *             printf("Could not find element %s\n", element_label)
  *         if isotope_number == 0:             # <<<<<<<<<<<<<<
  *             mass += element_monoisotopic_mass(element) * composition.counts[i]
  *         else:
@@ -4916,8 +5586,8 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
     __pyx_t_1 = ((__pyx_v_isotope_number == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":413
- *         index = get_element_from_periodic_table2(_PeriodicTable, element_name, &element)
+      /* "brainpy\_c\composition.pyx":575
+ *             printf("Could not find element %s\n", element_label)
  *         if isotope_number == 0:
  *             mass += element_monoisotopic_mass(element) * composition.counts[i]             # <<<<<<<<<<<<<<
  *         else:
@@ -4925,17 +5595,17 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
  */
       __pyx_v_mass = (__pyx_v_mass + (__pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(__pyx_v_element) * (__pyx_v_composition->counts[__pyx_v_i])));
 
-      /* "brainpy\_c\composition.pyx":412
- *         _parse_isotope_string(element_label, &isotope_number, element_name)
- *         index = get_element_from_periodic_table2(_PeriodicTable, element_name, &element)
+      /* "brainpy\_c\composition.pyx":574
+ *         if status != 0:
+ *             printf("Could not find element %s\n", element_label)
  *         if isotope_number == 0:             # <<<<<<<<<<<<<<
  *             mass += element_monoisotopic_mass(element) * composition.counts[i]
  *         else:
  */
-      goto __pyx_L5;
+      goto __pyx_L6;
     }
 
-    /* "brainpy\_c\composition.pyx":415
+    /* "brainpy\_c\composition.pyx":577
  *             mass += element_monoisotopic_mass(element) * composition.counts[i]
  *         else:
  *             mass += element_isotopic_mass(element, isotope_number) * composition.counts[i]             # <<<<<<<<<<<<<<
@@ -4945,9 +5615,9 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
     /*else*/ {
       __pyx_v_mass = (__pyx_v_mass + (__pyx_f_7brainpy_2_c_11composition_element_isotopic_mass(__pyx_v_element, __pyx_v_isotope_number) * (__pyx_v_composition->counts[__pyx_v_i])));
     }
-    __pyx_L5:;
+    __pyx_L6:;
 
-    /* "brainpy\_c\composition.pyx":416
+    /* "brainpy\_c\composition.pyx":578
  *         else:
  *             mass += element_isotopic_mass(element, isotope_number) * composition.counts[i]
  *         i += 1             # <<<<<<<<<<<<<<
@@ -4957,7 +5627,7 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":418
+  /* "brainpy\_c\composition.pyx":580
  *         i += 1
  * 
  *     return mass             # <<<<<<<<<<<<<<
@@ -4967,12 +5637,12 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
   __pyx_r = __pyx_v_mass;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":398
+  /* "brainpy\_c\composition.pyx":555
  *     return 0
  * 
  * cdef double composition_mass(Composition* composition) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         double mass
+ *     '''
+ *     Calculates the monoisotopic mass of `composition`
  */
 
   /* function exit code */
@@ -4980,7 +5650,7 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":420
+/* "brainpy\_c\composition.pyx":582
  *     return mass
  * 
  * cdef void free_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
@@ -4990,7 +5660,7 @@ static double __pyx_f_7brainpy_2_c_11composition_composition_mass(struct __pyx_t
 
 static void __pyx_f_7brainpy_2_c_11composition_free_composition(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition) {
 
-  /* "brainpy\_c\composition.pyx":421
+  /* "brainpy\_c\composition.pyx":583
  * 
  * cdef void free_composition(Composition* composition) nogil:
  *     free(composition.elements)             # <<<<<<<<<<<<<<
@@ -4999,7 +5669,7 @@ static void __pyx_f_7brainpy_2_c_11composition_free_composition(struct __pyx_t_7
  */
   free(__pyx_v_composition->elements);
 
-  /* "brainpy\_c\composition.pyx":422
+  /* "brainpy\_c\composition.pyx":584
  * cdef void free_composition(Composition* composition) nogil:
  *     free(composition.elements)
  *     free(composition.counts)             # <<<<<<<<<<<<<<
@@ -5008,7 +5678,7 @@ static void __pyx_f_7brainpy_2_c_11composition_free_composition(struct __pyx_t_7
  */
   free(__pyx_v_composition->counts);
 
-  /* "brainpy\_c\composition.pyx":423
+  /* "brainpy\_c\composition.pyx":585
  *     free(composition.elements)
  *     free(composition.counts)
  *     free(composition)             # <<<<<<<<<<<<<<
@@ -5017,7 +5687,7 @@ static void __pyx_f_7brainpy_2_c_11composition_free_composition(struct __pyx_t_7
  */
   free(__pyx_v_composition);
 
-  /* "brainpy\_c\composition.pyx":420
+  /* "brainpy\_c\composition.pyx":582
  *     return mass
  * 
  * cdef void free_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
@@ -5028,7 +5698,7 @@ static void __pyx_f_7brainpy_2_c_11composition_free_composition(struct __pyx_t_7
   /* function exit code */
 }
 
-/* "brainpy\_c\composition.pyx":425
+/* "brainpy\_c\composition.pyx":587
  *     free(composition)
  * 
  * cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil:             # <<<<<<<<<<<<<<
@@ -5045,7 +5715,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":433
+  /* "brainpy\_c\composition.pyx":595
  *         size_t i
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -5054,7 +5724,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":434
+  /* "brainpy\_c\composition.pyx":596
  * 
  *     i = 0
  *     result = copy_composition(composition_1)             # <<<<<<<<<<<<<<
@@ -5063,7 +5733,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result = __pyx_f_7brainpy_2_c_11composition_copy_composition(__pyx_v_composition_1);
 
-  /* "brainpy\_c\composition.pyx":436
+  /* "brainpy\_c\composition.pyx":598
  *     result = copy_composition(composition_1)
  * 
  *     while i < composition_2.used:             # <<<<<<<<<<<<<<
@@ -5074,7 +5744,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition_2->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":437
+    /* "brainpy\_c\composition.pyx":599
  * 
  *     while i < composition_2.used:
  *         symbol = composition_2.elements[i]             # <<<<<<<<<<<<<<
@@ -5083,7 +5753,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
     __pyx_v_symbol = (__pyx_v_composition_2->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":438
+    /* "brainpy\_c\composition.pyx":600
  *     while i < composition_2.used:
  *         symbol = composition_2.elements[i]
  *         status = composition_get_element_count(composition_2, symbol, &value)             # <<<<<<<<<<<<<<
@@ -5092,7 +5762,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
     __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_composition_2, __pyx_v_symbol, (&__pyx_v_value));
 
-    /* "brainpy\_c\composition.pyx":439
+    /* "brainpy\_c\composition.pyx":601
  *         symbol = composition_2.elements[i]
  *         status = composition_get_element_count(composition_2, symbol, &value)
  *         i += 1             # <<<<<<<<<<<<<<
@@ -5101,7 +5771,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
     __pyx_v_i = (__pyx_v_i + 1);
 
-    /* "brainpy\_c\composition.pyx":440
+    /* "brainpy\_c\composition.pyx":602
  *         status = composition_get_element_count(composition_2, symbol, &value)
  *         i += 1
  *         if value == 0:             # <<<<<<<<<<<<<<
@@ -5111,7 +5781,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_t_1 = ((__pyx_v_value == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":441
+      /* "brainpy\_c\composition.pyx":603
  *         i += 1
  *         if value == 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -5120,7 +5790,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_c\composition.pyx":440
+      /* "brainpy\_c\composition.pyx":602
  *         status = composition_get_element_count(composition_2, symbol, &value)
  *         i += 1
  *         if value == 0:             # <<<<<<<<<<<<<<
@@ -5129,7 +5799,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
     }
 
-    /* "brainpy\_c\composition.pyx":442
+    /* "brainpy\_c\composition.pyx":604
  *         if value == 0:
  *             continue
  *         status = composition_inc_element_count(result, symbol, sign * value)             # <<<<<<<<<<<<<<
@@ -5140,7 +5810,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_c\composition.pyx":443
+  /* "brainpy\_c\composition.pyx":605
  *             continue
  *         status = composition_inc_element_count(result, symbol, sign * value)
  *     return result             # <<<<<<<<<<<<<<
@@ -5150,7 +5820,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":425
+  /* "brainpy\_c\composition.pyx":587
  *     free(composition)
  * 
  * cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil:             # <<<<<<<<<<<<<<
@@ -5163,7 +5833,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":445
+/* "brainpy\_c\composition.pyx":607
  *     return result
  * 
  * cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil:             # <<<<<<<<<<<<<<
@@ -5179,7 +5849,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\composition.pyx":451
+  /* "brainpy\_c\composition.pyx":613
  *         int status
  *         size_t i
  *     i = 0             # <<<<<<<<<<<<<<
@@ -5188,7 +5858,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":452
+  /* "brainpy\_c\composition.pyx":614
  *         size_t i
  *     i = 0
  *     status = 0             # <<<<<<<<<<<<<<
@@ -5197,7 +5867,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
   __pyx_v_status = 0;
 
-  /* "brainpy\_c\composition.pyx":453
+  /* "brainpy\_c\composition.pyx":615
  *     i = 0
  *     status = 0
  *     while i < composition_2.used:             # <<<<<<<<<<<<<<
@@ -5208,7 +5878,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition_2->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":454
+    /* "brainpy\_c\composition.pyx":616
  *     status = 0
  *     while i < composition_2.used:
  *         symbol = composition_2.elements[i]             # <<<<<<<<<<<<<<
@@ -5217,7 +5887,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
     __pyx_v_symbol = (__pyx_v_composition_2->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":455
+    /* "brainpy\_c\composition.pyx":617
  *     while i < composition_2.used:
  *         symbol = composition_2.elements[i]
  *         status = composition_get_element_count(composition_2, symbol, &value)             # <<<<<<<<<<<<<<
@@ -5226,7 +5896,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
     __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_composition_2, __pyx_v_symbol, (&__pyx_v_value));
 
-    /* "brainpy\_c\composition.pyx":456
+    /* "brainpy\_c\composition.pyx":618
  *         symbol = composition_2.elements[i]
  *         status = composition_get_element_count(composition_2, symbol, &value)
  *         i += 1             # <<<<<<<<<<<<<<
@@ -5235,7 +5905,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
     __pyx_v_i = (__pyx_v_i + 1);
 
-    /* "brainpy\_c\composition.pyx":457
+    /* "brainpy\_c\composition.pyx":619
  *         status = composition_get_element_count(composition_2, symbol, &value)
  *         i += 1
  *         if value == 0:             # <<<<<<<<<<<<<<
@@ -5245,7 +5915,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
     __pyx_t_1 = ((__pyx_v_value == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\composition.pyx":458
+      /* "brainpy\_c\composition.pyx":620
  *         i += 1
  *         if value == 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -5254,7 +5924,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_c\composition.pyx":457
+      /* "brainpy\_c\composition.pyx":619
  *         status = composition_get_element_count(composition_2, symbol, &value)
  *         i += 1
  *         if value == 0:             # <<<<<<<<<<<<<<
@@ -5263,7 +5933,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
     }
 
-    /* "brainpy\_c\composition.pyx":459
+    /* "brainpy\_c\composition.pyx":621
  *         if value == 0:
  *             continue
  *         status = composition_inc_element_count(composition_1, symbol, sign * value)             # <<<<<<<<<<<<<<
@@ -5272,7 +5942,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
  */
     __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_inc_element_count(__pyx_v_composition_1, __pyx_v_symbol, (__pyx_v_sign * __pyx_v_value));
 
-    /* "brainpy\_c\composition.pyx":460
+    /* "brainpy\_c\composition.pyx":622
  *             continue
  *         status = composition_inc_element_count(composition_1, symbol, sign * value)
  *         if status != 0:             # <<<<<<<<<<<<<<
@@ -5285,7 +5955,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_c\composition.pyx":462
+  /* "brainpy\_c\composition.pyx":624
  *         if status != 0:
  *             pass
  *     return status             # <<<<<<<<<<<<<<
@@ -5295,7 +5965,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
   __pyx_r = __pyx_v_status;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":445
+  /* "brainpy\_c\composition.pyx":607
  *     return result
  * 
  * cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil:             # <<<<<<<<<<<<<<
@@ -5308,7 +5978,7 @@ static int __pyx_f_7brainpy_2_c_11composition_composition_iadd(struct __pyx_t_7b
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":464
+/* "brainpy\_c\composition.pyx":626
  *     return status
  * 
  * cdef Composition* composition_mul(Composition* composition, int scale) nogil:             # <<<<<<<<<<<<<<
@@ -5323,7 +5993,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   int __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\composition.pyx":469
+  /* "brainpy\_c\composition.pyx":631
  *         size_t i
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -5332,7 +6002,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":470
+  /* "brainpy\_c\composition.pyx":632
  * 
  *     i = 0
  *     result = copy_composition(composition)             # <<<<<<<<<<<<<<
@@ -5341,7 +6011,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result = __pyx_f_7brainpy_2_c_11composition_copy_composition(__pyx_v_composition);
 
-  /* "brainpy\_c\composition.pyx":471
+  /* "brainpy\_c\composition.pyx":633
  *     i = 0
  *     result = copy_composition(composition)
  *     while i < result.used:             # <<<<<<<<<<<<<<
@@ -5352,7 +6022,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_result->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":472
+    /* "brainpy\_c\composition.pyx":634
  *     result = copy_composition(composition)
  *     while i < result.used:
  *         result.counts[i] *= scale             # <<<<<<<<<<<<<<
@@ -5362,7 +6032,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_t_2 = __pyx_v_i;
     (__pyx_v_result->counts[__pyx_t_2]) = ((__pyx_v_result->counts[__pyx_t_2]) * __pyx_v_scale);
 
-    /* "brainpy\_c\composition.pyx":473
+    /* "brainpy\_c\composition.pyx":635
  *     while i < result.used:
  *         result.counts[i] *= scale
  *         i += 1             # <<<<<<<<<<<<<<
@@ -5372,7 +6042,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":474
+  /* "brainpy\_c\composition.pyx":636
  *         result.counts[i] *= scale
  *         i += 1
  *     return result             # <<<<<<<<<<<<<<
@@ -5382,7 +6052,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":464
+  /* "brainpy\_c\composition.pyx":626
  *     return status
  * 
  * cdef Composition* composition_mul(Composition* composition, int scale) nogil:             # <<<<<<<<<<<<<<
@@ -5395,7 +6065,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":476
+/* "brainpy\_c\composition.pyx":638
  *     return result
  * 
  * cdef void composition_imul(Composition* composition, int scale) nogil:             # <<<<<<<<<<<<<<
@@ -5408,7 +6078,7 @@ static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7
   int __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\composition.pyx":480
+  /* "brainpy\_c\composition.pyx":642
  *         size_t i
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -5417,7 +6087,7 @@ static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":481
+  /* "brainpy\_c\composition.pyx":643
  * 
  *     i = 0
  *     while i < composition.used:             # <<<<<<<<<<<<<<
@@ -5428,7 +6098,7 @@ static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\composition.pyx":482
+    /* "brainpy\_c\composition.pyx":644
  *     i = 0
  *     while i < composition.used:
  *         composition.counts[i] *= scale             # <<<<<<<<<<<<<<
@@ -5438,7 +6108,7 @@ static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7
     __pyx_t_2 = __pyx_v_i;
     (__pyx_v_composition->counts[__pyx_t_2]) = ((__pyx_v_composition->counts[__pyx_t_2]) * __pyx_v_scale);
 
-    /* "brainpy\_c\composition.pyx":483
+    /* "brainpy\_c\composition.pyx":645
  *     while i < composition.used:
  *         composition.counts[i] *= scale
  *         i += 1             # <<<<<<<<<<<<<<
@@ -5448,7 +6118,7 @@ static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":476
+  /* "brainpy\_c\composition.pyx":638
  *     return result
  * 
  * cdef void composition_imul(Composition* composition, int scale) nogil:             # <<<<<<<<<<<<<<
@@ -5459,7 +6129,7 @@ static void __pyx_f_7brainpy_2_c_11composition_composition_imul(struct __pyx_t_7
   /* function exit code */
 }
 
-/* "brainpy\_c\composition.pyx":485
+/* "brainpy\_c\composition.pyx":647
  *         i += 1
  * 
  * cdef dict composition_to_dict(Composition* composition):             # <<<<<<<<<<<<<<
@@ -5482,7 +6152,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("composition_to_dict", 0);
 
-  /* "brainpy\_c\composition.pyx":492
+  /* "brainpy\_c\composition.pyx":654
  *         char* symbol_c
  *         count_type value
  *     i = 0             # <<<<<<<<<<<<<<
@@ -5491,19 +6161,19 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":493
+  /* "brainpy\_c\composition.pyx":655
  *         count_type value
  *     i = 0
  *     result = dict()             # <<<<<<<<<<<<<<
  *     while i < composition.used:
  *         symbol_c = composition.elements[i]
  */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 493; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 655; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_result = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":494
+  /* "brainpy\_c\composition.pyx":656
  *     i = 0
  *     result = dict()
  *     while i < composition.used:             # <<<<<<<<<<<<<<
@@ -5514,7 +6184,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
     __pyx_t_2 = ((__pyx_v_i < __pyx_v_composition->used) != 0);
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_c\composition.pyx":495
+    /* "brainpy\_c\composition.pyx":657
  *     result = dict()
  *     while i < composition.used:
  *         symbol_c = composition.elements[i]             # <<<<<<<<<<<<<<
@@ -5523,7 +6193,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
  */
     __pyx_v_symbol_c = (__pyx_v_composition->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":496
+    /* "brainpy\_c\composition.pyx":658
  *     while i < composition.used:
  *         symbol_c = composition.elements[i]
  *         composition_get_element_count(composition, symbol_c, &value)             # <<<<<<<<<<<<<<
@@ -5532,7 +6202,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
  */
     __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_composition, __pyx_v_symbol_c, (&__pyx_v_value));
 
-    /* "brainpy\_c\composition.pyx":497
+    /* "brainpy\_c\composition.pyx":659
  *         symbol_c = composition.elements[i]
  *         composition_get_element_count(composition, symbol_c, &value)
  *         if value == 0:             # <<<<<<<<<<<<<<
@@ -5542,7 +6212,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
     __pyx_t_2 = ((__pyx_v_value == 0) != 0);
     if (__pyx_t_2) {
 
-      /* "brainpy\_c\composition.pyx":498
+      /* "brainpy\_c\composition.pyx":660
  *         composition_get_element_count(composition, symbol_c, &value)
  *         if value == 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -5551,7 +6221,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_c\composition.pyx":497
+      /* "brainpy\_c\composition.pyx":659
  *         symbol_c = composition.elements[i]
  *         composition_get_element_count(composition, symbol_c, &value)
  *         if value == 0:             # <<<<<<<<<<<<<<
@@ -5560,32 +6230,32 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
  */
     }
 
-    /* "brainpy\_c\composition.pyx":499
+    /* "brainpy\_c\composition.pyx":661
  *         if value == 0:
  *             continue
  *         symbol = PyString_FromString(symbol_c)             # <<<<<<<<<<<<<<
  *         result[symbol] = value
  *         i += 1
  */
-    __pyx_t_1 = PyString_FromString(__pyx_v_symbol_c); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = PyString_FromString(__pyx_v_symbol_c); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_XDECREF_SET(__pyx_v_symbol, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "brainpy\_c\composition.pyx":500
+    /* "brainpy\_c\composition.pyx":662
  *             continue
  *         symbol = PyString_FromString(symbol_c)
  *         result[symbol] = value             # <<<<<<<<<<<<<<
  *         i += 1
  *     return result
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_value); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_value); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 662; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_v_symbol, __pyx_t_1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(PyDict_SetItem(__pyx_v_result, __pyx_v_symbol, __pyx_t_1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 662; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "brainpy\_c\composition.pyx":501
+    /* "brainpy\_c\composition.pyx":663
  *         symbol = PyString_FromString(symbol_c)
  *         result[symbol] = value
  *         i += 1             # <<<<<<<<<<<<<<
@@ -5596,7 +6266,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_c\composition.pyx":502
+  /* "brainpy\_c\composition.pyx":664
  *         result[symbol] = value
  *         i += 1
  *     return result             # <<<<<<<<<<<<<<
@@ -5608,7 +6278,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":485
+  /* "brainpy\_c\composition.pyx":647
  *         i += 1
  * 
  * cdef dict composition_to_dict(Composition* composition):             # <<<<<<<<<<<<<<
@@ -5629,7 +6299,7 @@ static PyObject *__pyx_f_7brainpy_2_c_11composition_composition_to_dict(struct _
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":504
+/* "brainpy\_c\composition.pyx":666
  *     return result
  * 
  * cdef Composition* dict_to_composition(dict comp_dict):             # <<<<<<<<<<<<<<
@@ -5659,7 +6329,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("dict_to_composition", 0);
 
-  /* "brainpy\_c\composition.pyx":511
+  /* "brainpy\_c\composition.pyx":673
  *         char* symbol_c
  *         count_type value
  *     result = make_composition()             # <<<<<<<<<<<<<<
@@ -5668,7 +6338,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   __pyx_v_result = __pyx_f_7brainpy_2_c_11composition_make_composition();
 
-  /* "brainpy\_c\composition.pyx":512
+  /* "brainpy\_c\composition.pyx":674
  *         count_type value
  *     result = make_composition()
  *     for symbol, value in comp_dict.items():             # <<<<<<<<<<<<<<
@@ -5677,17 +6347,17 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
   if (unlikely(__pyx_v_comp_dict == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "items");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_1 = __Pyx_PyDict_Items(__pyx_v_comp_dict); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyDict_Items(__pyx_v_comp_dict); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
     __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -5695,17 +6365,17 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -5715,7 +6385,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -5731,7 +6401,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -5744,15 +6414,15 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
       __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(__pyx_t_6);
       #else
-      __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       #endif
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_t_8 = Py_TYPE(__pyx_t_7)->tp_iternext;
@@ -5760,7 +6430,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
       __Pyx_GOTREF(__pyx_t_5);
       index = 1; __pyx_t_6 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_6)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_6);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_8 = NULL;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L6_unpacking_done;
@@ -5768,27 +6438,27 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L6_unpacking_done:;
     }
-    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_6); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_6); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF_SET(__pyx_v_symbol, ((PyObject*)__pyx_t_5));
     __pyx_t_5 = 0;
     __pyx_v_value = __pyx_t_9;
 
-    /* "brainpy\_c\composition.pyx":513
+    /* "brainpy\_c\composition.pyx":675
  *     result = make_composition()
  *     for symbol, value in comp_dict.items():
  *         symbol_c = PyString_AsString(symbol)             # <<<<<<<<<<<<<<
  *         composition_set_element_count(result, symbol_c, value)
  *     return result
  */
-    __pyx_t_10 = PyString_AsString(__pyx_v_symbol); if (unlikely(__pyx_t_10 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 513; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = PyString_AsString(__pyx_v_symbol); if (unlikely(__pyx_t_10 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 675; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_symbol_c = __pyx_t_10;
 
-    /* "brainpy\_c\composition.pyx":514
+    /* "brainpy\_c\composition.pyx":676
  *     for symbol, value in comp_dict.items():
  *         symbol_c = PyString_AsString(symbol)
  *         composition_set_element_count(result, symbol_c, value)             # <<<<<<<<<<<<<<
@@ -5797,7 +6467,7 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
  */
     __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(__pyx_v_result, __pyx_v_symbol_c, __pyx_v_value);
 
-    /* "brainpy\_c\composition.pyx":512
+    /* "brainpy\_c\composition.pyx":674
  *         count_type value
  *     result = make_composition()
  *     for symbol, value in comp_dict.items():             # <<<<<<<<<<<<<<
@@ -5807,17 +6477,17 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\composition.pyx":515
+  /* "brainpy\_c\composition.pyx":677
  *         symbol_c = PyString_AsString(symbol)
  *         composition_set_element_count(result, symbol_c, value)
  *     return result             # <<<<<<<<<<<<<<
  * 
- * def main():
+ * 
  */
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":504
+  /* "brainpy\_c\composition.pyx":666
  *     return result
  * 
  * cdef Composition* dict_to_composition(dict comp_dict):             # <<<<<<<<<<<<<<
@@ -5840,8 +6510,8 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":517
- *     return result
+/* "brainpy\_c\composition.pyx":683
+ * # Prototyping and Testing
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef Element* elem
@@ -5850,7 +6520,8 @@ static struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_f_7brainpy_2
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_3main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_7brainpy_2_c_11composition_3main = {"main", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_3main, METH_NOARGS, 0};
+static char __pyx_doc_7brainpy_2_c_11composition_2main[] = "main()";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_11composition_3main = {"main", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_3main, METH_NOARGS, __pyx_doc_7brainpy_2_c_11composition_2main};
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_3main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5876,25 +6547,25 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("main", 0);
 
-  /* "brainpy\_c\composition.pyx":527
+  /* "brainpy\_c\composition.pyx":693
  *     cdef dict copy
  * 
  *     sym = "O"             # <<<<<<<<<<<<<<
- *     # i = get_element_from_periodic_table(_PeriodicTable, sym, &j)
- *     # if i == 0:
+ * 
+ *     j = element_hash_table_get(_ElementTable, "C", &elem)
  */
   __pyx_v_sym = __pyx_k_O;
 
-  /* "brainpy\_c\composition.pyx":535
- *     #     print "Could not locate element"
+  /* "brainpy\_c\composition.pyx":695
+ *     sym = "O"
  * 
- *     j = get_element_from_periodic_table2(_PeriodicTable, "C", &elem)             # <<<<<<<<<<<<<<
+ *     j = element_hash_table_get(_ElementTable, "C", &elem)             # <<<<<<<<<<<<<<
  *     # print elem.symbol, element_monoisotopic_mass(elem)
  * 
  */
-  __pyx_v_j = __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(__pyx_v_7brainpy_2_c_11composition__PeriodicTable, __pyx_k_C, (&__pyx_v_elem));
+  __pyx_v_j = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_k_C, (&__pyx_v_elem));
 
-  /* "brainpy\_c\composition.pyx":538
+  /* "brainpy\_c\composition.pyx":698
  *     # print elem.symbol, element_monoisotopic_mass(elem)
  * 
  *     composition = make_composition()             # <<<<<<<<<<<<<<
@@ -5903,7 +6574,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
  */
   __pyx_v_composition = __pyx_f_7brainpy_2_c_11composition_make_composition();
 
-  /* "brainpy\_c\composition.pyx":539
+  /* "brainpy\_c\composition.pyx":699
  * 
  *     composition = make_composition()
  *     composition_set_element_count(composition, "O[18]", 1)             # <<<<<<<<<<<<<<
@@ -5912,7 +6583,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
  */
   __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(__pyx_v_composition, __pyx_k_O_18, 1);
 
-  /* "brainpy\_c\composition.pyx":540
+  /* "brainpy\_c\composition.pyx":700
  *     composition = make_composition()
  *     composition_set_element_count(composition, "O[18]", 1)
  *     composition_set_element_count(composition, "H", 2)             # <<<<<<<<<<<<<<
@@ -5921,7 +6592,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
  */
   __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(__pyx_v_composition, __pyx_k_H, 2);
 
-  /* "brainpy\_c\composition.pyx":541
+  /* "brainpy\_c\composition.pyx":701
  *     composition_set_element_count(composition, "O[18]", 1)
  *     composition_set_element_count(composition, "H", 2)
  *     print_composition(composition)             # <<<<<<<<<<<<<<
@@ -5930,28 +6601,28 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
  */
   __pyx_f_7brainpy_2_c_11composition_print_composition(__pyx_v_composition);
 
-  /* "brainpy\_c\composition.pyx":542
+  /* "brainpy\_c\composition.pyx":702
  *     composition_set_element_count(composition, "H", 2)
  *     print_composition(composition)
  *     print "Massing"             # <<<<<<<<<<<<<<
  *     print composition_mass(composition)
  * 
  */
-  if (__Pyx_PrintOne(0, __pyx_n_s_Massing) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_n_s_Massing) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 702; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\composition.pyx":543
+  /* "brainpy\_c\composition.pyx":703
  *     print_composition(composition)
  *     print "Massing"
  *     print composition_mass(composition)             # <<<<<<<<<<<<<<
  * 
  *     sum_composition = composition_add(composition, composition, 1)
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 543; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 703; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 543; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 703; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":545
+  /* "brainpy\_c\composition.pyx":705
  *     print composition_mass(composition)
  * 
  *     sum_composition = composition_add(composition, composition, 1)             # <<<<<<<<<<<<<<
@@ -5960,40 +6631,40 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
  */
   __pyx_v_sum_composition = __pyx_f_7brainpy_2_c_11composition_composition_add(__pyx_v_composition, __pyx_v_composition, 1);
 
-  /* "brainpy\_c\composition.pyx":546
+  /* "brainpy\_c\composition.pyx":706
  * 
  *     sum_composition = composition_add(composition, composition, 1)
  *     print "Summed"             # <<<<<<<<<<<<<<
  *     print composition_mass(sum_composition)
  *     print composition_mass(composition)
  */
-  if (__Pyx_PrintOne(0, __pyx_n_s_Summed) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 546; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_n_s_Summed) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\composition.pyx":547
+  /* "brainpy\_c\composition.pyx":707
  *     sum_composition = composition_add(composition, composition, 1)
  *     print "Summed"
  *     print composition_mass(sum_composition)             # <<<<<<<<<<<<<<
  *     print composition_mass(composition)
  *     composition_iadd(sum_composition, composition, 1)
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_sum_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 547; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_sum_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 707; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 547; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 707; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":548
+  /* "brainpy\_c\composition.pyx":708
  *     print "Summed"
  *     print composition_mass(sum_composition)
  *     print composition_mass(composition)             # <<<<<<<<<<<<<<
  *     composition_iadd(sum_composition, composition, 1)
  *     print composition_mass(sum_composition)
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 548; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 708; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 548; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 708; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":549
+  /* "brainpy\_c\composition.pyx":709
  *     print composition_mass(sum_composition)
  *     print composition_mass(composition)
  *     composition_iadd(sum_composition, composition, 1)             # <<<<<<<<<<<<<<
@@ -6002,20 +6673,20 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
  */
   __pyx_f_7brainpy_2_c_11composition_composition_iadd(__pyx_v_sum_composition, __pyx_v_composition, 1);
 
-  /* "brainpy\_c\composition.pyx":550
+  /* "brainpy\_c\composition.pyx":710
  *     print composition_mass(composition)
  *     composition_iadd(sum_composition, composition, 1)
  *     print composition_mass(sum_composition)             # <<<<<<<<<<<<<<
  * 
- *     # copy = composition_to_dict(sum_composition)
+ * 
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_sum_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_sum_composition)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":517
- *     return result
+  /* "brainpy\_c\composition.pyx":683
+ * # Prototyping and Testing
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef Element* elem
@@ -6035,7 +6706,503 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_2main(CYTHON_UNUSED PyObjec
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":568
+/* "brainpy\_c\composition.pyx":713
+ * 
+ * 
+ * def isotope_update_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_5isotope_update_test(PyObject *__pyx_self, PyObject *__pyx_v_element_symbol); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_4isotope_update_test[] = "isotope_update_test(str element_symbol)";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_11composition_5isotope_update_test = {"isotope_update_test", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_5isotope_update_test, METH_O, __pyx_doc_7brainpy_2_c_11composition_4isotope_update_test};
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_5isotope_update_test(PyObject *__pyx_self, PyObject *__pyx_v_element_symbol) {
+  CYTHON_UNUSED int __pyx_lineno = 0;
+  CYTHON_UNUSED const char *__pyx_filename = NULL;
+  CYTHON_UNUSED int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("isotope_update_test (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_element_symbol), (&PyString_Type), 1, "element_symbol", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_r = __pyx_pf_7brainpy_2_c_11composition_4isotope_update_test(__pyx_self, ((PyObject*)__pyx_v_element_symbol));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_4isotope_update_test(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element_symbol) {
+  char *__pyx_v_c_element_symbol;
+  char *__pyx_v_element;
+  char __pyx_v_isotope_string[10];
+  int __pyx_v_isotope;
+  int __pyx_v_status;
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_elem_obj;
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_fixed_isotope_element;
+  struct __pyx_t_7brainpy_2_c_11composition_Isotope *__pyx_v_isotope_obj;
+  CYTHON_UNUSED PyObject *__pyx_v_out = 0;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  char *__pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_3;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("isotope_update_test", 0);
+
+  /* "brainpy\_c\composition.pyx":725
+ *         str out
+ * 
+ *     c_element_symbol = PyString_AsString(element_symbol)             # <<<<<<<<<<<<<<
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)
+ *     out = PyString_FromString(element)
+ */
+  __pyx_t_1 = PyString_AsString(__pyx_v_element_symbol); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 725; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_c_element_symbol = __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":726
+ * 
+ *     c_element_symbol = PyString_AsString(element_symbol)
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)             # <<<<<<<<<<<<<<
+ *     out = PyString_FromString(element)
+ *     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
+ */
+  __pyx_v_element = __pyx_f_7brainpy_2_c_11composition__parse_isotope_string(__pyx_v_c_element_symbol, (&__pyx_v_isotope), __pyx_v_element);
+
+  /* "brainpy\_c\composition.pyx":727
+ *     c_element_symbol = PyString_AsString(element_symbol)
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)
+ *     out = PyString_FromString(element)             # <<<<<<<<<<<<<<
+ *     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
+ *     print "element_hash_table_get"
+ */
+  __pyx_t_2 = PyString_FromString(__pyx_v_element); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 727; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 727; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_out = ((PyObject*)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "brainpy\_c\composition.pyx":728
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)
+ *     out = PyString_FromString(element)
+ *     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)             # <<<<<<<<<<<<<<
+ *     print "element_hash_table_get"
+ *     status = element_hash_table_get(_ElementTable, element, &elem_obj)
+ */
+  printf(__pyx_k_Element_Symbol_s_Isotope_d, __pyx_v_element, __pyx_v_isotope);
+
+  /* "brainpy\_c\composition.pyx":729
+ *     out = PyString_FromString(element)
+ *     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
+ *     print "element_hash_table_get"             # <<<<<<<<<<<<<<
+ *     status = element_hash_table_get(_ElementTable, element, &elem_obj)
+ *     if status != 0:
+ */
+  if (__Pyx_PrintOne(0, __pyx_n_s_element_hash_table_get) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "brainpy\_c\composition.pyx":730
+ *     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
+ *     print "element_hash_table_get"
+ *     status = element_hash_table_get(_ElementTable, element, &elem_obj)             # <<<<<<<<<<<<<<
+ *     if status != 0:
+ *         print("Error, ", element_symbol, element, isotope)
+ */
+  __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element, (&__pyx_v_elem_obj));
+
+  /* "brainpy\_c\composition.pyx":731
+ *     print "element_hash_table_get"
+ *     status = element_hash_table_get(_ElementTable, element, &elem_obj)
+ *     if status != 0:             # <<<<<<<<<<<<<<
+ *         print("Error, ", element_symbol, element, isotope)
+ *     print "Fetched element", elem_obj.symbol
+ */
+  __pyx_t_3 = ((__pyx_v_status != 0) != 0);
+  if (__pyx_t_3) {
+
+    /* "brainpy\_c\composition.pyx":732
+ *     status = element_hash_table_get(_ElementTable, element, &elem_obj)
+ *     if status != 0:
+ *         print("Error, ", element_symbol, element, isotope)             # <<<<<<<<<<<<<<
+ *     print "Fetched element", elem_obj.symbol
+ *     isotope_obj = get_isotope_by_neutron_count(elem_obj.isotopes, isotope)
+ */
+    __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_element); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_isotope); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = PyTuple_New(4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_INCREF(__pyx_kp_s_Error);
+    __Pyx_GIVEREF(__pyx_kp_s_Error);
+    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_kp_s_Error);
+    __Pyx_INCREF(__pyx_v_element_symbol);
+    __Pyx_GIVEREF(__pyx_v_element_symbol);
+    PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_v_element_symbol);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_5, 2, __pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_5, 3, __pyx_t_4);
+    __pyx_t_2 = 0;
+    __pyx_t_4 = 0;
+    if (__Pyx_PrintOne(0, __pyx_t_5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+    /* "brainpy\_c\composition.pyx":731
+ *     print "element_hash_table_get"
+ *     status = element_hash_table_get(_ElementTable, element, &elem_obj)
+ *     if status != 0:             # <<<<<<<<<<<<<<
+ *         print("Error, ", element_symbol, element, isotope)
+ *     print "Fetched element", elem_obj.symbol
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":733
+ *     if status != 0:
+ *         print("Error, ", element_symbol, element, isotope)
+ *     print "Fetched element", elem_obj.symbol             # <<<<<<<<<<<<<<
+ *     isotope_obj = get_isotope_by_neutron_count(elem_obj.isotopes, isotope)
+ *     print(isotope_obj.mass, isotope_obj.neutrons, isotope_obj.neutron_shift)
+ */
+  __pyx_t_5 = __Pyx_PyBytes_FromString(__pyx_v_elem_obj->symbol); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 733; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 733; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_INCREF(__pyx_kp_s_Fetched_element);
+  __Pyx_GIVEREF(__pyx_kp_s_Fetched_element);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_kp_s_Fetched_element);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_5);
+  __pyx_t_5 = 0;
+  if (__Pyx_Print(0, __pyx_t_4, 1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 733; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "brainpy\_c\composition.pyx":734
+ *         print("Error, ", element_symbol, element, isotope)
+ *     print "Fetched element", elem_obj.symbol
+ *     isotope_obj = get_isotope_by_neutron_count(elem_obj.isotopes, isotope)             # <<<<<<<<<<<<<<
+ *     print(isotope_obj.mass, isotope_obj.neutrons, isotope_obj.neutron_shift)
+ *     _make_isotope_string(elem_obj, isotope_obj, isotope_string)
+ */
+  __pyx_v_isotope_obj = __pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_count(__pyx_v_elem_obj->isotopes, __pyx_v_isotope);
+
+  /* "brainpy\_c\composition.pyx":735
+ *     print "Fetched element", elem_obj.symbol
+ *     isotope_obj = get_isotope_by_neutron_count(elem_obj.isotopes, isotope)
+ *     print(isotope_obj.mass, isotope_obj.neutrons, isotope_obj.neutron_shift)             # <<<<<<<<<<<<<<
+ *     _make_isotope_string(elem_obj, isotope_obj, isotope_string)
+ *     print isotope_string
+ */
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_isotope_obj->mass); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 735; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_isotope_obj->neutrons); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 735; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_isotope_obj->neutron_shift); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 735; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_6 = PyTuple_New(3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 735; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_6, 2, __pyx_t_2);
+  __pyx_t_4 = 0;
+  __pyx_t_5 = 0;
+  __pyx_t_2 = 0;
+  if (__Pyx_PrintOne(0, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 735; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "brainpy\_c\composition.pyx":736
+ *     isotope_obj = get_isotope_by_neutron_count(elem_obj.isotopes, isotope)
+ *     print(isotope_obj.mass, isotope_obj.neutrons, isotope_obj.neutron_shift)
+ *     _make_isotope_string(elem_obj, isotope_obj, isotope_string)             # <<<<<<<<<<<<<<
+ *     print isotope_string
+ *     fixed_isotope_element = make_fixed_isotope_element(elem_obj, isotope)
+ */
+  __pyx_f_7brainpy_2_c_11composition__make_isotope_string(__pyx_v_elem_obj, __pyx_v_isotope_obj, __pyx_v_isotope_string);
+
+  /* "brainpy\_c\composition.pyx":737
+ *     print(isotope_obj.mass, isotope_obj.neutrons, isotope_obj.neutron_shift)
+ *     _make_isotope_string(elem_obj, isotope_obj, isotope_string)
+ *     print isotope_string             # <<<<<<<<<<<<<<
+ *     fixed_isotope_element = make_fixed_isotope_element(elem_obj, isotope)
+ *     printf("Fixed: %s, %f", fixed_isotope_element.symbol, element_monoisotopic_mass(fixed_isotope_element))
+ */
+  __pyx_t_6 = __Pyx_PyObject_FromString(__pyx_v_isotope_string); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_6);
+  if (__Pyx_PrintOne(0, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+  /* "brainpy\_c\composition.pyx":738
+ *     _make_isotope_string(elem_obj, isotope_obj, isotope_string)
+ *     print isotope_string
+ *     fixed_isotope_element = make_fixed_isotope_element(elem_obj, isotope)             # <<<<<<<<<<<<<<
+ *     printf("Fixed: %s, %f", fixed_isotope_element.symbol, element_monoisotopic_mass(fixed_isotope_element))
+ * 
+ */
+  __pyx_v_fixed_isotope_element = __pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element(__pyx_v_elem_obj, __pyx_v_isotope);
+
+  /* "brainpy\_c\composition.pyx":739
+ *     print isotope_string
+ *     fixed_isotope_element = make_fixed_isotope_element(elem_obj, isotope)
+ *     printf("Fixed: %s, %f", fixed_isotope_element.symbol, element_monoisotopic_mass(fixed_isotope_element))             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  printf(__pyx_k_Fixed_s_f, __pyx_v_fixed_isotope_element->symbol, __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(__pyx_v_fixed_isotope_element));
+
+  /* "brainpy\_c\composition.pyx":713
+ * 
+ * 
+ * def isotope_update_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_AddTraceback("brainpy._c.composition.isotope_update_test", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_out);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":742
+ * 
+ * 
+ * def isotope_parse_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_7isotope_parse_test(PyObject *__pyx_self, PyObject *__pyx_v_element_symbol); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_6isotope_parse_test[] = "isotope_parse_test(str element_symbol)";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_11composition_7isotope_parse_test = {"isotope_parse_test", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_7isotope_parse_test, METH_O, __pyx_doc_7brainpy_2_c_11composition_6isotope_parse_test};
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_7isotope_parse_test(PyObject *__pyx_self, PyObject *__pyx_v_element_symbol) {
+  CYTHON_UNUSED int __pyx_lineno = 0;
+  CYTHON_UNUSED const char *__pyx_filename = NULL;
+  CYTHON_UNUSED int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("isotope_parse_test (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_element_symbol), (&PyString_Type), 1, "element_symbol", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_r = __pyx_pf_7brainpy_2_c_11composition_6isotope_parse_test(__pyx_self, ((PyObject*)__pyx_v_element_symbol));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_6isotope_parse_test(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_element_symbol) {
+  char *__pyx_v_c_element_symbol;
+  char *__pyx_v_element;
+  int __pyx_v_isotope;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  char *__pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("isotope_parse_test", 0);
+
+  /* "brainpy\_c\composition.pyx":748
+ *         char[10] isotope_string
+ *         int isotope
+ *     c_element_symbol = PyString_AsString(element_symbol)             # <<<<<<<<<<<<<<
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)
+ * 
+ */
+  __pyx_t_1 = PyString_AsString(__pyx_v_element_symbol); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_c_element_symbol = __pyx_t_1;
+
+  /* "brainpy\_c\composition.pyx":749
+ *         int isotope
+ *     c_element_symbol = PyString_AsString(element_symbol)
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)             # <<<<<<<<<<<<<<
+ * 
+ *     print element, isotope
+ */
+  __pyx_v_element = __pyx_f_7brainpy_2_c_11composition__parse_isotope_string(__pyx_v_c_element_symbol, (&__pyx_v_isotope), __pyx_v_element);
+
+  /* "brainpy\_c\composition.pyx":751
+ *     element = _parse_isotope_string(c_element_symbol, &isotope, element)
+ * 
+ *     print element, isotope             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_element); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_isotope); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
+  __pyx_t_2 = 0;
+  __pyx_t_3 = 0;
+  if (__Pyx_Print(0, __pyx_t_4, 1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "brainpy\_c\composition.pyx":742
+ * 
+ * 
+ * def isotope_parse_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("brainpy._c.composition.isotope_parse_test", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":756
+ * cdef dict _string_table = {}
+ * 
+ * cdef str _store_string(str symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         PyObject* po
+ */
+
+static PyObject *__pyx_f_7brainpy_2_c_11composition__store_string(PyObject *__pyx_v_symbol) {
+  PyObject *__pyx_v_po;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_t_2;
+  int __pyx_t_3;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_store_string", 0);
+
+  /* "brainpy\_c\composition.pyx":759
+ *     cdef:
+ *         PyObject* po
+ *     po = PyDict_GetItem(_string_table, symbol)             # <<<<<<<<<<<<<<
+ *     if po == NULL:
+ *         PyDict_SetItem(_string_table, symbol, symbol)
+ */
+  __pyx_t_1 = __pyx_v_7brainpy_2_c_11composition__string_table;
+  __Pyx_INCREF(__pyx_t_1);
+  __pyx_v_po = PyDict_GetItem(__pyx_t_1, __pyx_v_symbol);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "brainpy\_c\composition.pyx":760
+ *         PyObject* po
+ *     po = PyDict_GetItem(_string_table, symbol)
+ *     if po == NULL:             # <<<<<<<<<<<<<<
+ *         PyDict_SetItem(_string_table, symbol, symbol)
+ *         po = PyDict_GetItem(_string_table, symbol)
+ */
+  __pyx_t_2 = ((__pyx_v_po == NULL) != 0);
+  if (__pyx_t_2) {
+
+    /* "brainpy\_c\composition.pyx":761
+ *     po = PyDict_GetItem(_string_table, symbol)
+ *     if po == NULL:
+ *         PyDict_SetItem(_string_table, symbol, symbol)             # <<<<<<<<<<<<<<
+ *         po = PyDict_GetItem(_string_table, symbol)
+ *     return <str>po
+ */
+    __pyx_t_1 = __pyx_v_7brainpy_2_c_11composition__string_table;
+    __Pyx_INCREF(__pyx_t_1);
+    __pyx_t_3 = PyDict_SetItem(__pyx_t_1, __pyx_v_symbol, __pyx_v_symbol); if (unlikely(__pyx_t_3 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "brainpy\_c\composition.pyx":762
+ *     if po == NULL:
+ *         PyDict_SetItem(_string_table, symbol, symbol)
+ *         po = PyDict_GetItem(_string_table, symbol)             # <<<<<<<<<<<<<<
+ *     return <str>po
+ * 
+ */
+    __pyx_t_1 = __pyx_v_7brainpy_2_c_11composition__string_table;
+    __Pyx_INCREF(__pyx_t_1);
+    __pyx_v_po = PyDict_GetItem(__pyx_t_1, __pyx_v_symbol);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "brainpy\_c\composition.pyx":760
+ *         PyObject* po
+ *     po = PyDict_GetItem(_string_table, symbol)
+ *     if po == NULL:             # <<<<<<<<<<<<<<
+ *         PyDict_SetItem(_string_table, symbol, symbol)
+ *         po = PyDict_GetItem(_string_table, symbol)
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":763
+ *         PyDict_SetItem(_string_table, symbol, symbol)
+ *         po = PyDict_GetItem(_string_table, symbol)
+ *     return <str>po             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(((PyObject*)__pyx_v_po));
+  __pyx_r = ((PyObject*)__pyx_v_po);
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":756
+ * cdef dict _string_table = {}
+ * 
+ * cdef str _store_string(str symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         PyObject* po
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("brainpy._c.composition._store_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":767
  * 
  * cdef class PyComposition(object):
  *     def __cinit__(self, base=None, **kwargs):             # <<<<<<<<<<<<<<
@@ -6077,7 +7244,7 @@ static int __pyx_pw_7brainpy_2_c_11composition_13PyComposition_1__cinit__(PyObje
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 767; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -6090,7 +7257,7 @@ static int __pyx_pw_7brainpy_2_c_11composition_13PyComposition_1__cinit__(PyObje
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 767; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
   __Pyx_AddTraceback("brainpy._c.composition.PyComposition.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
@@ -6128,7 +7295,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "brainpy\_c\composition.pyx":572
+  /* "brainpy\_c\composition.pyx":771
  *             char* element
  *             count_type count
  *         self.impl = make_composition()             # <<<<<<<<<<<<<<
@@ -6137,7 +7304,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
  */
   __pyx_v_self->impl = __pyx_f_7brainpy_2_c_11composition_make_composition();
 
-  /* "brainpy\_c\composition.pyx":573
+  /* "brainpy\_c\composition.pyx":772
  *             count_type count
  *         self.impl = make_composition()
  *         self._clean = False             # <<<<<<<<<<<<<<
@@ -6146,7 +7313,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
  */
   __pyx_v_self->_clean = 0;
 
-  /* "brainpy\_c\composition.pyx":574
+  /* "brainpy\_c\composition.pyx":773
  *         self.impl = make_composition()
  *         self._clean = False
  *         self.cached_mass = 0.             # <<<<<<<<<<<<<<
@@ -6155,7 +7322,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
  */
   __pyx_v_self->cached_mass = 0.;
 
-  /* "brainpy\_c\composition.pyx":576
+  /* "brainpy\_c\composition.pyx":775
  *         self.cached_mass = 0.
  * 
  *         if base is not None and isinstance(base, dict):             # <<<<<<<<<<<<<<
@@ -6175,14 +7342,14 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":577
+    /* "brainpy\_c\composition.pyx":776
  * 
  *         if base is not None and isinstance(base, dict):
  *             self.update(base)             # <<<<<<<<<<<<<<
  * 
  *         for element, count in kwargs.items():
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 577; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_6 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_5))) {
@@ -6195,23 +7362,23 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
       }
     }
     if (!__pyx_t_6) {
-      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_v_base); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 577; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_v_base); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
     } else {
-      __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 577; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_6); __pyx_t_6 = NULL;
       __Pyx_INCREF(__pyx_v_base);
       __Pyx_GIVEREF(__pyx_v_base);
       PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_v_base);
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 577; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     }
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":576
+    /* "brainpy\_c\composition.pyx":775
  *         self.cached_mass = 0.
  * 
  *         if base is not None and isinstance(base, dict):             # <<<<<<<<<<<<<<
@@ -6220,22 +7387,22 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
  */
   }
 
-  /* "brainpy\_c\composition.pyx":579
+  /* "brainpy\_c\composition.pyx":778
  *             self.update(base)
  * 
  *         for element, count in kwargs.items():             # <<<<<<<<<<<<<<
  *             self[element] = count
  * 
  */
-  __pyx_t_4 = __Pyx_PyDict_Items(__pyx_v_kwargs); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyDict_Items(__pyx_v_kwargs); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   if (likely(PyList_CheckExact(__pyx_t_4)) || PyTuple_CheckExact(__pyx_t_4)) {
     __pyx_t_5 = __pyx_t_4; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
     __pyx_t_9 = NULL;
   } else {
-    __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   for (;;) {
@@ -6243,17 +7410,17 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
       if (likely(PyList_CheckExact(__pyx_t_5))) {
         if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_4); __pyx_t_8++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_4); __pyx_t_8++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       } else {
         if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_4); __pyx_t_8++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_4); __pyx_t_8++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       }
@@ -6263,7 +7430,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -6279,7 +7446,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -6292,15 +7459,15 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
       __Pyx_INCREF(__pyx_t_7);
       __Pyx_INCREF(__pyx_t_6);
       #else
-      __pyx_t_7 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       #endif
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_10 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_10 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_11 = Py_TYPE(__pyx_t_10)->tp_iternext;
@@ -6308,7 +7475,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
       __Pyx_GOTREF(__pyx_t_7);
       index = 1; __pyx_t_6 = __pyx_t_11(__pyx_t_10); if (unlikely(!__pyx_t_6)) goto __pyx_L8_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_6);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_11(__pyx_t_10), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_11(__pyx_t_10), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_11 = NULL;
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       goto __pyx_L9_unpacking_done;
@@ -6316,32 +7483,32 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __pyx_t_11 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L9_unpacking_done:;
     }
-    __pyx_t_12 = __Pyx_PyObject_AsString(__pyx_t_7); if (unlikely((!__pyx_t_12) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_13 = __Pyx_PyInt_As_int(__pyx_t_6); if (unlikely((__pyx_t_13 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyObject_AsString(__pyx_t_7); if (unlikely((!__pyx_t_12) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_13 = __Pyx_PyInt_As_int(__pyx_t_6); if (unlikely((__pyx_t_13 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_v_element = __pyx_t_12;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_v_count = __pyx_t_13;
 
-    /* "brainpy\_c\composition.pyx":580
+    /* "brainpy\_c\composition.pyx":779
  * 
  *         for element, count in kwargs.items():
  *             self[element] = count             # <<<<<<<<<<<<<<
  * 
  *     def __dealloc__(self):
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 580; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 779; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyBytes_FromString(__pyx_v_element); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 580; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyBytes_FromString(__pyx_v_element); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 779; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
-    if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_t_6, __pyx_t_4) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 580; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_t_6, __pyx_t_4) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 779; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":579
+    /* "brainpy\_c\composition.pyx":778
  *             self.update(base)
  * 
  *         for element, count in kwargs.items():             # <<<<<<<<<<<<<<
@@ -6351,7 +7518,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "brainpy\_c\composition.pyx":568
+  /* "brainpy\_c\composition.pyx":767
  * 
  * cdef class PyComposition(object):
  *     def __cinit__(self, base=None, **kwargs):             # <<<<<<<<<<<<<<
@@ -6375,7 +7542,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition___cinit__(struct 
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":582
+/* "brainpy\_c\composition.pyx":781
  *             self[element] = count
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -6398,7 +7565,7 @@ static void __pyx_pf_7brainpy_2_c_11composition_13PyComposition_2__dealloc__(str
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "brainpy\_c\composition.pyx":583
+  /* "brainpy\_c\composition.pyx":782
  * 
  *     def __dealloc__(self):
  *         free_composition(self.impl)             # <<<<<<<<<<<<<<
@@ -6407,7 +7574,7 @@ static void __pyx_pf_7brainpy_2_c_11composition_13PyComposition_2__dealloc__(str
  */
   __pyx_f_7brainpy_2_c_11composition_free_composition(__pyx_v_self->impl);
 
-  /* "brainpy\_c\composition.pyx":582
+  /* "brainpy\_c\composition.pyx":781
  *             self[element] = count
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -6419,7 +7586,7 @@ static void __pyx_pf_7brainpy_2_c_11composition_13PyComposition_2__dealloc__(str
   __Pyx_RefNannyFinishContext();
 }
 
-/* "brainpy\_c\composition.pyx":585
+/* "brainpy\_c\composition.pyx":784
  *         free_composition(self.impl)
  * 
  *     def __getitem__(self, str key):             # <<<<<<<<<<<<<<
@@ -6436,7 +7603,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_5__getitem_
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__getitem__ (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_key), (&PyString_Type), 1, "key", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_key), (&PyString_Type), 1, "key", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 784; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem__(((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_v_self), ((PyObject*)__pyx_v_key));
 
   /* function exit code */
@@ -6454,26 +7621,39 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem_
   char *__pyx_v_ckey;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  char *__pyx_t_1;
-  int __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_1 = NULL;
+  char *__pyx_t_2;
+  int __pyx_t_3;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getitem__", 0);
+  __Pyx_INCREF(__pyx_v_key);
 
-  /* "brainpy\_c\composition.pyx":590
+  /* "brainpy\_c\composition.pyx":789
  *             int status
  *             char* ckey
+ *         key = _store_string(key)             # <<<<<<<<<<<<<<
+ *         ckey = PyString_AsString(key)
+ *         status = composition_get_element_count(self.impl, ckey, &count)
+ */
+  __pyx_t_1 = __pyx_f_7brainpy_2_c_11composition__store_string(__pyx_v_key); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 789; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF_SET(__pyx_v_key, ((PyObject*)__pyx_t_1));
+  __pyx_t_1 = 0;
+
+  /* "brainpy\_c\composition.pyx":790
+ *             char* ckey
+ *         key = _store_string(key)
  *         ckey = PyString_AsString(key)             # <<<<<<<<<<<<<<
  *         status = composition_get_element_count(self.impl, ckey, &count)
  *         if status == 0:
  */
-  __pyx_t_1 = PyString_AsString(__pyx_v_key); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 590; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_ckey = __pyx_t_1;
+  __pyx_t_2 = PyString_AsString(__pyx_v_key); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 790; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_ckey = __pyx_t_2;
 
-  /* "brainpy\_c\composition.pyx":591
- *             char* ckey
+  /* "brainpy\_c\composition.pyx":791
+ *         key = _store_string(key)
  *         ckey = PyString_AsString(key)
  *         status = composition_get_element_count(self.impl, ckey, &count)             # <<<<<<<<<<<<<<
  *         if status == 0:
@@ -6481,31 +7661,31 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem_
  */
   __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_self->impl, __pyx_v_ckey, (&__pyx_v_count));
 
-  /* "brainpy\_c\composition.pyx":592
+  /* "brainpy\_c\composition.pyx":792
  *         ckey = PyString_AsString(key)
  *         status = composition_get_element_count(self.impl, ckey, &count)
  *         if status == 0:             # <<<<<<<<<<<<<<
  *             return count
  *         else:
  */
-  __pyx_t_2 = ((__pyx_v_status == 0) != 0);
-  if (__pyx_t_2) {
+  __pyx_t_3 = ((__pyx_v_status == 0) != 0);
+  if (__pyx_t_3) {
 
-    /* "brainpy\_c\composition.pyx":593
+    /* "brainpy\_c\composition.pyx":793
  *         status = composition_get_element_count(self.impl, ckey, &count)
  *         if status == 0:
  *             return count             # <<<<<<<<<<<<<<
  *         else:
- *             intern(key)
+ *             composition_set_element_count(self.impl, ckey, 0)
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 593; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_r = __pyx_t_3;
-    __pyx_t_3 = 0;
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_count); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 793; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_r = __pyx_t_1;
+    __pyx_t_1 = 0;
     goto __pyx_L0;
 
-    /* "brainpy\_c\composition.pyx":592
+    /* "brainpy\_c\composition.pyx":792
  *         ckey = PyString_AsString(key)
  *         status = composition_get_element_count(self.impl, ckey, &count)
  *         if status == 0:             # <<<<<<<<<<<<<<
@@ -6514,29 +7694,18 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem_
  */
   }
 
-  /* "brainpy\_c\composition.pyx":595
+  /* "brainpy\_c\composition.pyx":795
  *             return count
  *         else:
- *             intern(key)             # <<<<<<<<<<<<<<
- *             composition_set_element_count(self.impl, ckey, 0)
- *             return 0.
- */
-  /*else*/ {
-    __pyx_t_3 = __Pyx_Intern(__pyx_v_key); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 595; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-
-    /* "brainpy\_c\composition.pyx":596
- *         else:
- *             intern(key)
  *             composition_set_element_count(self.impl, ckey, 0)             # <<<<<<<<<<<<<<
  *             return 0.
  * 
  */
+  /*else*/ {
     __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(__pyx_v_self->impl, __pyx_v_ckey, 0);
 
-    /* "brainpy\_c\composition.pyx":597
- *             intern(key)
+    /* "brainpy\_c\composition.pyx":796
+ *         else:
  *             composition_set_element_count(self.impl, ckey, 0)
  *             return 0.             # <<<<<<<<<<<<<<
  * 
@@ -6548,7 +7717,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem_
     goto __pyx_L0;
   }
 
-  /* "brainpy\_c\composition.pyx":585
+  /* "brainpy\_c\composition.pyx":784
  *         free_composition(self.impl)
  * 
  *     def __getitem__(self, str key):             # <<<<<<<<<<<<<<
@@ -6558,16 +7727,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_4__getitem_
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_AddTraceback("brainpy._c.composition.PyComposition.__getitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_key);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":599
+/* "brainpy\_c\composition.pyx":798
  *             return 0.
  * 
  *     def __setitem__(self, str key, count_type count):             # <<<<<<<<<<<<<<
@@ -6586,7 +7756,7 @@ static int __pyx_pw_7brainpy_2_c_11composition_13PyComposition_7__setitem__(PyOb
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setitem__ (wrapper)", 0);
   assert(__pyx_arg_count); {
-    __pyx_v_count = __Pyx_PyInt_As_int(__pyx_arg_count); if (unlikely((__pyx_v_count == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_count = __Pyx_PyInt_As_int(__pyx_arg_count); if (unlikely((__pyx_v_count == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -6594,7 +7764,7 @@ static int __pyx_pw_7brainpy_2_c_11composition_13PyComposition_7__setitem__(PyOb
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_key), (&PyString_Type), 1, "key", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_key), (&PyString_Type), 1, "key", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_6__setitem__(((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_v_self), ((PyObject*)__pyx_v_key), ((__pyx_t_7brainpy_2_c_11composition_count_type)__pyx_v_count));
 
   /* function exit code */
@@ -6611,45 +7781,47 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition_6__setitem__(stru
   char *__pyx_v_ckey;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  char *__pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_1 = NULL;
+  char *__pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__setitem__", 0);
+  __Pyx_INCREF(__pyx_v_key);
 
-  /* "brainpy\_c\composition.pyx":603
+  /* "brainpy\_c\composition.pyx":802
  *             int status
  *             char* ckey
- *         ckey = PyString_AsString(key)             # <<<<<<<<<<<<<<
- *         intern(key)
+ *         key = _store_string(key)             # <<<<<<<<<<<<<<
+ *         ckey = PyString_AsString(key)
  *         status = composition_set_element_count(self.impl, ckey, count)
  */
-  __pyx_t_1 = PyString_AsString(__pyx_v_key); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 603; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_ckey = __pyx_t_1;
+  __pyx_t_1 = __pyx_f_7brainpy_2_c_11composition__store_string(__pyx_v_key); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF_SET(__pyx_v_key, ((PyObject*)__pyx_t_1));
+  __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":604
+  /* "brainpy\_c\composition.pyx":803
  *             char* ckey
- *         ckey = PyString_AsString(key)
- *         intern(key)             # <<<<<<<<<<<<<<
+ *         key = _store_string(key)
+ *         ckey = PyString_AsString(key)             # <<<<<<<<<<<<<<
  *         status = composition_set_element_count(self.impl, ckey, count)
  *         self._clean = False
  */
-  __pyx_t_2 = __Pyx_Intern(__pyx_v_key); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 604; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyString_AsString(__pyx_v_key); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 803; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_ckey = __pyx_t_2;
 
-  /* "brainpy\_c\composition.pyx":605
+  /* "brainpy\_c\composition.pyx":804
+ *         key = _store_string(key)
  *         ckey = PyString_AsString(key)
- *         intern(key)
  *         status = composition_set_element_count(self.impl, ckey, count)             # <<<<<<<<<<<<<<
  *         self._clean = False
  * 
  */
   __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_composition_set_element_count(__pyx_v_self->impl, __pyx_v_ckey, __pyx_v_count);
 
-  /* "brainpy\_c\composition.pyx":606
- *         intern(key)
+  /* "brainpy\_c\composition.pyx":805
+ *         ckey = PyString_AsString(key)
  *         status = composition_set_element_count(self.impl, ckey, count)
  *         self._clean = False             # <<<<<<<<<<<<<<
  * 
@@ -6657,7 +7829,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition_6__setitem__(stru
  */
   __pyx_v_self->_clean = 0;
 
-  /* "brainpy\_c\composition.pyx":599
+  /* "brainpy\_c\composition.pyx":798
  *             return 0.
  * 
  *     def __setitem__(self, str key, count_type count):             # <<<<<<<<<<<<<<
@@ -6669,15 +7841,16 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition_6__setitem__(stru
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_AddTraceback("brainpy._c.composition.PyComposition.__setitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_key);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":608
+/* "brainpy\_c\composition.pyx":807
  *         self._clean = False
  * 
  *     def update(self, arg=None, **kwargs):             # <<<<<<<<<<<<<<
@@ -6687,6 +7860,7 @@ static int __pyx_pf_7brainpy_2_c_11composition_13PyComposition_6__setitem__(stru
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_9update(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_8update[] = "PyComposition.update(self, arg=None, **kwargs)";
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_9update(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_arg = 0;
   PyObject *__pyx_v_kwargs = 0;
@@ -6719,7 +7893,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_9update(PyO
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, pos_args, "update") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 608; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, __pyx_v_kwargs, values, pos_args, "update") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -6732,7 +7906,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_9update(PyO
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("update", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 608; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("update", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
   __Pyx_AddTraceback("brainpy._c.composition.PyComposition.update", __pyx_clineno, __pyx_lineno, __pyx_filename);
@@ -6767,7 +7941,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("update", 0);
 
-  /* "brainpy\_c\composition.pyx":609
+  /* "brainpy\_c\composition.pyx":808
  * 
  *     def update(self, arg=None, **kwargs):
  *         if arg is not None:             # <<<<<<<<<<<<<<
@@ -6778,33 +7952,33 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "brainpy\_c\composition.pyx":610
+    /* "brainpy\_c\composition.pyx":809
  *     def update(self, arg=None, **kwargs):
  *         if arg is not None:
  *             self.update(**arg)             # <<<<<<<<<<<<<<
  *         for key, value in kwargs.items():
  *             self[key] = value
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     if (unlikely(__pyx_v_arg == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "argument after ** must be a mapping, not NoneType");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (likely(PyDict_CheckExact(__pyx_v_arg))) {
-      __pyx_t_4 = PyDict_Copy(__pyx_v_arg); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyDict_Copy(__pyx_v_arg); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
     } else {
-      __pyx_t_4 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_arg, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyObject_CallFunctionObjArgs((PyObject*)&PyDict_Type, __pyx_v_arg, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
     }
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 610; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "brainpy\_c\composition.pyx":609
+    /* "brainpy\_c\composition.pyx":808
  * 
  *     def update(self, arg=None, **kwargs):
  *         if arg is not None:             # <<<<<<<<<<<<<<
@@ -6813,22 +7987,22 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
  */
   }
 
-  /* "brainpy\_c\composition.pyx":611
+  /* "brainpy\_c\composition.pyx":810
  *         if arg is not None:
  *             self.update(**arg)
  *         for key, value in kwargs.items():             # <<<<<<<<<<<<<<
  *             self[key] = value
  * 
  */
-  __pyx_t_5 = __Pyx_PyDict_Items(__pyx_v_kwargs); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyDict_Items(__pyx_v_kwargs); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   if (likely(PyList_CheckExact(__pyx_t_5)) || PyTuple_CheckExact(__pyx_t_5)) {
     __pyx_t_4 = __pyx_t_5; __Pyx_INCREF(__pyx_t_4); __pyx_t_6 = 0;
     __pyx_t_7 = NULL;
   } else {
-    __pyx_t_6 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   for (;;) {
@@ -6836,17 +8010,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
       if (likely(PyList_CheckExact(__pyx_t_4))) {
         if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_4)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -6856,7 +8030,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -6872,7 +8046,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       #if CYTHON_COMPILING_IN_CPYTHON
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -6885,15 +8059,15 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
       __Pyx_INCREF(__pyx_t_3);
       __Pyx_INCREF(__pyx_t_8);
       #else
-      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_8);
       #endif
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_9 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_9 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_t_10 = Py_TYPE(__pyx_t_9)->tp_iternext;
@@ -6901,7 +8075,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
       __Pyx_GOTREF(__pyx_t_3);
       index = 1; __pyx_t_8 = __pyx_t_10(__pyx_t_9); if (unlikely(!__pyx_t_8)) goto __pyx_L6_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_8);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_t_10 = NULL;
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
       goto __pyx_L7_unpacking_done;
@@ -6909,7 +8083,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
       __pyx_t_10 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 810; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __pyx_L7_unpacking_done:;
     }
     __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_3);
@@ -6917,16 +8091,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
     __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "brainpy\_c\composition.pyx":612
+    /* "brainpy\_c\composition.pyx":811
  *             self.update(**arg)
  *         for key, value in kwargs.items():
  *             self[key] = value             # <<<<<<<<<<<<<<
  * 
  *     def keys(self):
  */
-    if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_v_key, __pyx_v_value) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_v_key, __pyx_v_value) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 811; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "brainpy\_c\composition.pyx":611
+    /* "brainpy\_c\composition.pyx":810
  *         if arg is not None:
  *             self.update(**arg)
  *         for key, value in kwargs.items():             # <<<<<<<<<<<<<<
@@ -6936,7 +8110,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "brainpy\_c\composition.pyx":608
+  /* "brainpy\_c\composition.pyx":807
  *         self._clean = False
  * 
  *     def update(self, arg=None, **kwargs):             # <<<<<<<<<<<<<<
@@ -6963,7 +8137,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":614
+/* "brainpy\_c\composition.pyx":813
  *             self[key] = value
  * 
  *     def keys(self):             # <<<<<<<<<<<<<<
@@ -6973,6 +8147,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8update(str
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_11keys(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_10keys[] = "PyComposition.keys(self)";
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_11keys(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -6988,71 +8163,83 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_10keys(stru
   size_t __pyx_v_i;
   char *__pyx_v_elem;
   PyObject *__pyx_v_keys = 0;
+  PyObject *__pyx_v_key_str = 0;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
+  int __pyx_t_3;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("keys", 0);
 
-  /* "brainpy\_c\composition.pyx":619
- *             char* elem
+  /* "brainpy\_c\composition.pyx":819
  *             list keys
+ *             str key_str
  *         i = 0             # <<<<<<<<<<<<<<
- *         keys = PyList_New(self.impl.used)
+ *         keys = []
  *         while i < self.impl.used:
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":620
- *             list keys
+  /* "brainpy\_c\composition.pyx":820
+ *             str key_str
  *         i = 0
- *         keys = PyList_New(self.impl.used)             # <<<<<<<<<<<<<<
+ *         keys = []             # <<<<<<<<<<<<<<
  *         while i < self.impl.used:
  *             elem = self.impl.elements[i]
  */
-  __pyx_t_1 = PyList_New(__pyx_v_self->impl->used); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 820; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_keys = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":621
+  /* "brainpy\_c\composition.pyx":821
  *         i = 0
- *         keys = PyList_New(self.impl.used)
+ *         keys = []
  *         while i < self.impl.used:             # <<<<<<<<<<<<<<
  *             elem = self.impl.elements[i]
- *             PyList_SET_ITEM(keys, i, PyString_FromString(elem))
+ *             key_str = PyString_FromString(elem)
  */
   while (1) {
     __pyx_t_2 = ((__pyx_v_i < __pyx_v_self->impl->used) != 0);
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_c\composition.pyx":622
- *         keys = PyList_New(self.impl.used)
+    /* "brainpy\_c\composition.pyx":822
+ *         keys = []
  *         while i < self.impl.used:
  *             elem = self.impl.elements[i]             # <<<<<<<<<<<<<<
- *             PyList_SET_ITEM(keys, i, PyString_FromString(elem))
- *             i += 1
+ *             key_str = PyString_FromString(elem)
+ *             PyList_Append(keys, key_str)
  */
     __pyx_v_elem = (__pyx_v_self->impl->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":623
+    /* "brainpy\_c\composition.pyx":823
  *         while i < self.impl.used:
  *             elem = self.impl.elements[i]
- *             PyList_SET_ITEM(keys, i, PyString_FromString(elem))             # <<<<<<<<<<<<<<
+ *             key_str = PyString_FromString(elem)             # <<<<<<<<<<<<<<
+ *             PyList_Append(keys, key_str)
+ *             i += 1
+ */
+    __pyx_t_1 = PyString_FromString(__pyx_v_elem); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_XDECREF_SET(__pyx_v_key_str, ((PyObject*)__pyx_t_1));
+    __pyx_t_1 = 0;
+
+    /* "brainpy\_c\composition.pyx":824
+ *             elem = self.impl.elements[i]
+ *             key_str = PyString_FromString(elem)
+ *             PyList_Append(keys, key_str)             # <<<<<<<<<<<<<<
  *             i += 1
  *         return keys
  */
-    __pyx_t_1 = PyString_FromString(__pyx_v_elem); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    PyList_SET_ITEM(__pyx_v_keys, __pyx_v_i, __pyx_t_1);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_3 = PyList_Append(__pyx_v_keys, __pyx_v_key_str); if (unlikely(__pyx_t_3 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 824; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "brainpy\_c\composition.pyx":624
- *             elem = self.impl.elements[i]
- *             PyList_SET_ITEM(keys, i, PyString_FromString(elem))
+    /* "brainpy\_c\composition.pyx":825
+ *             key_str = PyString_FromString(elem)
+ *             PyList_Append(keys, key_str)
  *             i += 1             # <<<<<<<<<<<<<<
  *         return keys
  * 
@@ -7060,8 +8247,8 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_10keys(stru
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":625
- *             PyList_SET_ITEM(keys, i, PyString_FromString(elem))
+  /* "brainpy\_c\composition.pyx":826
+ *             PyList_Append(keys, key_str)
  *             i += 1
  *         return keys             # <<<<<<<<<<<<<<
  * 
@@ -7072,7 +8259,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_10keys(stru
   __pyx_r = __pyx_v_keys;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":614
+  /* "brainpy\_c\composition.pyx":813
  *             self[key] = value
  * 
  *     def keys(self):             # <<<<<<<<<<<<<<
@@ -7087,12 +8274,13 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_10keys(stru
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_keys);
+  __Pyx_XDECREF(__pyx_v_key_str);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":627
+/* "brainpy\_c\composition.pyx":828
  *         return keys
  * 
  *     def values(self):             # <<<<<<<<<<<<<<
@@ -7102,6 +8290,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_10keys(stru
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_13values(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_12values[] = "PyComposition.values(self)";
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_13values(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -7127,19 +8316,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("values", 0);
 
-  /* "brainpy\_c\composition.pyx":632
+  /* "brainpy\_c\composition.pyx":833
  *             count_type value
  *             list counts
  *         counts = []             # <<<<<<<<<<<<<<
  *         i = 0
  *         while i < self.impl.used:
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 632; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_counts = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":633
+  /* "brainpy\_c\composition.pyx":834
  *             list counts
  *         counts = []
  *         i = 0             # <<<<<<<<<<<<<<
@@ -7148,7 +8337,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":634
+  /* "brainpy\_c\composition.pyx":835
  *         counts = []
  *         i = 0
  *         while i < self.impl.used:             # <<<<<<<<<<<<<<
@@ -7159,7 +8348,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
     __pyx_t_2 = ((__pyx_v_i < __pyx_v_self->impl->used) != 0);
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_c\composition.pyx":635
+    /* "brainpy\_c\composition.pyx":836
  *         i = 0
  *         while i < self.impl.used:
  *             value = self.impl.counts[i]             # <<<<<<<<<<<<<<
@@ -7168,19 +8357,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
  */
     __pyx_v_value = (__pyx_v_self->impl->counts[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":636
+    /* "brainpy\_c\composition.pyx":837
  *         while i < self.impl.used:
  *             value = self.impl.counts[i]
  *             counts.append(value)             # <<<<<<<<<<<<<<
  *             i += 1
  *         return counts
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_value); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 636; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_value); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 837; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyList_Append(__pyx_v_counts, __pyx_t_1); if (unlikely(__pyx_t_3 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 636; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyList_Append(__pyx_v_counts, __pyx_t_1); if (unlikely(__pyx_t_3 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 837; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "brainpy\_c\composition.pyx":637
+    /* "brainpy\_c\composition.pyx":838
  *             value = self.impl.counts[i]
  *             counts.append(value)
  *             i += 1             # <<<<<<<<<<<<<<
@@ -7190,7 +8379,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":638
+  /* "brainpy\_c\composition.pyx":839
  *             counts.append(value)
  *             i += 1
  *         return counts             # <<<<<<<<<<<<<<
@@ -7202,7 +8391,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
   __pyx_r = __pyx_v_counts;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":627
+  /* "brainpy\_c\composition.pyx":828
  *         return keys
  * 
  *     def values(self):             # <<<<<<<<<<<<<<
@@ -7222,7 +8411,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":640
+/* "brainpy\_c\composition.pyx":841
  *         return counts
  * 
  *     def items(self):             # <<<<<<<<<<<<<<
@@ -7232,6 +8421,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_12values(st
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_15items(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_14items[] = "PyComposition.items(self)";
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_15items(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -7260,7 +8450,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("items", 0);
 
-  /* "brainpy\_c\composition.pyx":647
+  /* "brainpy\_c\composition.pyx":848
  *             list items
  * 
  *         i = 0             # <<<<<<<<<<<<<<
@@ -7269,19 +8459,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\composition.pyx":648
+  /* "brainpy\_c\composition.pyx":849
  * 
  *         i = 0
  *         items = []             # <<<<<<<<<<<<<<
  *         while i < self.impl.used:
  *             elem = self.impl.elements[i]
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 648; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_items = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":649
+  /* "brainpy\_c\composition.pyx":850
  *         i = 0
  *         items = []
  *         while i < self.impl.used:             # <<<<<<<<<<<<<<
@@ -7292,7 +8482,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
     __pyx_t_2 = ((__pyx_v_i < __pyx_v_self->impl->used) != 0);
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_c\composition.pyx":650
+    /* "brainpy\_c\composition.pyx":851
  *         items = []
  *         while i < self.impl.used:
  *             elem = self.impl.elements[i]             # <<<<<<<<<<<<<<
@@ -7301,7 +8491,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
  */
     __pyx_v_elem = (__pyx_v_self->impl->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":651
+    /* "brainpy\_c\composition.pyx":852
  *         while i < self.impl.used:
  *             elem = self.impl.elements[i]
  *             value = self.impl.counts[i]             # <<<<<<<<<<<<<<
@@ -7310,18 +8500,18 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
  */
     __pyx_v_value = (__pyx_v_self->impl->counts[__pyx_v_i]);
 
-    /* "brainpy\_c\composition.pyx":652
+    /* "brainpy\_c\composition.pyx":853
  *             elem = self.impl.elements[i]
  *             value = self.impl.counts[i]
  *             items.append((PyString_FromString(elem), value))             # <<<<<<<<<<<<<<
  *             i += 1
  *         return items
  */
-    __pyx_t_1 = PyString_FromString(__pyx_v_elem); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = PyString_FromString(__pyx_v_elem); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 853; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_value); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_value); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 853; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 853; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -7329,10 +8519,10 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
     PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
     __pyx_t_1 = 0;
     __pyx_t_3 = 0;
-    __pyx_t_5 = __Pyx_PyList_Append(__pyx_v_items, __pyx_t_4); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyList_Append(__pyx_v_items, __pyx_t_4); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 853; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":653
+    /* "brainpy\_c\composition.pyx":854
  *             value = self.impl.counts[i]
  *             items.append((PyString_FromString(elem), value))
  *             i += 1             # <<<<<<<<<<<<<<
@@ -7342,7 +8532,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\composition.pyx":654
+  /* "brainpy\_c\composition.pyx":855
  *             items.append((PyString_FromString(elem), value))
  *             i += 1
  *         return items             # <<<<<<<<<<<<<<
@@ -7354,7 +8544,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
   __pyx_r = __pyx_v_items;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":640
+  /* "brainpy\_c\composition.pyx":841
  *         return counts
  * 
  *     def items(self):             # <<<<<<<<<<<<<<
@@ -7376,7 +8566,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":656
+/* "brainpy\_c\composition.pyx":857
  *         return items
  * 
  *     def copy(self):             # <<<<<<<<<<<<<<
@@ -7386,6 +8576,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_14items(str
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_17copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_16copy[] = "PyComposition.copy(self)";
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_17copy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -7407,19 +8598,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_16copy(stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy", 0);
 
-  /* "brainpy\_c\composition.pyx":657
+  /* "brainpy\_c\composition.pyx":858
  * 
  *     def copy(self):
  *         inst = PyComposition()             # <<<<<<<<<<<<<<
  *         composition_iadd(inst.impl, self.impl, 1)
  *         return inst
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_11composition_PyComposition), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 657; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_11composition_PyComposition), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 858; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_inst = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":658
+  /* "brainpy\_c\composition.pyx":859
  *     def copy(self):
  *         inst = PyComposition()
  *         composition_iadd(inst.impl, self.impl, 1)             # <<<<<<<<<<<<<<
@@ -7428,7 +8619,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_16copy(stru
  */
   __pyx_f_7brainpy_2_c_11composition_composition_iadd(__pyx_v_inst->impl, __pyx_v_self->impl, 1);
 
-  /* "brainpy\_c\composition.pyx":659
+  /* "brainpy\_c\composition.pyx":860
  *         inst = PyComposition()
  *         composition_iadd(inst.impl, self.impl, 1)
  *         return inst             # <<<<<<<<<<<<<<
@@ -7440,7 +8631,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_16copy(stru
   __pyx_r = ((PyObject *)__pyx_v_inst);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":656
+  /* "brainpy\_c\composition.pyx":857
  *         return items
  * 
  *     def copy(self):             # <<<<<<<<<<<<<<
@@ -7460,7 +8651,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_16copy(stru
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":661
+/* "brainpy\_c\composition.pyx":862
  *         return inst
  * 
  *     def __add__(self, other):             # <<<<<<<<<<<<<<
@@ -7503,14 +8694,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__add__", 0);
 
-  /* "brainpy\_c\composition.pyx":666
+  /* "brainpy\_c\composition.pyx":867
  *             PyComposition _other
  * 
  *         result = self.copy()             # <<<<<<<<<<<<<<
  * 
  *         if isinstance(other, dict):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_copy); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 666; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_copy); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -7523,18 +8714,18 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 666; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 666; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 666; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_result = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":668
+  /* "brainpy\_c\composition.pyx":869
  *         result = self.copy()
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -7545,14 +8736,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
   __pyx_t_5 = (__pyx_t_4 != 0);
   if (__pyx_t_5) {
 
-    /* "brainpy\_c\composition.pyx":669
+    /* "brainpy\_c\composition.pyx":870
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
  *                 result[key] += value
  *         elif isinstance(other, PyComposition):
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -7565,10 +8756,10 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
       }
     }
     if (__pyx_t_3) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -7576,9 +8767,9 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
       __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_6 = 0;
       __pyx_t_7 = NULL;
     } else {
-      __pyx_t_6 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     for (;;) {
@@ -7586,17 +8777,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
         if (likely(PyList_CheckExact(__pyx_t_2))) {
           if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_1);
           #endif
         } else {
           if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_1);
           #endif
         }
@@ -7606,7 +8797,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           break;
         }
@@ -7622,7 +8813,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
         if (unlikely(size != 2)) {
           if (size > 2) __Pyx_RaiseTooManyValuesError(2);
           else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         #if CYTHON_COMPILING_IN_CPYTHON
         if (likely(PyTuple_CheckExact(sequence))) {
@@ -7635,15 +8826,15 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
         __Pyx_INCREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_8);
         #else
-        __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_8);
         #endif
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       } else {
         Py_ssize_t index = -1;
-        __pyx_t_9 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_t_10 = Py_TYPE(__pyx_t_9)->tp_iternext;
@@ -7651,7 +8842,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
         __Pyx_GOTREF(__pyx_t_3);
         index = 1; __pyx_t_8 = __pyx_t_10(__pyx_t_9); if (unlikely(!__pyx_t_8)) goto __pyx_L6_unpacking_failed;
         __Pyx_GOTREF(__pyx_t_8);
-        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_t_10 = NULL;
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         goto __pyx_L7_unpacking_done;
@@ -7659,7 +8850,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         __pyx_t_10 = NULL;
         if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_L7_unpacking_done:;
       }
       __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_3);
@@ -7667,7 +8858,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
       __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "brainpy\_c\composition.pyx":670
+      /* "brainpy\_c\composition.pyx":871
  *         if isinstance(other, dict):
  *             for key, value in other.items():
  *                 result[key] += value             # <<<<<<<<<<<<<<
@@ -7676,16 +8867,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
  */
       __Pyx_INCREF(__pyx_v_key);
       __pyx_t_1 = __pyx_v_key;
-      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_result), __pyx_t_1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_result), __pyx_t_1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_result), __pyx_t_1, __pyx_t_3) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_result), __pyx_t_1, __pyx_t_3) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "brainpy\_c\composition.pyx":669
+      /* "brainpy\_c\composition.pyx":870
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
@@ -7695,7 +8886,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "brainpy\_c\composition.pyx":668
+    /* "brainpy\_c\composition.pyx":869
  *         result = self.copy()
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -7705,7 +8896,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":671
+  /* "brainpy\_c\composition.pyx":872
  *             for key, value in other.items():
  *                 result[key] += value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -7716,20 +8907,20 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
   __pyx_t_4 = (__pyx_t_5 != 0);
   if (__pyx_t_4) {
 
-    /* "brainpy\_c\composition.pyx":672
+    /* "brainpy\_c\composition.pyx":873
  *                 result[key] += value
  *         elif isinstance(other, PyComposition):
  *             _other = other             # <<<<<<<<<<<<<<
  *             composition_iadd(result.impl, _other.impl, 1)
  *         else:
  */
-    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 672; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_2 = __pyx_v_other;
     __Pyx_INCREF(__pyx_t_2);
     __pyx_v__other = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "brainpy\_c\composition.pyx":673
+    /* "brainpy\_c\composition.pyx":874
  *         elif isinstance(other, PyComposition):
  *             _other = other
  *             composition_iadd(result.impl, _other.impl, 1)             # <<<<<<<<<<<<<<
@@ -7738,7 +8929,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
  */
     __pyx_f_7brainpy_2_c_11composition_composition_iadd(__pyx_v_result->impl, __pyx_v__other->impl, 1);
 
-    /* "brainpy\_c\composition.pyx":671
+    /* "brainpy\_c\composition.pyx":872
  *             for key, value in other.items():
  *                 result[key] += value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -7748,7 +8939,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":675
+  /* "brainpy\_c\composition.pyx":876
  *             composition_iadd(result.impl, _other.impl, 1)
  *         else:
  *             return NotImplemented             # <<<<<<<<<<<<<<
@@ -7763,7 +8954,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\composition.pyx":676
+  /* "brainpy\_c\composition.pyx":877
  *         else:
  *             return NotImplemented
  *         return result             # <<<<<<<<<<<<<<
@@ -7775,7 +8966,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
   __pyx_r = ((PyObject *)__pyx_v_result);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":661
+  /* "brainpy\_c\composition.pyx":862
  *         return inst
  * 
  *     def __add__(self, other):             # <<<<<<<<<<<<<<
@@ -7802,7 +8993,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_18__add__(P
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":678
+/* "brainpy\_c\composition.pyx":879
  *         return result
  * 
  *     def __iadd__(self, other):             # <<<<<<<<<<<<<<
@@ -7844,7 +9035,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__iadd__", 0);
 
-  /* "brainpy\_c\composition.pyx":682
+  /* "brainpy\_c\composition.pyx":883
  *             PyComposition _other
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -7855,14 +9046,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "brainpy\_c\composition.pyx":683
+    /* "brainpy\_c\composition.pyx":884
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
  *                 self[key] += value
  *         elif isinstance(other, PyComposition):
  */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_4))) {
@@ -7875,10 +9066,10 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
       }
     }
     if (__pyx_t_5) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -7886,9 +9077,9 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
       __pyx_t_4 = __pyx_t_3; __Pyx_INCREF(__pyx_t_4); __pyx_t_6 = 0;
       __pyx_t_7 = NULL;
     } else {
-      __pyx_t_6 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     for (;;) {
@@ -7896,17 +9087,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
         if (likely(PyList_CheckExact(__pyx_t_4))) {
           if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_4)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_3);
           #endif
         } else {
           if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_3);
           #endif
         }
@@ -7916,7 +9107,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           break;
         }
@@ -7932,7 +9123,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
         if (unlikely(size != 2)) {
           if (size > 2) __Pyx_RaiseTooManyValuesError(2);
           else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         #if CYTHON_COMPILING_IN_CPYTHON
         if (likely(PyTuple_CheckExact(sequence))) {
@@ -7945,15 +9136,15 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
         __Pyx_INCREF(__pyx_t_5);
         __Pyx_INCREF(__pyx_t_8);
         #else
-        __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_8);
         #endif
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       } else {
         Py_ssize_t index = -1;
-        __pyx_t_9 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_t_10 = Py_TYPE(__pyx_t_9)->tp_iternext;
@@ -7961,7 +9152,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
         __Pyx_GOTREF(__pyx_t_5);
         index = 1; __pyx_t_8 = __pyx_t_10(__pyx_t_9); if (unlikely(!__pyx_t_8)) goto __pyx_L6_unpacking_failed;
         __Pyx_GOTREF(__pyx_t_8);
-        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_t_10 = NULL;
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         goto __pyx_L7_unpacking_done;
@@ -7969,7 +9160,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         __pyx_t_10 = NULL;
         if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 884; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_L7_unpacking_done:;
       }
       __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_5);
@@ -7977,7 +9168,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
       __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "brainpy\_c\composition.pyx":684
+      /* "brainpy\_c\composition.pyx":885
  *         if isinstance(other, dict):
  *             for key, value in other.items():
  *                 self[key] += value             # <<<<<<<<<<<<<<
@@ -7986,16 +9177,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
  */
       __Pyx_INCREF(__pyx_v_key);
       __pyx_t_3 = __pyx_v_key;
-      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_t_3); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_t_3); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 885; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 885; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_t_3, __pyx_t_5) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_t_3, __pyx_t_5) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 885; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "brainpy\_c\composition.pyx":683
+      /* "brainpy\_c\composition.pyx":884
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
@@ -8005,7 +9196,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
     }
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":682
+    /* "brainpy\_c\composition.pyx":883
  *             PyComposition _other
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -8015,7 +9206,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":685
+  /* "brainpy\_c\composition.pyx":886
  *             for key, value in other.items():
  *                 self[key] += value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -8026,20 +9217,20 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":686
+    /* "brainpy\_c\composition.pyx":887
  *                 self[key] += value
  *         elif isinstance(other, PyComposition):
  *             _other = other             # <<<<<<<<<<<<<<
  *             composition_iadd(self.impl, _other.impl, 1)
  *         else:
  */
-    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 887; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_4 = __pyx_v_other;
     __Pyx_INCREF(__pyx_t_4);
     __pyx_v__other = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":687
+    /* "brainpy\_c\composition.pyx":888
  *         elif isinstance(other, PyComposition):
  *             _other = other
  *             composition_iadd(self.impl, _other.impl, 1)             # <<<<<<<<<<<<<<
@@ -8048,7 +9239,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
  */
     __pyx_f_7brainpy_2_c_11composition_composition_iadd(__pyx_v_self->impl, __pyx_v__other->impl, 1);
 
-    /* "brainpy\_c\composition.pyx":685
+    /* "brainpy\_c\composition.pyx":886
  *             for key, value in other.items():
  *                 self[key] += value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -8058,7 +9249,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":689
+  /* "brainpy\_c\composition.pyx":890
  *             composition_iadd(self.impl, _other.impl, 1)
  *         else:
  *             raise TypeError("Cannot add %s to PyComposition" % type(other))             # <<<<<<<<<<<<<<
@@ -8066,23 +9257,23 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
  * 
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Cannot_add_s_to_PyComposition, ((PyObject *)Py_TYPE(__pyx_v_other))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Cannot_add_s_to_PyComposition, ((PyObject *)Py_TYPE(__pyx_v_other))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 890; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 890; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 890; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 890; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\composition.pyx":690
+  /* "brainpy\_c\composition.pyx":891
  *         else:
  *             raise TypeError("Cannot add %s to PyComposition" % type(other))
  *         return self             # <<<<<<<<<<<<<<
@@ -8094,7 +9285,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":678
+  /* "brainpy\_c\composition.pyx":879
  *         return result
  * 
  *     def __iadd__(self, other):             # <<<<<<<<<<<<<<
@@ -8120,7 +9311,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_20__iadd__(
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":692
+/* "brainpy\_c\composition.pyx":893
  *         return self
  * 
  *     def __sub__(self, other):             # <<<<<<<<<<<<<<
@@ -8163,14 +9354,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__sub__", 0);
 
-  /* "brainpy\_c\composition.pyx":697
+  /* "brainpy\_c\composition.pyx":898
  *             PyComposition _other
  * 
  *         result = self.copy()             # <<<<<<<<<<<<<<
  * 
  *         if isinstance(other, dict):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_copy); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_copy); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 898; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -8183,18 +9374,18 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 898; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 898; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 898; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_result = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\composition.pyx":699
+  /* "brainpy\_c\composition.pyx":900
  *         result = self.copy()
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -8205,14 +9396,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
   __pyx_t_5 = (__pyx_t_4 != 0);
   if (__pyx_t_5) {
 
-    /* "brainpy\_c\composition.pyx":700
+    /* "brainpy\_c\composition.pyx":901
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
  *                 result[key] -= value
  *         elif isinstance(other, PyComposition):
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -8225,10 +9416,10 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
       }
     }
     if (__pyx_t_3) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -8236,9 +9427,9 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
       __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_6 = 0;
       __pyx_t_7 = NULL;
     } else {
-      __pyx_t_6 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     for (;;) {
@@ -8246,17 +9437,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
         if (likely(PyList_CheckExact(__pyx_t_2))) {
           if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_1);
           #endif
         } else {
           if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_6); __Pyx_INCREF(__pyx_t_1); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_1);
           #endif
         }
@@ -8266,7 +9457,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           break;
         }
@@ -8282,7 +9473,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
         if (unlikely(size != 2)) {
           if (size > 2) __Pyx_RaiseTooManyValuesError(2);
           else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         #if CYTHON_COMPILING_IN_CPYTHON
         if (likely(PyTuple_CheckExact(sequence))) {
@@ -8295,15 +9486,15 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
         __Pyx_INCREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_8);
         #else
-        __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_8);
         #endif
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       } else {
         Py_ssize_t index = -1;
-        __pyx_t_9 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_t_10 = Py_TYPE(__pyx_t_9)->tp_iternext;
@@ -8311,7 +9502,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
         __Pyx_GOTREF(__pyx_t_3);
         index = 1; __pyx_t_8 = __pyx_t_10(__pyx_t_9); if (unlikely(!__pyx_t_8)) goto __pyx_L6_unpacking_failed;
         __Pyx_GOTREF(__pyx_t_8);
-        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_t_10 = NULL;
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         goto __pyx_L7_unpacking_done;
@@ -8319,7 +9510,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         __pyx_t_10 = NULL;
         if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 901; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_L7_unpacking_done:;
       }
       __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_3);
@@ -8327,7 +9518,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
       __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "brainpy\_c\composition.pyx":701
+      /* "brainpy\_c\composition.pyx":902
  *         if isinstance(other, dict):
  *             for key, value in other.items():
  *                 result[key] -= value             # <<<<<<<<<<<<<<
@@ -8336,16 +9527,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
  */
       __Pyx_INCREF(__pyx_v_key);
       __pyx_t_1 = __pyx_v_key;
-      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_result), __pyx_t_1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 701; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_result), __pyx_t_1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 902; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_3 = PyNumber_InPlaceSubtract(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 701; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PyNumber_InPlaceSubtract(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 902; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_result), __pyx_t_1, __pyx_t_3) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 701; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_result), __pyx_t_1, __pyx_t_3) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 902; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "brainpy\_c\composition.pyx":700
+      /* "brainpy\_c\composition.pyx":901
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
@@ -8355,7 +9546,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "brainpy\_c\composition.pyx":699
+    /* "brainpy\_c\composition.pyx":900
  *         result = self.copy()
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -8365,7 +9556,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":702
+  /* "brainpy\_c\composition.pyx":903
  *             for key, value in other.items():
  *                 result[key] -= value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -8376,20 +9567,20 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
   __pyx_t_4 = (__pyx_t_5 != 0);
   if (__pyx_t_4) {
 
-    /* "brainpy\_c\composition.pyx":703
+    /* "brainpy\_c\composition.pyx":904
  *                 result[key] -= value
  *         elif isinstance(other, PyComposition):
  *             _other = other             # <<<<<<<<<<<<<<
  *             composition_iadd(result.impl, _other.impl, -1)
  *         else:
  */
-    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 703; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 904; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_2 = __pyx_v_other;
     __Pyx_INCREF(__pyx_t_2);
     __pyx_v__other = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "brainpy\_c\composition.pyx":704
+    /* "brainpy\_c\composition.pyx":905
  *         elif isinstance(other, PyComposition):
  *             _other = other
  *             composition_iadd(result.impl, _other.impl, -1)             # <<<<<<<<<<<<<<
@@ -8398,7 +9589,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
  */
     __pyx_f_7brainpy_2_c_11composition_composition_iadd(__pyx_v_result->impl, __pyx_v__other->impl, -1);
 
-    /* "brainpy\_c\composition.pyx":702
+    /* "brainpy\_c\composition.pyx":903
  *             for key, value in other.items():
  *                 result[key] -= value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -8408,7 +9599,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":706
+  /* "brainpy\_c\composition.pyx":907
  *             composition_iadd(result.impl, _other.impl, -1)
  *         else:
  *             return NotImplemented             # <<<<<<<<<<<<<<
@@ -8423,7 +9614,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\composition.pyx":707
+  /* "brainpy\_c\composition.pyx":908
  *         else:
  *             return NotImplemented
  *         return result             # <<<<<<<<<<<<<<
@@ -8435,7 +9626,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
   __pyx_r = ((PyObject *)__pyx_v_result);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":692
+  /* "brainpy\_c\composition.pyx":893
  *         return self
  * 
  *     def __sub__(self, other):             # <<<<<<<<<<<<<<
@@ -8462,7 +9653,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_22__sub__(P
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":709
+/* "brainpy\_c\composition.pyx":910
  *         return result
  * 
  *     def __isub__(self, other):             # <<<<<<<<<<<<<<
@@ -8504,7 +9695,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__isub__", 0);
 
-  /* "brainpy\_c\composition.pyx":713
+  /* "brainpy\_c\composition.pyx":914
  *             PyComposition _other
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -8515,14 +9706,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "brainpy\_c\composition.pyx":714
+    /* "brainpy\_c\composition.pyx":915
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
  *                 self[key] -= value
  *         elif isinstance(other, PyComposition):
  */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_items); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_4))) {
@@ -8535,10 +9726,10 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
       }
     }
     if (__pyx_t_5) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -8546,9 +9737,9 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
       __pyx_t_4 = __pyx_t_3; __Pyx_INCREF(__pyx_t_4); __pyx_t_6 = 0;
       __pyx_t_7 = NULL;
     } else {
-      __pyx_t_6 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     for (;;) {
@@ -8556,17 +9747,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
         if (likely(PyList_CheckExact(__pyx_t_4))) {
           if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_4)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_3);
           #endif
         } else {
           if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
           #if CYTHON_COMPILING_IN_CPYTHON
-          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_3);
           #endif
         }
@@ -8576,7 +9767,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           break;
         }
@@ -8592,7 +9783,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
         if (unlikely(size != 2)) {
           if (size > 2) __Pyx_RaiseTooManyValuesError(2);
           else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         #if CYTHON_COMPILING_IN_CPYTHON
         if (likely(PyTuple_CheckExact(sequence))) {
@@ -8605,15 +9796,15 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
         __Pyx_INCREF(__pyx_t_5);
         __Pyx_INCREF(__pyx_t_8);
         #else
-        __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_8 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_8);
         #endif
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       } else {
         Py_ssize_t index = -1;
-        __pyx_t_9 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_t_10 = Py_TYPE(__pyx_t_9)->tp_iternext;
@@ -8621,7 +9812,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
         __Pyx_GOTREF(__pyx_t_5);
         index = 1; __pyx_t_8 = __pyx_t_10(__pyx_t_9); if (unlikely(!__pyx_t_8)) goto __pyx_L6_unpacking_failed;
         __Pyx_GOTREF(__pyx_t_8);
-        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        if (__Pyx_IternextUnpackEndCheck(__pyx_t_10(__pyx_t_9), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_t_10 = NULL;
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         goto __pyx_L7_unpacking_done;
@@ -8629,7 +9820,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         __pyx_t_10 = NULL;
         if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 915; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __pyx_L7_unpacking_done:;
       }
       __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_5);
@@ -8637,7 +9828,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
       __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "brainpy\_c\composition.pyx":715
+      /* "brainpy\_c\composition.pyx":916
  *         if isinstance(other, dict):
  *             for key, value in other.items():
  *                 self[key] -= value             # <<<<<<<<<<<<<<
@@ -8646,16 +9837,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
  */
       __Pyx_INCREF(__pyx_v_key);
       __pyx_t_3 = __pyx_v_key;
-      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_t_3); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+      __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_t_3); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 916; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_5 = PyNumber_InPlaceSubtract(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PyNumber_InPlaceSubtract(__pyx_t_8, __pyx_v_value); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 916; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_t_3, __pyx_t_5) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_self), __pyx_t_3, __pyx_t_5) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 916; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "brainpy\_c\composition.pyx":714
+      /* "brainpy\_c\composition.pyx":915
  * 
  *         if isinstance(other, dict):
  *             for key, value in other.items():             # <<<<<<<<<<<<<<
@@ -8665,7 +9856,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
     }
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":713
+    /* "brainpy\_c\composition.pyx":914
  *             PyComposition _other
  * 
  *         if isinstance(other, dict):             # <<<<<<<<<<<<<<
@@ -8675,7 +9866,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":716
+  /* "brainpy\_c\composition.pyx":917
  *             for key, value in other.items():
  *                 self[key] -= value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -8686,20 +9877,20 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\composition.pyx":717
+    /* "brainpy\_c\composition.pyx":918
  *                 self[key] -= value
  *         elif isinstance(other, PyComposition):
  *             _other = other             # <<<<<<<<<<<<<<
  *             composition_iadd(self.impl, _other.impl, -1)
  *         else:
  */
-    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 717; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_v_other) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 918; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_4 = __pyx_v_other;
     __Pyx_INCREF(__pyx_t_4);
     __pyx_v__other = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "brainpy\_c\composition.pyx":718
+    /* "brainpy\_c\composition.pyx":919
  *         elif isinstance(other, PyComposition):
  *             _other = other
  *             composition_iadd(self.impl, _other.impl, -1)             # <<<<<<<<<<<<<<
@@ -8708,7 +9899,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
  */
     __pyx_f_7brainpy_2_c_11composition_composition_iadd(__pyx_v_self->impl, __pyx_v__other->impl, -1);
 
-    /* "brainpy\_c\composition.pyx":716
+    /* "brainpy\_c\composition.pyx":917
  *             for key, value in other.items():
  *                 self[key] -= value
  *         elif isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
@@ -8718,7 +9909,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":720
+  /* "brainpy\_c\composition.pyx":921
  *             composition_iadd(self.impl, _other.impl, -1)
  *         else:
  *             raise TypeError("Cannot subtract %s from PyComposition" % type(other))             # <<<<<<<<<<<<<<
@@ -8726,35 +9917,35 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
  * 
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Cannot_subtract_s_from_PyComposi, ((PyObject *)Py_TYPE(__pyx_v_other))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Cannot_subtract_s_from_PyComposi, ((PyObject *)Py_TYPE(__pyx_v_other))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 921; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 921; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 921; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 921; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\composition.pyx":721
+  /* "brainpy\_c\composition.pyx":922
  *         else:
  *             raise TypeError("Cannot subtract %s from PyComposition" % type(other))
  *         return self             # <<<<<<<<<<<<<<
  * 
- * 
+ *     def __mul__(self, scale):
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":709
+  /* "brainpy\_c\composition.pyx":910
  *         return result
  * 
  *     def __isub__(self, other):             # <<<<<<<<<<<<<<
@@ -8780,8 +9971,8 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_24__isub__(
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":724
- * 
+/* "brainpy\_c\composition.pyx":924
+ *         return self
  * 
  *     def __mul__(self, scale):             # <<<<<<<<<<<<<<
  *         cdef:
@@ -8818,7 +10009,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__mul__", 0);
 
-  /* "brainpy\_c\composition.pyx":730
+  /* "brainpy\_c\composition.pyx":930
  *             int scale_factor
  * 
  *         if isinstance(self, PyComposition):             # <<<<<<<<<<<<<<
@@ -8829,30 +10020,30 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "brainpy\_c\composition.pyx":731
+    /* "brainpy\_c\composition.pyx":931
  * 
  *         if isinstance(self, PyComposition):
  *             inst = self             # <<<<<<<<<<<<<<
  *             scale_factor = PyInt_AsLong(scale)
  *         else:
  */
-    if (!(likely(((__pyx_v_self) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_self, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 731; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_v_self) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_self, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 931; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_3 = __pyx_v_self;
     __Pyx_INCREF(__pyx_t_3);
     __pyx_v_inst = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "brainpy\_c\composition.pyx":732
+    /* "brainpy\_c\composition.pyx":932
  *         if isinstance(self, PyComposition):
  *             inst = self
  *             scale_factor = PyInt_AsLong(scale)             # <<<<<<<<<<<<<<
  *         else:
  *             inst = scale
  */
-    __pyx_t_4 = PyInt_AsLong(__pyx_v_scale); if (unlikely(__pyx_t_4 == -1L && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyInt_AsLong(__pyx_v_scale); if (unlikely(__pyx_t_4 == -1L && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 932; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_scale_factor = __pyx_t_4;
 
-    /* "brainpy\_c\composition.pyx":730
+    /* "brainpy\_c\composition.pyx":930
  *             int scale_factor
  * 
  *         if isinstance(self, PyComposition):             # <<<<<<<<<<<<<<
@@ -8862,7 +10053,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\composition.pyx":734
+  /* "brainpy\_c\composition.pyx":934
  *             scale_factor = PyInt_AsLong(scale)
  *         else:
  *             inst = scale             # <<<<<<<<<<<<<<
@@ -8870,32 +10061,32 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
  * 
  */
   /*else*/ {
-    if (!(likely(((__pyx_v_scale) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_scale, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 734; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(((__pyx_v_scale) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_scale, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 934; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_t_3 = __pyx_v_scale;
     __Pyx_INCREF(__pyx_t_3);
     __pyx_v_inst = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "brainpy\_c\composition.pyx":735
+    /* "brainpy\_c\composition.pyx":935
  *         else:
  *             inst = scale
  *             scale_factor = PyInt_AsLong(self)             # <<<<<<<<<<<<<<
  * 
  *         result = inst.copy()
  */
-    __pyx_t_4 = PyInt_AsLong(__pyx_v_self); if (unlikely(__pyx_t_4 == -1L && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 735; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyInt_AsLong(__pyx_v_self); if (unlikely(__pyx_t_4 == -1L && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 935; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_scale_factor = __pyx_t_4;
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\composition.pyx":737
+  /* "brainpy\_c\composition.pyx":937
  *             scale_factor = PyInt_AsLong(self)
  * 
  *         result = inst.copy()             # <<<<<<<<<<<<<<
  * 
  *         composition_imul(result.impl, scale_factor)
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_inst), __pyx_n_s_copy); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_inst), __pyx_n_s_copy); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 937; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_5))) {
@@ -8908,18 +10099,18 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
     }
   }
   if (__pyx_t_6) {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 937; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   } else {
-    __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 937; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_7brainpy_2_c_11composition_PyComposition))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 937; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_result = ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "brainpy\_c\composition.pyx":739
+  /* "brainpy\_c\composition.pyx":939
  *         result = inst.copy()
  * 
  *         composition_imul(result.impl, scale_factor)             # <<<<<<<<<<<<<<
@@ -8928,7 +10119,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
  */
   __pyx_f_7brainpy_2_c_11composition_composition_imul(__pyx_v_result->impl, __pyx_v_scale_factor);
 
-  /* "brainpy\_c\composition.pyx":741
+  /* "brainpy\_c\composition.pyx":941
  *         composition_imul(result.impl, scale_factor)
  * 
  *         return result             # <<<<<<<<<<<<<<
@@ -8940,8 +10131,8 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
   __pyx_r = ((PyObject *)__pyx_v_result);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":724
- * 
+  /* "brainpy\_c\composition.pyx":924
+ *         return self
  * 
  *     def __mul__(self, scale):             # <<<<<<<<<<<<<<
  *         cdef:
@@ -8963,7 +10154,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_26__mul__(P
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":743
+/* "brainpy\_c\composition.pyx":943
  *         return result
  * 
  *     def __imul__(self, int scale):             # <<<<<<<<<<<<<<
@@ -8982,7 +10173,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_29__imul__(
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__imul__ (wrapper)", 0);
   assert(__pyx_arg_scale); {
-    __pyx_v_scale = __Pyx_PyInt_As_int(__pyx_arg_scale); if (unlikely((__pyx_v_scale == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 743; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_scale = __Pyx_PyInt_As_int(__pyx_arg_scale); if (unlikely((__pyx_v_scale == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 943; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -9002,7 +10193,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_28__imul__(
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__imul__", 0);
 
-  /* "brainpy\_c\composition.pyx":744
+  /* "brainpy\_c\composition.pyx":944
  * 
  *     def __imul__(self, int scale):
  *         composition_imul(self.impl, scale)             # <<<<<<<<<<<<<<
@@ -9011,7 +10202,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_28__imul__(
  */
   __pyx_f_7brainpy_2_c_11composition_composition_imul(__pyx_v_self->impl, __pyx_v_scale);
 
-  /* "brainpy\_c\composition.pyx":745
+  /* "brainpy\_c\composition.pyx":945
  *     def __imul__(self, int scale):
  *         composition_imul(self.impl, scale)
  *         return self             # <<<<<<<<<<<<<<
@@ -9023,7 +10214,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_28__imul__(
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":743
+  /* "brainpy\_c\composition.pyx":943
  *         return result
  * 
  *     def __imul__(self, int scale):             # <<<<<<<<<<<<<<
@@ -9038,7 +10229,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_28__imul__(
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":747
+/* "brainpy\_c\composition.pyx":947
  *         return self
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -9070,7 +10261,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_30__iter__(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__iter__", 0);
 
-  /* "brainpy\_c\composition.pyx":748
+  /* "brainpy\_c\composition.pyx":948
  * 
  *     def __iter__(self):
  *         return iter(self.keys())             # <<<<<<<<<<<<<<
@@ -9078,7 +10269,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_30__iter__(
  *     cpdef double mass(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_keys); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_keys); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 948; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -9091,21 +10282,21 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_30__iter__(
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 948; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 948; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 948; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":747
+  /* "brainpy\_c\composition.pyx":947
  *         return self
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -9126,7 +10317,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_30__iter__(
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":750
+/* "brainpy\_c\composition.pyx":950
  *         return iter(self.keys())
  * 
  *     cpdef double mass(self):             # <<<<<<<<<<<<<<
@@ -9152,7 +10343,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 750; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 950; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_33mass)) {
       __Pyx_INCREF(__pyx_t_1);
@@ -9167,14 +10358,14 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 750; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 950; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 750; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 950; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 750; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 950; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_r = __pyx_t_5;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -9183,7 +10374,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "brainpy\_c\composition.pyx":751
+  /* "brainpy\_c\composition.pyx":951
  * 
  *     cpdef double mass(self):
  *         if self._clean:             # <<<<<<<<<<<<<<
@@ -9193,7 +10384,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
   __pyx_t_6 = (__pyx_v_self->_clean != 0);
   if (__pyx_t_6) {
 
-    /* "brainpy\_c\composition.pyx":752
+    /* "brainpy\_c\composition.pyx":952
  *     cpdef double mass(self):
  *         if self._clean:
  *             return self.cached_mass             # <<<<<<<<<<<<<<
@@ -9203,7 +10394,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
     __pyx_r = __pyx_v_self->cached_mass;
     goto __pyx_L0;
 
-    /* "brainpy\_c\composition.pyx":751
+    /* "brainpy\_c\composition.pyx":951
  * 
  *     cpdef double mass(self):
  *         if self._clean:             # <<<<<<<<<<<<<<
@@ -9212,7 +10403,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
  */
   }
 
-  /* "brainpy\_c\composition.pyx":754
+  /* "brainpy\_c\composition.pyx":954
  *             return self.cached_mass
  *         else:
  *             self.cached_mass = composition_mass(self.impl)             # <<<<<<<<<<<<<<
@@ -9222,7 +10413,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
   /*else*/ {
     __pyx_v_self->cached_mass = __pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_self->impl);
 
-    /* "brainpy\_c\composition.pyx":755
+    /* "brainpy\_c\composition.pyx":955
  *         else:
  *             self.cached_mass = composition_mass(self.impl)
  *             self._clean = True             # <<<<<<<<<<<<<<
@@ -9231,7 +10422,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
  */
     __pyx_v_self->_clean = 1;
 
-    /* "brainpy\_c\composition.pyx":756
+    /* "brainpy\_c\composition.pyx":956
  *             self.cached_mass = composition_mass(self.impl)
  *             self._clean = True
  *             return self.cached_mass             # <<<<<<<<<<<<<<
@@ -9242,7 +10433,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
     goto __pyx_L0;
   }
 
-  /* "brainpy\_c\composition.pyx":750
+  /* "brainpy\_c\composition.pyx":950
  *         return iter(self.keys())
  * 
  *     cpdef double mass(self):             # <<<<<<<<<<<<<<
@@ -9265,6 +10456,7 @@ static double __pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(struct __p
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_33mass(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_32mass[] = "PyComposition.mass(self) -> double";
 static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_33mass(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -9285,7 +10477,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_32mass(stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("mass", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 750; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_7brainpy_2_c_11composition_13PyComposition_mass(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 950; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9302,7 +10494,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_32mass(stru
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":758
+/* "brainpy\_c\composition.pyx":958
  *             return self.cached_mass
  * 
  *     def __len__(self):             # <<<<<<<<<<<<<<
@@ -9328,7 +10520,7 @@ static Py_ssize_t __pyx_pf_7brainpy_2_c_11composition_13PyComposition_34__len__(
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__len__", 0);
 
-  /* "brainpy\_c\composition.pyx":759
+  /* "brainpy\_c\composition.pyx":959
  * 
  *     def __len__(self):
  *         return self.impl.used             # <<<<<<<<<<<<<<
@@ -9338,7 +10530,7 @@ static Py_ssize_t __pyx_pf_7brainpy_2_c_11composition_13PyComposition_34__len__(
   __pyx_r = __pyx_v_self->impl->used;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":758
+  /* "brainpy\_c\composition.pyx":958
  *             return self.cached_mass
  * 
  *     def __len__(self):             # <<<<<<<<<<<<<<
@@ -9352,11 +10544,12 @@ static Py_ssize_t __pyx_pf_7brainpy_2_c_11composition_13PyComposition_34__len__(
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":761
+/* "brainpy\_c\composition.pyx":961
  *         return self.impl.used
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+ * 
  */
 
 /* Python wrapper */
@@ -9373,10 +10566,12 @@ static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_37__repr__(
 }
 static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2generator(__pyx_CoroutineObject *__pyx_generator, PyObject *__pyx_sent_value); /* proto */
 
-/* "brainpy\_c\composition.pyx":762
+/* "brainpy\_c\composition.pyx":962
  * 
  *     def __repr__(self):
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bint __equality_pycomposition(self, PyComposition other):
  */
 
 static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8__repr___genexpr(PyObject *__pyx_self) {
@@ -9397,7 +10592,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_8__repr___g
   __Pyx_INCREF(((PyObject *)__pyx_cur_scope->__pyx_outer_scope));
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_outer_scope);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2generator, (PyObject *) __pyx_cur_scope, __pyx_n_s_genexpr, __pyx_n_s_repr___locals_genexpr); if (unlikely(!gen)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2generator, (PyObject *) __pyx_cur_scope, __pyx_n_s_genexpr, __pyx_n_s_repr___locals_genexpr); if (unlikely(!gen)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -9435,9 +10630,9 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_self)) { __Pyx_RaiseClosureNameError("self"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_outer_scope->__pyx_v_self), __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_self)) { __Pyx_RaiseClosureNameError("self"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_outer_scope->__pyx_v_self), __pyx_n_s_items); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -9450,10 +10645,10 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -9461,9 +10656,9 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
     __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_4 = 0;
     __pyx_t_5 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -9471,17 +10666,17 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -9491,7 +10686,7 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -9501,7 +10696,7 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_kv, __pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_1);
     __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_d_2, __pyx_cur_scope->__pyx_v_kv); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_d_3, __pyx_cur_scope->__pyx_v_kv); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
@@ -9520,7 +10715,7 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
     __Pyx_XGOTREF(__pyx_t_2);
     __pyx_t_4 = __pyx_cur_scope->__pyx_t_1;
     __pyx_t_5 = __pyx_cur_scope->__pyx_t_2;
-    if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
@@ -9540,11 +10735,12 @@ static PyObject *__pyx_gb_7brainpy_2_c_11composition_13PyComposition_8__repr___2
   return __pyx_r;
 }
 
-/* "brainpy\_c\composition.pyx":761
+/* "brainpy\_c\composition.pyx":961
  *         return self.impl.used
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+ * 
  */
 
 static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_36__repr__(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self) {
@@ -9567,29 +10763,32 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_36__repr__(
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
 
-  /* "brainpy\_c\composition.pyx":762
+  /* "brainpy\_c\composition.pyx":962
  * 
  *     def __repr__(self):
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bint __equality_pycomposition(self, PyComposition other):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_8__repr___genexpr(((PyObject*)__pyx_cur_scope)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_8__repr___genexpr(((PyObject*)__pyx_cur_scope)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyString_Join(__pyx_kp_s__5, __pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyString_Join(__pyx_kp_s__5, __pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_s_2, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\composition.pyx":761
+  /* "brainpy\_c\composition.pyx":961
  *         return self.impl.used
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
  *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+ * 
  */
 
   /* function exit code */
@@ -9600,6 +10799,1030 @@ static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_36__repr__(
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_DECREF(((PyObject *)__pyx_cur_scope));
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":964
+ *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+ * 
+ *     cpdef bint __equality_pycomposition(self, PyComposition other):             # <<<<<<<<<<<<<<
+ *         return composition_eq(self.impl, other.impl)
+ * 
+ */
+
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_39__equality_pycomposition(PyObject *__pyx_v_self, PyObject *__pyx_v_other); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_pycomposition(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_other, int __pyx_skip_dispatch) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__equality_pycomposition", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_equality_pycomposition); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_39__equality_pycomposition)) {
+      __Pyx_INCREF(__pyx_t_1);
+      __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+        if (likely(__pyx_t_4)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+          __Pyx_INCREF(__pyx_t_4);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
+        }
+      }
+      if (!__pyx_t_4) {
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_other)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+      } else {
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
+        __Pyx_INCREF(((PyObject *)__pyx_v_other));
+        __Pyx_GIVEREF(((PyObject *)__pyx_v_other));
+        PyTuple_SET_ITEM(__pyx_t_5, 0+1, ((PyObject *)__pyx_v_other));
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_r = __pyx_t_6;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      goto __pyx_L0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  }
+
+  /* "brainpy\_c\composition.pyx":965
+ * 
+ *     cpdef bint __equality_pycomposition(self, PyComposition other):
+ *         return composition_eq(self.impl, other.impl)             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bint __equality_dict(self, dict other):
+ */
+  __pyx_r = __pyx_f_7brainpy_2_c_11composition_composition_eq(__pyx_v_self->impl, __pyx_v_other->impl);
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":964
+ *         return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+ * 
+ *     cpdef bint __equality_pycomposition(self, PyComposition other):             # <<<<<<<<<<<<<<
+ *         return composition_eq(self.impl, other.impl)
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_WriteUnraisable("brainpy._c.composition.PyComposition.__equality_pycomposition", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_39__equality_pycomposition(PyObject *__pyx_v_self, PyObject *__pyx_v_other); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_38__equality_pycomposition[] = "PyComposition.__equality_pycomposition(self, PyComposition other) -> bool";
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_39__equality_pycomposition(PyObject *__pyx_v_self, PyObject *__pyx_v_other) {
+  CYTHON_UNUSED int __pyx_lineno = 0;
+  CYTHON_UNUSED const char *__pyx_filename = NULL;
+  CYTHON_UNUSED int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__equality_pycomposition (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_other), __pyx_ptype_7brainpy_2_c_11composition_PyComposition, 1, "other", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_r = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_38__equality_pycomposition(((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_v_self), ((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_v_other));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_38__equality_pycomposition(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_other) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__equality_pycomposition", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_pycomposition(__pyx_v_self, __pyx_v_other, 1)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 964; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("brainpy._c.composition.PyComposition.__equality_pycomposition", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":967
+ *         return composition_eq(self.impl, other.impl)
+ * 
+ *     cpdef bint __equality_dict(self, dict other):             # <<<<<<<<<<<<<<
+ *         cdef:
+ *             size_t n
+ */
+
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_41__equality_dict(PyObject *__pyx_v_self, PyObject *__pyx_v_other); /*proto*/
+static int __pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_dict(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_skip_dispatch) {
+  size_t __pyx_v_n;
+  PyObject *__pyx_v_key = 0;
+  __pyx_t_7brainpy_2_c_11composition_count_type __pyx_v_value;
+  __pyx_t_7brainpy_2_c_11composition_count_type __pyx_v_my_value;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  PyObject *(*__pyx_t_8)(PyObject *);
+  PyObject *(*__pyx_t_9)(PyObject *);
+  __pyx_t_7brainpy_2_c_11composition_count_type __pyx_t_10;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__equality_dict", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_equality_dict); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_41__equality_dict)) {
+      __Pyx_INCREF(__pyx_t_1);
+      __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+        if (likely(__pyx_t_4)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+          __Pyx_INCREF(__pyx_t_4);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
+        }
+      }
+      if (!__pyx_t_4) {
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_other); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+      } else {
+        __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_other);
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_r = __pyx_t_6;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      goto __pyx_L0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  }
+
+  /* "brainpy\_c\composition.pyx":974
+ *             count_type my_value
+ * 
+ *         n = len(other)             # <<<<<<<<<<<<<<
+ *         if n != self.impl.used:
+ *             return False
+ */
+  if (unlikely(__pyx_v_other == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 974; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_7 = PyDict_Size(__pyx_v_other); if (unlikely(__pyx_t_7 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 974; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_n = __pyx_t_7;
+
+  /* "brainpy\_c\composition.pyx":975
+ * 
+ *         n = len(other)
+ *         if n != self.impl.used:             # <<<<<<<<<<<<<<
+ *             return False
+ *         for key, value in other.items():
+ */
+  __pyx_t_6 = ((__pyx_v_n != __pyx_v_self->impl->used) != 0);
+  if (__pyx_t_6) {
+
+    /* "brainpy\_c\composition.pyx":976
+ *         n = len(other)
+ *         if n != self.impl.used:
+ *             return False             # <<<<<<<<<<<<<<
+ *         for key, value in other.items():
+ *             my_value = self[key]
+ */
+    __pyx_r = 0;
+    goto __pyx_L0;
+
+    /* "brainpy\_c\composition.pyx":975
+ * 
+ *         n = len(other)
+ *         if n != self.impl.used:             # <<<<<<<<<<<<<<
+ *             return False
+ *         for key, value in other.items():
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":977
+ *         if n != self.impl.used:
+ *             return False
+ *         for key, value in other.items():             # <<<<<<<<<<<<<<
+ *             my_value = self[key]
+ *             if my_value != value:
+ */
+  if (unlikely(__pyx_v_other == Py_None)) {
+    PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "items");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_1 = __Pyx_PyDict_Items(__pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
+    __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_7 = 0;
+    __pyx_t_8 = NULL;
+  } else {
+    __pyx_t_7 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_8 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  for (;;) {
+    if (likely(!__pyx_t_8)) {
+      if (likely(PyList_CheckExact(__pyx_t_2))) {
+        if (__pyx_t_7 >= PyList_GET_SIZE(__pyx_t_2)) break;
+        #if CYTHON_COMPILING_IN_CPYTHON
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_7); __Pyx_INCREF(__pyx_t_1); __pyx_t_7++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        #else
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_1);
+        #endif
+      } else {
+        if (__pyx_t_7 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
+        #if CYTHON_COMPILING_IN_CPYTHON
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_7); __Pyx_INCREF(__pyx_t_1); __pyx_t_7++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        #else
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_1);
+        #endif
+      }
+    } else {
+      __pyx_t_1 = __pyx_t_8(__pyx_t_2);
+      if (unlikely(!__pyx_t_1)) {
+        PyObject* exc_type = PyErr_Occurred();
+        if (exc_type) {
+          if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        }
+        break;
+      }
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
+      PyObject* sequence = __pyx_t_1;
+      #if CYTHON_COMPILING_IN_CPYTHON
+      Py_ssize_t size = Py_SIZE(sequence);
+      #else
+      Py_ssize_t size = PySequence_Size(sequence);
+      #endif
+      if (unlikely(size != 2)) {
+        if (size > 2) __Pyx_RaiseTooManyValuesError(2);
+        else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      #if CYTHON_COMPILING_IN_CPYTHON
+      if (likely(PyTuple_CheckExact(sequence))) {
+        __pyx_t_3 = PyTuple_GET_ITEM(sequence, 0); 
+        __pyx_t_5 = PyTuple_GET_ITEM(sequence, 1); 
+      } else {
+        __pyx_t_3 = PyList_GET_ITEM(sequence, 0); 
+        __pyx_t_5 = PyList_GET_ITEM(sequence, 1); 
+      }
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_5);
+      #else
+      __pyx_t_3 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_5 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else {
+      Py_ssize_t index = -1;
+      __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_9 = Py_TYPE(__pyx_t_4)->tp_iternext;
+      index = 0; __pyx_t_3 = __pyx_t_9(__pyx_t_4); if (unlikely(!__pyx_t_3)) goto __pyx_L6_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_3);
+      index = 1; __pyx_t_5 = __pyx_t_9(__pyx_t_4); if (unlikely(!__pyx_t_5)) goto __pyx_L6_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_5);
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_9(__pyx_t_4), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_9 = NULL;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      goto __pyx_L7_unpacking_done;
+      __pyx_L6_unpacking_failed:;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_t_9 = NULL;
+      if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_L7_unpacking_done:;
+    }
+    if (!(likely(PyString_CheckExact(__pyx_t_3))||((__pyx_t_3) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_3)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_5); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 977; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_key, ((PyObject*)__pyx_t_3));
+    __pyx_t_3 = 0;
+    __pyx_v_value = __pyx_t_10;
+
+    /* "brainpy\_c\composition.pyx":978
+ *             return False
+ *         for key, value in other.items():
+ *             my_value = self[key]             # <<<<<<<<<<<<<<
+ *             if my_value != value:
+ *                 return False
+ */
+    __pyx_t_1 = PyObject_GetItem(((PyObject *)__pyx_v_self), __pyx_v_key); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 978; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 978; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_my_value = __pyx_t_10;
+
+    /* "brainpy\_c\composition.pyx":979
+ *         for key, value in other.items():
+ *             my_value = self[key]
+ *             if my_value != value:             # <<<<<<<<<<<<<<
+ *                 return False
+ *         return True
+ */
+    __pyx_t_6 = ((__pyx_v_my_value != __pyx_v_value) != 0);
+    if (__pyx_t_6) {
+
+      /* "brainpy\_c\composition.pyx":980
+ *             my_value = self[key]
+ *             if my_value != value:
+ *                 return False             # <<<<<<<<<<<<<<
+ *         return True
+ * 
+ */
+      __pyx_r = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":979
+ *         for key, value in other.items():
+ *             my_value = self[key]
+ *             if my_value != value:             # <<<<<<<<<<<<<<
+ *                 return False
+ *         return True
+ */
+    }
+
+    /* "brainpy\_c\composition.pyx":977
+ *         if n != self.impl.used:
+ *             return False
+ *         for key, value in other.items():             # <<<<<<<<<<<<<<
+ *             my_value = self[key]
+ *             if my_value != value:
+ */
+  }
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "brainpy\_c\composition.pyx":981
+ *             if my_value != value:
+ *                 return False
+ *         return True             # <<<<<<<<<<<<<<
+ * 
+ *     def __richcmp__(self, object other, int code):
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\composition.pyx":967
+ *         return composition_eq(self.impl, other.impl)
+ * 
+ *     cpdef bint __equality_dict(self, dict other):             # <<<<<<<<<<<<<<
+ *         cdef:
+ *             size_t n
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_WriteUnraisable("brainpy._c.composition.PyComposition.__equality_dict", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_key);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_41__equality_dict(PyObject *__pyx_v_self, PyObject *__pyx_v_other); /*proto*/
+static char __pyx_doc_7brainpy_2_c_11composition_13PyComposition_40__equality_dict[] = "PyComposition.__equality_dict(self, dict other) -> bool";
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_41__equality_dict(PyObject *__pyx_v_self, PyObject *__pyx_v_other) {
+  CYTHON_UNUSED int __pyx_lineno = 0;
+  CYTHON_UNUSED const char *__pyx_filename = NULL;
+  CYTHON_UNUSED int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__equality_dict (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_other), (&PyDict_Type), 1, "other", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_r = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_40__equality_dict(((struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *)__pyx_v_self), ((PyObject*)__pyx_v_other));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_40__equality_dict(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *__pyx_v_self, PyObject *__pyx_v_other) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__equality_dict", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_dict(__pyx_v_self, __pyx_v_other, 1)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 967; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("brainpy._c.composition.PyComposition.__equality_dict", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\composition.pyx":983
+ *         return True
+ * 
+ *     def __richcmp__(self, object other, int code):             # <<<<<<<<<<<<<<
+ *         if not isinstance(self, PyComposition):
+ *             other, self = self, other
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_43__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code); /*proto*/
+static PyObject *__pyx_pw_7brainpy_2_c_11composition_13PyComposition_43__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__richcmp__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_7brainpy_2_c_11composition_13PyComposition_42__richcmp__(((PyObject *)__pyx_v_self), ((PyObject *)__pyx_v_other), ((int)__pyx_v_code));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_2_c_11composition_13PyComposition_42__richcmp__(PyObject *__pyx_v_self, PyObject *__pyx_v_other, int __pyx_v_code) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__richcmp__", 0);
+  __Pyx_INCREF(__pyx_v_self);
+  __Pyx_INCREF(__pyx_v_other);
+
+  /* "brainpy\_c\composition.pyx":984
+ * 
+ *     def __richcmp__(self, object other, int code):
+ *         if not isinstance(self, PyComposition):             # <<<<<<<<<<<<<<
+ *             other, self = self, other
+ *         if isinstance(other, PyComposition):
+ */
+  __pyx_t_1 = __Pyx_TypeCheck(__pyx_v_self, __pyx_ptype_7brainpy_2_c_11composition_PyComposition); 
+  __pyx_t_2 = ((!(__pyx_t_1 != 0)) != 0);
+  if (__pyx_t_2) {
+
+    /* "brainpy\_c\composition.pyx":985
+ *     def __richcmp__(self, object other, int code):
+ *         if not isinstance(self, PyComposition):
+ *             other, self = self, other             # <<<<<<<<<<<<<<
+ *         if isinstance(other, PyComposition):
+ *             if code == 2:
+ */
+    __pyx_t_3 = __pyx_v_self;
+    __pyx_t_4 = __pyx_v_other;
+    __pyx_v_other = __pyx_t_3;
+    __pyx_t_3 = 0;
+    __pyx_v_self = __pyx_t_4;
+    __pyx_t_4 = 0;
+
+    /* "brainpy\_c\composition.pyx":984
+ * 
+ *     def __richcmp__(self, object other, int code):
+ *         if not isinstance(self, PyComposition):             # <<<<<<<<<<<<<<
+ *             other, self = self, other
+ *         if isinstance(other, PyComposition):
+ */
+  }
+
+  /* "brainpy\_c\composition.pyx":986
+ *         if not isinstance(self, PyComposition):
+ *             other, self = self, other
+ *         if isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
+ *             if code == 2:
+ *                 return self.__equality_pycomposition(other)
+ */
+  __pyx_t_2 = __Pyx_TypeCheck(__pyx_v_other, __pyx_ptype_7brainpy_2_c_11composition_PyComposition); 
+  __pyx_t_1 = (__pyx_t_2 != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\composition.pyx":987
+ *             other, self = self, other
+ *         if isinstance(other, PyComposition):
+ *             if code == 2:             # <<<<<<<<<<<<<<
+ *                 return self.__equality_pycomposition(other)
+ *             elif code == 3:
+ */
+    switch (__pyx_v_code) {
+      case 2:
+
+      /* "brainpy\_c\composition.pyx":988
+ *         if isinstance(other, PyComposition):
+ *             if code == 2:
+ *                 return self.__equality_pycomposition(other)             # <<<<<<<<<<<<<<
+ *             elif code == 3:
+ *                 return not self.__equality_pycomposition(other)
+ */
+      __Pyx_XDECREF(__pyx_r);
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_equality_pycomposition); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 988; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_7 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_6))) {
+        __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_7)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+          __Pyx_INCREF(__pyx_t_7);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_6, function);
+        }
+      }
+      if (!__pyx_t_7) {
+        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_other); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 988; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+      } else {
+        __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 988; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_7); __pyx_t_7 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_v_other);
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_8, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 988; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_r = __pyx_t_5;
+      __pyx_t_5 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":987
+ *             other, self = self, other
+ *         if isinstance(other, PyComposition):
+ *             if code == 2:             # <<<<<<<<<<<<<<
+ *                 return self.__equality_pycomposition(other)
+ *             elif code == 3:
+ */
+      break;
+
+      /* "brainpy\_c\composition.pyx":989
+ *             if code == 2:
+ *                 return self.__equality_pycomposition(other)
+ *             elif code == 3:             # <<<<<<<<<<<<<<
+ *                 return not self.__equality_pycomposition(other)
+ *         elif isinstance(other, dict):
+ */
+      case 3:
+
+      /* "brainpy\_c\composition.pyx":990
+ *                 return self.__equality_pycomposition(other)
+ *             elif code == 3:
+ *                 return not self.__equality_pycomposition(other)             # <<<<<<<<<<<<<<
+ *         elif isinstance(other, dict):
+ *             if code == 2:
+ */
+      __Pyx_XDECREF(__pyx_r);
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_equality_pycomposition); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 990; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_8 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_6))) {
+        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_8)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+          __Pyx_INCREF(__pyx_t_8);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_6, function);
+        }
+      }
+      if (!__pyx_t_8) {
+        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_other); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 990; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+      } else {
+        __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 990; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8); __pyx_t_8 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_v_other);
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_7, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 990; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 990; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_t_5 = __Pyx_PyBool_FromLong((!__pyx_t_1)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 990; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_r = __pyx_t_5;
+      __pyx_t_5 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":989
+ *             if code == 2:
+ *                 return self.__equality_pycomposition(other)
+ *             elif code == 3:             # <<<<<<<<<<<<<<
+ *                 return not self.__equality_pycomposition(other)
+ *         elif isinstance(other, dict):
+ */
+      break;
+      default: break;
+    }
+
+    /* "brainpy\_c\composition.pyx":986
+ *         if not isinstance(self, PyComposition):
+ *             other, self = self, other
+ *         if isinstance(other, PyComposition):             # <<<<<<<<<<<<<<
+ *             if code == 2:
+ *                 return self.__equality_pycomposition(other)
+ */
+    goto __pyx_L4;
+  }
+
+  /* "brainpy\_c\composition.pyx":991
+ *             elif code == 3:
+ *                 return not self.__equality_pycomposition(other)
+ *         elif isinstance(other, dict):             # <<<<<<<<<<<<<<
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ */
+  __pyx_t_1 = PyDict_Check(__pyx_v_other); 
+  __pyx_t_2 = (__pyx_t_1 != 0);
+  if (__pyx_t_2) {
+
+    /* "brainpy\_c\composition.pyx":992
+ *                 return not self.__equality_pycomposition(other)
+ *         elif isinstance(other, dict):
+ *             if code == 2:             # <<<<<<<<<<<<<<
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:
+ */
+    switch (__pyx_v_code) {
+      case 2:
+
+      /* "brainpy\_c\composition.pyx":993
+ *         elif isinstance(other, dict):
+ *             if code == 2:
+ *                 return self.__equality_dict(other)             # <<<<<<<<<<<<<<
+ *             elif code == 3:
+ *                 return not self.__equality_dict(other)
+ */
+      __Pyx_XDECREF(__pyx_r);
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_equality_dict); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 993; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_7 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_6))) {
+        __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_7)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+          __Pyx_INCREF(__pyx_t_7);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_6, function);
+        }
+      }
+      if (!__pyx_t_7) {
+        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_other); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 993; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+      } else {
+        __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 993; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_7); __pyx_t_7 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_v_other);
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_8, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 993; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_r = __pyx_t_5;
+      __pyx_t_5 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":992
+ *                 return not self.__equality_pycomposition(other)
+ *         elif isinstance(other, dict):
+ *             if code == 2:             # <<<<<<<<<<<<<<
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:
+ */
+      break;
+
+      /* "brainpy\_c\composition.pyx":994
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:             # <<<<<<<<<<<<<<
+ *                 return not self.__equality_dict(other)
+ *         else:
+ */
+      case 3:
+
+      /* "brainpy\_c\composition.pyx":995
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:
+ *                 return not self.__equality_dict(other)             # <<<<<<<<<<<<<<
+ *         else:
+ *             other = dict(other)
+ */
+      __Pyx_XDECREF(__pyx_r);
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_equality_dict); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 995; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_8 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_6))) {
+        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_8)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+          __Pyx_INCREF(__pyx_t_8);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_6, function);
+        }
+      }
+      if (!__pyx_t_8) {
+        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_other); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 995; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+      } else {
+        __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 995; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8); __pyx_t_8 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_v_other);
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_7, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 995; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 995; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_t_5 = __Pyx_PyBool_FromLong((!__pyx_t_2)); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 995; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_r = __pyx_t_5;
+      __pyx_t_5 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":994
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:             # <<<<<<<<<<<<<<
+ *                 return not self.__equality_dict(other)
+ *         else:
+ */
+      break;
+      default: break;
+    }
+
+    /* "brainpy\_c\composition.pyx":991
+ *             elif code == 3:
+ *                 return not self.__equality_pycomposition(other)
+ *         elif isinstance(other, dict):             # <<<<<<<<<<<<<<
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ */
+    goto __pyx_L4;
+  }
+
+  /* "brainpy\_c\composition.pyx":997
+ *                 return not self.__equality_dict(other)
+ *         else:
+ *             other = dict(other)             # <<<<<<<<<<<<<<
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ */
+  /*else*/ {
+    __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 997; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_INCREF(__pyx_v_other);
+    __Pyx_GIVEREF(__pyx_v_other);
+    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_v_other);
+    __pyx_t_6 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_5, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 997; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF_SET(__pyx_v_other, __pyx_t_6);
+    __pyx_t_6 = 0;
+
+    /* "brainpy\_c\composition.pyx":998
+ *         else:
+ *             other = dict(other)
+ *             if code == 2:             # <<<<<<<<<<<<<<
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:
+ */
+    switch (__pyx_v_code) {
+      case 2:
+
+      /* "brainpy\_c\composition.pyx":999
+ *             other = dict(other)
+ *             if code == 2:
+ *                 return self.__equality_dict(other)             # <<<<<<<<<<<<<<
+ *             elif code == 3:
+ *                 return not self.__equality_dict(other)
+ */
+      __Pyx_XDECREF(__pyx_r);
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_equality_dict); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 999; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_7 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_5))) {
+        __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_5);
+        if (likely(__pyx_t_7)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+          __Pyx_INCREF(__pyx_t_7);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_5, function);
+        }
+      }
+      if (!__pyx_t_7) {
+        __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_v_other); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 999; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_6);
+      } else {
+        __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 999; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_7); __pyx_t_7 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_v_other);
+        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 999; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_r = __pyx_t_6;
+      __pyx_t_6 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":998
+ *         else:
+ *             other = dict(other)
+ *             if code == 2:             # <<<<<<<<<<<<<<
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:
+ */
+      break;
+
+      /* "brainpy\_c\composition.pyx":1000
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:             # <<<<<<<<<<<<<<
+ *                 return not self.__equality_dict(other)
+ */
+      case 3:
+
+      /* "brainpy\_c\composition.pyx":1001
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:
+ *                 return not self.__equality_dict(other)             # <<<<<<<<<<<<<<
+ */
+      __Pyx_XDECREF(__pyx_r);
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_equality_dict); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1001; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_8 = NULL;
+      if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_5))) {
+        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_5);
+        if (likely(__pyx_t_8)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+          __Pyx_INCREF(__pyx_t_8);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_5, function);
+        }
+      }
+      if (!__pyx_t_8) {
+        __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_v_other); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1001; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_6);
+      } else {
+        __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1001; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8); __pyx_t_8 = NULL;
+        __Pyx_INCREF(__pyx_v_other);
+        __Pyx_GIVEREF(__pyx_v_other);
+        PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_v_other);
+        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1001; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1001; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_t_6 = __Pyx_PyBool_FromLong((!__pyx_t_2)); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1001; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_r = __pyx_t_6;
+      __pyx_t_6 = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\composition.pyx":1000
+ *             if code == 2:
+ *                 return self.__equality_dict(other)
+ *             elif code == 3:             # <<<<<<<<<<<<<<
+ *                 return not self.__equality_dict(other)
+ */
+      break;
+      default: break;
+    }
+  }
+  __pyx_L4:;
+
+  /* "brainpy\_c\composition.pyx":983
+ *         return True
+ * 
+ *     def __richcmp__(self, object other, int code):             # <<<<<<<<<<<<<<
+ *         if not isinstance(self, PyComposition):
+ *             other, self = self, other
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_AddTraceback("brainpy._c.composition.PyComposition.__richcmp__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_self);
+  __Pyx_XDECREF(__pyx_v_other);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -9659,12 +11882,14 @@ static int __pyx_mp_ass_subscript_7brainpy_2_c_11composition_PyComposition(PyObj
 }
 
 static PyMethodDef __pyx_methods_7brainpy_2_c_11composition_PyComposition[] = {
-  {"update", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_9update, METH_VARARGS|METH_KEYWORDS, 0},
-  {"keys", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_11keys, METH_NOARGS, 0},
-  {"values", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_13values, METH_NOARGS, 0},
-  {"items", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_15items, METH_NOARGS, 0},
-  {"copy", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_17copy, METH_NOARGS, 0},
-  {"mass", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_33mass, METH_NOARGS, 0},
+  {"update", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_9update, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_8update},
+  {"keys", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_11keys, METH_NOARGS, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_10keys},
+  {"values", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_13values, METH_NOARGS, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_12values},
+  {"items", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_15items, METH_NOARGS, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_14items},
+  {"copy", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_17copy, METH_NOARGS, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_16copy},
+  {"mass", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_33mass, METH_NOARGS, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_32mass},
+  {"__equality_pycomposition", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_39__equality_pycomposition, METH_O, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_38__equality_pycomposition},
+  {"__equality_dict", (PyCFunction)__pyx_pw_7brainpy_2_c_11composition_13PyComposition_41__equality_dict, METH_O, __pyx_doc_7brainpy_2_c_11composition_13PyComposition_40__equality_dict},
   {0, 0, 0, 0}
 };
 
@@ -9778,7 +12003,7 @@ static PyTypeObject __pyx_type_7brainpy_2_c_11composition_PyComposition = {
   0, /*tp_doc*/
   0, /*tp_traverse*/
   0, /*tp_clear*/
-  0, /*tp_richcompare*/
+  __pyx_pw_7brainpy_2_c_11composition_13PyComposition_43__richcmp__, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   __pyx_pw_7brainpy_2_c_11composition_13PyComposition_31__iter__, /*tp_iter*/
   0, /*tp_iternext*/
@@ -10055,11 +12280,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Cannot_add_s_to_PyComposition, __pyx_k_Cannot_add_s_to_PyComposition, sizeof(__pyx_k_Cannot_add_s_to_PyComposition), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_subtract_s_from_PyComposi, __pyx_k_Cannot_subtract_s_from_PyComposi, sizeof(__pyx_k_Cannot_subtract_s_from_PyComposi), 0, 0, 1, 0},
   {&__pyx_kp_s_D_Programming_exploration_brainp, __pyx_k_D_Programming_exploration_brainp, sizeof(__pyx_k_D_Programming_exploration_brainp), 0, 0, 1, 0},
+  {&__pyx_n_s_ElementTable, __pyx_k_ElementTable, sizeof(__pyx_k_ElementTable), 0, 0, 1, 1},
+  {&__pyx_kp_s_Error, __pyx_k_Error, sizeof(__pyx_k_Error), 0, 0, 1, 0},
+  {&__pyx_kp_s_Fetched_element, __pyx_k_Fetched_element, sizeof(__pyx_k_Fetched_element), 0, 0, 1, 0},
   {&__pyx_kp_s_H_2, __pyx_k_H_2, sizeof(__pyx_k_H_2), 0, 0, 1, 0},
   {&__pyx_n_s_Massing, __pyx_k_Massing, sizeof(__pyx_k_Massing), 0, 0, 1, 1},
   {&__pyx_n_s_NotImplemented, __pyx_k_NotImplemented, sizeof(__pyx_k_NotImplemented), 0, 0, 1, 1},
   {&__pyx_n_s_PROTON, __pyx_k_PROTON, sizeof(__pyx_k_PROTON), 0, 0, 1, 1},
-  {&__pyx_n_s_PeriodicTable, __pyx_k_PeriodicTable, sizeof(__pyx_k_PeriodicTable), 0, 0, 1, 1},
   {&__pyx_n_s_Summed, __pyx_k_Summed, sizeof(__pyx_k_Summed), 0, 0, 1, 1},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s__5, __pyx_k__5, sizeof(__pyx_k__5), 0, 0, 1, 0},
@@ -10068,16 +12295,29 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
   {&__pyx_n_s_brainpy__c_composition, __pyx_k_brainpy__c_composition, sizeof(__pyx_k_brainpy__c_composition), 0, 0, 1, 1},
   {&__pyx_n_s_brainpy_mass_dict, __pyx_k_brainpy_mass_dict, sizeof(__pyx_k_brainpy_mass_dict), 0, 0, 1, 1},
+  {&__pyx_n_s_c_element_symbol, __pyx_k_c_element_symbol, sizeof(__pyx_k_c_element_symbol), 0, 0, 1, 1},
   {&__pyx_n_s_close, __pyx_k_close, sizeof(__pyx_k_close), 0, 0, 1, 1},
   {&__pyx_n_s_composition, __pyx_k_composition, sizeof(__pyx_k_composition), 0, 0, 1, 1},
   {&__pyx_n_s_copy, __pyx_k_copy, sizeof(__pyx_k_copy), 0, 0, 1, 1},
   {&__pyx_n_s_elem, __pyx_k_elem, sizeof(__pyx_k_elem), 0, 0, 1, 1},
+  {&__pyx_n_s_elem_obj, __pyx_k_elem_obj, sizeof(__pyx_k_elem_obj), 0, 0, 1, 1},
+  {&__pyx_n_s_element, __pyx_k_element, sizeof(__pyx_k_element), 0, 0, 1, 1},
+  {&__pyx_n_s_element_hash_table_get, __pyx_k_element_hash_table_get, sizeof(__pyx_k_element_hash_table_get), 0, 0, 1, 1},
   {&__pyx_n_s_element_name_buffer, __pyx_k_element_name_buffer, sizeof(__pyx_k_element_name_buffer), 0, 0, 1, 1},
+  {&__pyx_n_s_element_symbol, __pyx_k_element_symbol, sizeof(__pyx_k_element_symbol), 0, 0, 1, 1},
   {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
+  {&__pyx_n_s_equality_dict, __pyx_k_equality_dict, sizeof(__pyx_k_equality_dict), 0, 0, 1, 1},
+  {&__pyx_n_s_equality_pycomposition, __pyx_k_equality_pycomposition, sizeof(__pyx_k_equality_pycomposition), 0, 0, 1, 1},
   {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
+  {&__pyx_n_s_fixed_isotope_element, __pyx_k_fixed_isotope_element, sizeof(__pyx_k_fixed_isotope_element), 0, 0, 1, 1},
   {&__pyx_n_s_genexpr, __pyx_k_genexpr, sizeof(__pyx_k_genexpr), 0, 0, 1, 1},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
+  {&__pyx_n_s_isotope, __pyx_k_isotope, sizeof(__pyx_k_isotope), 0, 0, 1, 1},
+  {&__pyx_n_s_isotope_obj, __pyx_k_isotope_obj, sizeof(__pyx_k_isotope_obj), 0, 0, 1, 1},
+  {&__pyx_n_s_isotope_parse_test, __pyx_k_isotope_parse_test, sizeof(__pyx_k_isotope_parse_test), 0, 0, 1, 1},
+  {&__pyx_n_s_isotope_string, __pyx_k_isotope_string, sizeof(__pyx_k_isotope_string), 0, 0, 1, 1},
+  {&__pyx_n_s_isotope_update_test, __pyx_k_isotope_update_test, sizeof(__pyx_k_isotope_update_test), 0, 0, 1, 1},
   {&__pyx_n_s_items, __pyx_k_items, sizeof(__pyx_k_items), 0, 0, 1, 1},
   {&__pyx_n_s_j, __pyx_k_j, sizeof(__pyx_k_j), 0, 0, 1, 1},
   {&__pyx_n_s_join, __pyx_k_join, sizeof(__pyx_k_join), 0, 0, 1, 1},
@@ -10089,16 +12329,18 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_mass, __pyx_k_mass, sizeof(__pyx_k_mass), 0, 0, 1, 1},
   {&__pyx_n_s_nist_mass, __pyx_k_nist_mass, sizeof(__pyx_k_nist_mass), 0, 0, 1, 1},
   {&__pyx_n_s_nist_mass_2, __pyx_k_nist_mass_2, sizeof(__pyx_k_nist_mass_2), 0, 0, 1, 1},
+  {&__pyx_n_s_out, __pyx_k_out, sizeof(__pyx_k_out), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_capi, __pyx_k_pyx_capi, sizeof(__pyx_k_pyx_capi), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_repr___locals_genexpr, __pyx_k_repr___locals_genexpr, sizeof(__pyx_k_repr___locals_genexpr), 0, 0, 1, 1},
-  {&__pyx_kp_s_s, __pyx_k_s, sizeof(__pyx_k_s), 0, 0, 1, 0},
-  {&__pyx_kp_s_s_d_2, __pyx_k_s_d_2, sizeof(__pyx_k_s_d_2), 0, 0, 1, 0},
+  {&__pyx_kp_s_s_2, __pyx_k_s_2, sizeof(__pyx_k_s_2), 0, 0, 1, 0},
+  {&__pyx_kp_s_s_d_3, __pyx_k_s_d_3, sizeof(__pyx_k_s_d_3), 0, 0, 1, 0},
   {&__pyx_n_s_select_1_1, __pyx_k_select_1_1, sizeof(__pyx_k_select_1_1), 0, 0, 1, 1},
   {&__pyx_n_s_send, __pyx_k_send, sizeof(__pyx_k_send), 0, 0, 1, 1},
   {&__pyx_n_s_sort, __pyx_k_sort, sizeof(__pyx_k_sort), 0, 0, 1, 1},
+  {&__pyx_n_s_status, __pyx_k_status, sizeof(__pyx_k_status), 0, 0, 1, 1},
   {&__pyx_n_s_sum_composition, __pyx_k_sum_composition, sizeof(__pyx_k_sum_composition), 0, 0, 1, 1},
   {&__pyx_n_s_sym, __pyx_k_sym, sizeof(__pyx_k_sym), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
@@ -10108,9 +12350,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_NotImplemented = __Pyx_GetBuiltinName(__pyx_n_s_NotImplemented); if (!__pyx_builtin_NotImplemented) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 675; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_NotImplemented = __Pyx_GetBuiltinName(__pyx_n_s_NotImplemented); if (!__pyx_builtin_NotImplemented) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 890; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -10120,29 +12362,53 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "brainpy\_c\composition.pyx":98
+  /* "brainpy\_c\composition.pyx":160
  *     return element.isotopes.bins[element.isotopes.size - 1].neutron_shift
  * 
  * def __select_1_1(object x):             # <<<<<<<<<<<<<<
  *     return x[1][1]
  * 
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_n_s_x); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_n_s_x); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 160; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_select_1_1, 98, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_select_1_1, 160, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 160; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\composition.pyx":517
- *     return result
+  /* "brainpy\_c\composition.pyx":683
+ * # Prototyping and Testing
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef Element* elem
  *     cdef Composition* composition
  */
-  __pyx_tuple__8 = PyTuple_Pack(9, __pyx_n_s_elem, __pyx_n_s_composition, __pyx_n_s_sum_composition, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_sym, __pyx_n_s_k, __pyx_n_s_element_name_buffer, __pyx_n_s_copy); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 517; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__8 = PyTuple_Pack(9, __pyx_n_s_elem, __pyx_n_s_composition, __pyx_n_s_sum_composition, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_sym, __pyx_n_s_k, __pyx_n_s_element_name_buffer, __pyx_n_s_copy); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(0, 0, 9, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_main_2, 517, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 517; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(0, 0, 9, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_main_2, 683, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "brainpy\_c\composition.pyx":713
+ * 
+ * 
+ * def isotope_update_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+  __pyx_tuple__10 = PyTuple_Pack(10, __pyx_n_s_element_symbol, __pyx_n_s_c_element_symbol, __pyx_n_s_element, __pyx_n_s_isotope_string, __pyx_n_s_isotope, __pyx_n_s_status, __pyx_n_s_elem_obj, __pyx_n_s_fixed_isotope_element, __pyx_n_s_isotope_obj, __pyx_n_s_out); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__10);
+  __Pyx_GIVEREF(__pyx_tuple__10);
+  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(1, 0, 10, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_isotope_update_test, 713, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "brainpy\_c\composition.pyx":742
+ * 
+ * 
+ * def isotope_parse_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+  __pyx_tuple__12 = PyTuple_Pack(5, __pyx_n_s_element_symbol, __pyx_n_s_c_element_symbol, __pyx_n_s_element, __pyx_n_s_isotope_string, __pyx_n_s_isotope); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_isotope_parse_test, 742, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -10246,27 +12512,31 @@ PyMODINIT_FUNC PyInit_composition(void)
   if (__Pyx_InitCachedConstants() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Global init code ---*/
   __pyx_v_7brainpy_2_c_11composition_nist_mass = ((PyObject*)Py_None); Py_INCREF(Py_None);
+  __pyx_v_7brainpy_2_c_11composition__string_table = ((PyObject*)Py_None); Py_INCREF(Py_None);
   /*--- Variable export code ---*/
   if (__Pyx_ExportVoidPtr(__pyx_n_s_nist_mass, (void *)&__pyx_v_7brainpy_2_c_11composition_nist_mass, "PyObject *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportVoidPtr(__pyx_n_s_PROTON, (void *)&__pyx_v_7brainpy_2_c_11composition_PROTON, "double") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ExportVoidPtr(__pyx_n_s_PeriodicTable, (void *)&__pyx_v_7brainpy_2_c_11composition__PeriodicTable, "struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportVoidPtr(__pyx_n_s_ElementTable, (void *)&__pyx_v_7brainpy_2_c_11composition__ElementTable, "struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Function export code ---*/
   if (__Pyx_ExportFunction("neutral_mass", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_neutral_mass, "double (double, int, struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass *__pyx_optional_args)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("mass_charge_ratio", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_mass_charge_ratio, "double (double, int, struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio *__pyx_optional_args)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ExportFunction("hash_string", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_hash_string, "size_t (char *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("_parse_isotope_string", (void (*)(void))__pyx_f_7brainpy_2_c_11composition__parse_isotope_string, "char *(char *, int *, char *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("make_isotope_map", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_isotope_map, "struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *(PyObject *, size_t)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("get_isotope_by_neutron_shift", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_shift, "struct __pyx_t_7brainpy_2_c_11composition_Isotope *(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *, int)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("free_isotope_map", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_free_isotope_map, "void (struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("_isotopes_of", (void (*)(void))__pyx_f_7brainpy_2_c_11composition__isotopes_of, "void (char *, struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("make_element", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_element, "struct __pyx_t_7brainpy_2_c_11composition_Element *(char *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ExportFunction("make_element_in_place", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_element_in_place, "void (char *, struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("element_monoisotopic_mass", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass, "double (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("element_min_neutron_shift", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_min_neutron_shift, "int (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("element_max_neutron_shift", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift, "int (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("free_element", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_free_element, "void (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ExportFunction("make_periodic_table", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_periodic_table, "struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *(void)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ExportFunction("get_element_from_periodic_table", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table, "int (struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, int *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ExportFunction("get_element_from_periodic_table2", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2, "int (struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("make_fixed_isotope_element", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element, "struct __pyx_t_7brainpy_2_c_11composition_Element *(struct __pyx_t_7brainpy_2_c_11composition_Element *, int)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("make_element_hash_table", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_element_hash_table, "struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *(size_t)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("element_hash_bucket_insert", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_hash_bucket_insert, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *, struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("element_hash_bucket_find", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_hash_bucket_find, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("element_hash_table_get", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_hash_table_get, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("element_hash_table_put", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_element_hash_table_put, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("hash_string", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_hash_string, "size_t (char *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("make_composition", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_make_composition, "struct __pyx_t_7brainpy_2_c_11composition_Composition *(void)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("copy_composition", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_copy_composition, "struct __pyx_t_7brainpy_2_c_11composition_Composition *(struct __pyx_t_7brainpy_2_c_11composition_Composition *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("print_composition", (void (*)(void))__pyx_f_7brainpy_2_c_11composition_print_composition, "void (struct __pyx_t_7brainpy_2_c_11composition_Composition *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -10285,15 +12555,17 @@ PyMODINIT_FUNC PyInit_composition(void)
   /*--- Type init code ---*/
   __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition = &__pyx_vtable_7brainpy_2_c_11composition_PyComposition;
   __pyx_vtable_7brainpy_2_c_11composition_PyComposition.mass = (double (*)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch))__pyx_f_7brainpy_2_c_11composition_13PyComposition_mass;
-  if (PyType_Ready(&__pyx_type_7brainpy_2_c_11composition_PyComposition) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtable_7brainpy_2_c_11composition_PyComposition.__pyx___equality_pycomposition = (int (*)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch))__pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_pycomposition;
+  __pyx_vtable_7brainpy_2_c_11composition_PyComposition.__pyx___equality_dict = (int (*)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, PyObject *, int __pyx_skip_dispatch))__pyx_f_7brainpy_2_c_11composition_13PyComposition___equality_dict;
+  if (PyType_Ready(&__pyx_type_7brainpy_2_c_11composition_PyComposition) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 766; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_2_c_11composition_PyComposition.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_7brainpy_2_c_11composition_PyComposition.tp_dict, __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyObject_SetAttrString(__pyx_m, "PyComposition", (PyObject *)&__pyx_type_7brainpy_2_c_11composition_PyComposition) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_SetVtable(__pyx_type_7brainpy_2_c_11composition_PyComposition.tp_dict, __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 766; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "PyComposition", (PyObject *)&__pyx_type_7brainpy_2_c_11composition_PyComposition) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 766; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_7brainpy_2_c_11composition_PyComposition = &__pyx_type_7brainpy_2_c_11composition_PyComposition;
-  if (PyType_Ready(&__pyx_type_7brainpy_2_c_11composition___pyx_scope_struct____repr__) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_7brainpy_2_c_11composition___pyx_scope_struct____repr__) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 961; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_2_c_11composition___pyx_scope_struct____repr__.tp_print = 0;
   __pyx_ptype_7brainpy_2_c_11composition___pyx_scope_struct____repr__ = &__pyx_type_7brainpy_2_c_11composition___pyx_scope_struct____repr__;
-  if (PyType_Ready(&__pyx_type_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 962; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr.tp_print = 0;
   __pyx_ptype_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr = &__pyx_type_7brainpy_2_c_11composition___pyx_scope_struct_1_genexpr;
   /*--- Type import code ---*/
@@ -10311,43 +12583,43 @@ PyMODINIT_FUNC PyInit_composition(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "brainpy\_c\composition.pyx":14
+  /* "brainpy\_c\composition.pyx":19
  * 
  * 
  * from brainpy.mass_dict import nist_mass as __nist_mass             # <<<<<<<<<<<<<<
  * 
  * cdef dict nist_mass
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_nist_mass);
   __Pyx_GIVEREF(__pyx_n_s_nist_mass);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_nist_mass);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_brainpy_mass_dict, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_brainpy_mass_dict, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_nist_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_nist_mass); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_nist_mass_2, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_nist_mass_2, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\composition.pyx":17
+  /* "brainpy\_c\composition.pyx":22
  * 
  * cdef dict nist_mass
  * nist_mass = __nist_mass             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_nist_mass_2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_nist_mass_2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (!(likely(PyDict_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(PyDict_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_2)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_XGOTREF(__pyx_v_7brainpy_2_c_11composition_nist_mass);
   __Pyx_DECREF_SET(__pyx_v_7brainpy_2_c_11composition_nist_mass, ((PyObject*)__pyx_t_2));
   __Pyx_GIVEREF(__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_c\composition.pyx":20
+  /* "brainpy\_c\composition.pyx":25
  * 
  * 
  * cdef double PROTON = nist_mass["H+"][0][0]             # <<<<<<<<<<<<<<
@@ -10356,21 +12628,21 @@ PyMODINIT_FUNC PyInit_composition(void)
  */
   if (unlikely(__pyx_v_7brainpy_2_c_11composition_nist_mass == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_2_c_11composition_nist_mass, __pyx_kp_s_H_2); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_7brainpy_2_c_11composition_nist_mass, __pyx_kp_s_H_2); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_7brainpy_2_c_11composition_PROTON = __pyx_t_3;
 
-  /* "brainpy\_c\composition.pyx":22
+  /* "brainpy\_c\composition.pyx":27
  * cdef double PROTON = nist_mass["H+"][0][0]
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -10379,7 +12651,7 @@ PyMODINIT_FUNC PyInit_composition(void)
  */
   __pyx_k_ = __pyx_v_7brainpy_2_c_11composition_PROTON;
 
-  /* "brainpy\_c\composition.pyx":25
+  /* "brainpy\_c\composition.pyx":30
  *     return (mz * fabs(z)) - (z * charge_carrier)
  * 
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -10388,43 +12660,81 @@ PyMODINIT_FUNC PyInit_composition(void)
  */
   __pyx_k__2 = __pyx_v_7brainpy_2_c_11composition_PROTON;
 
-  /* "brainpy\_c\composition.pyx":98
+  /* "brainpy\_c\composition.pyx":160
  *     return element.isotopes.bins[element.isotopes.size - 1].neutron_shift
  * 
  * def __select_1_1(object x):             # <<<<<<<<<<<<<<
  *     return x[1][1]
  * 
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_11composition_1__select_1_1, NULL, __pyx_n_s_brainpy__c_composition); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_11composition_1__select_1_1, NULL, __pyx_n_s_brainpy__c_composition); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 160; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_select_1_1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_select_1_1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 160; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\composition.pyx":274
+  /* "brainpy\_c\composition.pyx":370
  * 
- * cdef PeriodicTable* _PeriodicTable
- * _PeriodicTable = make_periodic_table()             # <<<<<<<<<<<<<<
  * 
- * cdef struct Composition:
+ * _ElementTable = make_element_hash_table_populated(256)             # <<<<<<<<<<<<<<
+ * 
+ * 
  */
-  __pyx_v_7brainpy_2_c_11composition__PeriodicTable = __pyx_f_7brainpy_2_c_11composition_make_periodic_table();
+  __pyx_v_7brainpy_2_c_11composition__ElementTable = __pyx_f_7brainpy_2_c_11composition_make_element_hash_table_populated(0x100);
 
-  /* "brainpy\_c\composition.pyx":517
- *     return result
+  /* "brainpy\_c\composition.pyx":683
+ * # Prototyping and Testing
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef Element* elem
  *     cdef Composition* composition
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_11composition_3main, NULL, __pyx_n_s_brainpy__c_composition); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 517; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_11composition_3main, NULL, __pyx_n_s_brainpy__c_composition); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_main_2, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 517; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_main_2, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
+  /* "brainpy\_c\composition.pyx":713
+ * 
+ * 
+ * def isotope_update_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_11composition_5isotope_update_test, NULL, __pyx_n_s_brainpy__c_composition); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_isotope_update_test, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "brainpy\_c\composition.pyx":742
+ * 
+ * 
+ * def isotope_parse_test(str element_symbol):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         char* c_element_symbol
+ */
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_11composition_7isotope_parse_test, NULL, __pyx_n_s_brainpy__c_composition); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_isotope_parse_test, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "brainpy\_c\composition.pyx":754
+ * 
+ * 
+ * cdef dict _string_table = {}             # <<<<<<<<<<<<<<
+ * 
+ * cdef str _store_string(str symbol):
+ */
+  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_XGOTREF(__pyx_v_7brainpy_2_c_11composition__string_table);
+  __Pyx_DECREF_SET(__pyx_v_7brainpy_2_c_11composition__string_table, ((PyObject*)__pyx_t_2));
+  __Pyx_GIVEREF(__pyx_t_2);
+  __pyx_t_2 = 0;
+
   /* "brainpy\_c\composition.pyx":1
- * cimport cython             # <<<<<<<<<<<<<<
- * from cpython.list cimport PyList_New, PyList_SET_ITEM
- * from cpython.string cimport PyString_FromString, PyString_AsString
+ * # cython: embedsignature=True             # <<<<<<<<<<<<<<
+ * 
+ * cimport cython
  */
   __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
@@ -11012,6 +13322,32 @@ static CYTHON_INLINE int __Pyx_dict_iter_next(
     return 1;
 }
 
+static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
+    PyErr_Format(PyExc_TypeError,
+        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
+        name, type->tp_name, Py_TYPE(obj)->tp_name);
+}
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact)
+{
+    if (unlikely(!type)) {
+        PyErr_SetString(PyExc_SystemError, "Missing type object");
+        return 0;
+    }
+    if (none_allowed && obj == Py_None) return 1;
+    else if (exact) {
+        if (likely(Py_TYPE(obj) == type)) return 1;
+        #if PY_MAJOR_VERSION == 2
+        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
+        #endif
+    }
+    else {
+        if (likely(PyObject_TypeCheck(obj, type))) return 1;
+    }
+    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
+    return 0;
+}
+
 static void __Pyx_RaiseDoubleKeywordsError(
     const char* func_name,
     PyObject* kw_name)
@@ -11149,46 +13485,6 @@ static void __Pyx_RaiseArgtupleInvalid(
                  "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
                  func_name, more_or_less, num_expected,
                  (num_expected == 1) ? "" : "s", num_found);
-}
-
-static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
-    PyErr_Format(PyExc_TypeError,
-        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
-        name, type->tp_name, Py_TYPE(obj)->tp_name);
-}
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact)
-{
-    if (unlikely(!type)) {
-        PyErr_SetString(PyExc_SystemError, "Missing type object");
-        return 0;
-    }
-    if (none_allowed && obj == Py_None) return 1;
-    else if (exact) {
-        if (likely(Py_TYPE(obj) == type)) return 1;
-        #if PY_MAJOR_VERSION == 2
-        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
-        #endif
-    }
-    else {
-        if (likely(PyObject_TypeCheck(obj, type))) return 1;
-    }
-    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
-    return 0;
-}
-
-static PyObject* __Pyx_Intern(PyObject* s) {
-    if (!(likely(PyString_CheckExact(s)))) {
-        PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(s)->tp_name);
-        return 0;
-    }
-    Py_INCREF(s);
-    #if PY_MAJOR_VERSION >= 3
-    PyUnicode_InternInPlace(&s);
-    #else
-    PyString_InternInPlace(&s);
-    #endif
-    return s;
 }
 
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {

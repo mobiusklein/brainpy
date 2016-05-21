@@ -1,5 +1,5 @@
 from brainpy._c.composition cimport (
-    _PeriodicTable, Element, Isotope, Composition)
+    _ElementTable, Element, Isotope, Composition)
 
 from brainpy._c.double_vector cimport DoubleVector
 

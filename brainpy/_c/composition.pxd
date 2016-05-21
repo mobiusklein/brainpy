@@ -9,6 +9,10 @@ cdef double PROTON = nist_mass["H+"][0][0]
 
 cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil
 cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
+cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
+
+# -----------------------------------------------------------------------------
+# Isotope and IsotopeMap Declarations
 
 cdef struct Isotope:
     double mass
@@ -20,45 +24,65 @@ cdef struct IsotopeMap:
     Isotope* bins
     size_t size
 
-cdef struct Element:
-    char* symbol
-    IsotopeMap* isotopes
-
-cdef struct PeriodicTable:
-    Element** elements
-    size_t size
-
-cdef PeriodicTable* _PeriodicTable
-
-cdef struct Composition:
-    char** elements
-    count_type* counts
-    size_t size
-    size_t used
-
-
-cdef size_t hash_string(char *str) nogil
-
-
 cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size)
 
 cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil
 cdef void free_isotope_map(IsotopeMap* isotopes) nogil
 
+# -----------------------------------------------------------------------------
+# Element Declarations
 
+cdef struct Element:
+    char* symbol
+    IsotopeMap* isotopes
 
 cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies)
 cdef Element* make_element(char* symbol)
-cdef void make_element_in_place(char* symbol, Element* element)
 
 cdef double element_monoisotopic_mass(Element* element) nogil
 cdef int element_min_neutron_shift(Element* element) nogil
 cdef int element_max_neutron_shift(Element* element) nogil
 cdef void free_element(Element* element) nogil
 
-cdef PeriodicTable* make_periodic_table()
-cdef int get_element_from_periodic_table(PeriodicTable* table, char* symbol, int* out) nogil
-cdef int get_element_from_periodic_table2(PeriodicTable* table, char* symbol, Element** out) nogil
+cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil
+
+
+# -----------------------------------------------------------------------------
+# ElementHashTable and ElementHashBucket Declarations
+
+cdef struct ElementHashBucket:
+    Element** elements
+    size_t used
+    size_t size
+
+
+cdef struct ElementHashTable:
+    ElementHashBucket* buckets
+    size_t size
+
+cdef ElementHashTable* _ElementTable
+
+cdef ElementHashTable* make_element_hash_table(size_t size) nogil
+
+cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element) nogil
+
+cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Element** out) nogil
+
+cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element** out) nogil
+
+cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil
+
+cdef size_t hash_string(char *str) nogil
+
+
+# -----------------------------------------------------------------------------
+# Composition Declarations
+
+cdef struct Composition:
+    char** elements
+    count_type* counts
+    size_t size
+    size_t used
 
 cdef Composition* make_composition() nogil
 cdef Composition* copy_composition(Composition* composition) nogil
@@ -84,3 +108,5 @@ cdef class PyComposition(object):
         double cached_mass
         bint _clean
     cpdef double mass(self)
+    cpdef bint __equality_pycomposition(self, PyComposition other)
+    cpdef bint __equality_dict(self, dict other)

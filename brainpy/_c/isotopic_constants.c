@@ -474,7 +474,8 @@ struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio;
 struct __pyx_t_7brainpy_2_c_11composition_Isotope;
 struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap;
 struct __pyx_t_7brainpy_2_c_11composition_Element;
-struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable;
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket;
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable;
 struct __pyx_t_7brainpy_2_c_11composition_Composition;
 
 /* "brainpy\_c\composition.pxd":10
@@ -482,7 +483,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Composition;
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil             # <<<<<<<<<<<<<<
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
- * 
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
  */
 struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass {
   int __pyx_n;
@@ -493,16 +494,16 @@ struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass {
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil             # <<<<<<<<<<<<<<
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
  * 
- * cdef struct Isotope:
  */
 struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio {
   int __pyx_n;
   double charge_carrier;
 };
 
-/* "brainpy\_c\composition.pxd":13
- * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
+/* "brainpy\_c\composition.pxd":17
+ * # Isotope and IsotopeMap Declarations
  * 
  * cdef struct Isotope:             # <<<<<<<<<<<<<<
  *     double mass
@@ -515,7 +516,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Isotope {
   int neutron_shift;
 };
 
-/* "brainpy\_c\composition.pxd":19
+/* "brainpy\_c\composition.pxd":23
  *     int neutron_shift
  * 
  * cdef struct IsotopeMap:             # <<<<<<<<<<<<<<
@@ -527,8 +528,8 @@ struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap {
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":23
- *     size_t size
+/* "brainpy\_c\composition.pxd":35
+ * # Element Declarations
  * 
  * cdef struct Element:             # <<<<<<<<<<<<<<
  *     char* symbol
@@ -539,20 +540,33 @@ struct __pyx_t_7brainpy_2_c_11composition_Element {
   struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *isotopes;
 };
 
-/* "brainpy\_c\composition.pxd":27
- *     IsotopeMap* isotopes
+/* "brainpy\_c\composition.pxd":53
+ * # ElementHashTable and ElementHashBucket Declarations
  * 
- * cdef struct PeriodicTable:             # <<<<<<<<<<<<<<
+ * cdef struct ElementHashBucket:             # <<<<<<<<<<<<<<
  *     Element** elements
- *     size_t size
+ *     size_t used
  */
-struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable {
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket {
   struct __pyx_t_7brainpy_2_c_11composition_Element **elements;
+  size_t used;
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":33
- * cdef PeriodicTable* _PeriodicTable
+/* "brainpy\_c\composition.pxd":59
+ * 
+ * 
+ * cdef struct ElementHashTable:             # <<<<<<<<<<<<<<
+ *     ElementHashBucket* buckets
+ *     size_t size
+ */
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable {
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *buckets;
+  size_t size;
+};
+
+/* "brainpy\_c\composition.pxd":81
+ * # Composition Declarations
  * 
  * cdef struct Composition:             # <<<<<<<<<<<<<<
  *     char** elements
@@ -629,7 +643,7 @@ struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants {
   size_t used;
 };
 
-/* "brainpy\_c\composition.pxd":81
+/* "brainpy\_c\composition.pxd":105
  * cdef Composition* dict_to_composition(dict comp_dict)
  * 
  * cdef class PyComposition(object):             # <<<<<<<<<<<<<<
@@ -648,6 +662,8 @@ struct __pyx_obj_7brainpy_2_c_11composition_PyComposition {
 
 struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition {
   double (*mass)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch);
+  int (*__pyx___equality_pycomposition)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch);
+  int (*__pyx___equality_dict)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, PyObject *, int __pyx_skip_dispatch);
 };
 static struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition *__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition;
 
@@ -827,10 +843,13 @@ static PyObject **__pyx_vp_7brainpy_2_c_11composition_nist_mass = 0;
 #define __pyx_v_7brainpy_2_c_11composition_nist_mass (*__pyx_vp_7brainpy_2_c_11composition_nist_mass)
 static double *__pyx_vp_7brainpy_2_c_11composition_PROTON = 0;
 #define __pyx_v_7brainpy_2_c_11composition_PROTON (*__pyx_vp_7brainpy_2_c_11composition_PROTON)
-static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable **__pyx_vp_7brainpy_2_c_11composition__PeriodicTable = 0;
-#define __pyx_v_7brainpy_2_c_11composition__PeriodicTable (*__pyx_vp_7brainpy_2_c_11composition__PeriodicTable)
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable **__pyx_vp_7brainpy_2_c_11composition__ElementTable = 0;
+#define __pyx_v_7brainpy_2_c_11composition__ElementTable (*__pyx_vp_7brainpy_2_c_11composition__ElementTable)
+static char *(*__pyx_f_7brainpy_2_c_11composition__parse_isotope_string)(char *, int *, char *); /*proto*/
 static int (*__pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift)(struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
-static int (*__pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2)(struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static struct __pyx_t_7brainpy_2_c_11composition_Element *(*__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element)(struct __pyx_t_7brainpy_2_c_11composition_Element *, int); /*proto*/
+static int (*__pyx_f_7brainpy_2_c_11composition_element_hash_table_get)(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static int (*__pyx_f_7brainpy_2_c_11composition_element_hash_table_put)(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
 
 /* Module declarations from 'brainpy._c.double_vector' */
 static struct __pyx_t_7brainpy_2_c_13double_vector_DoubleVector *(*__pyx_f_7brainpy_2_c_13double_vector_make_double_vector)(void); /*proto*/
@@ -897,6 +916,7 @@ static char __pyx_k_brainpy__c_isotopic_constants[] = "brainpy._c.isotopic_const
 static char __pyx_k_Error_unordered_isotopes_for_s[] = "Error, unordered isotopes for %s\n";
 static char __pyx_k_DEFAULT_ISOTOPIC_CONSTANTS_SIZE[] = "DEFAULT_ISOTOPIC_CONSTANTS_SIZE";
 static char __pyx_k_elementary_symmetric_polynomial[] = "elementary_symmetric_polynomial";
+static char __pyx_k_Could_not_resolve_element_symbol[] = "Could not resolve element_symbol %s\n";
 static char __pyx_k_D_Programming_exploration_brainp[] = "D:\\Programming\\exploration\\brainpy\\brainpy\\_c\\isotopic_constants.pyx";
 static PyObject *__pyx_n_s_DEFAULT_ISOTOPIC_CONSTANTS_SIZE;
 static PyObject *__pyx_kp_s_D_Programming_exploration_brainp;
@@ -921,8 +941,8 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
 static PyObject *__pyx_tuple__3;
 static PyObject *__pyx_codeobj__4;
 
-/* "brainpy\_c\isotopic_constants.pyx":19
- * # PolynomialParameters
+/* "brainpy\_c\isotopic_constants.pyx":23
+ * # PolynomialParameters Methods
  * 
  * cdef dvec* vietes(dvec* coefficients) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -944,7 +964,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":27
+  /* "brainpy\_c\isotopic_constants.pyx":31
  *         double el
  * 
  *     elementary_symmetric_polynomial = make_double_vector()             # <<<<<<<<<<<<<<
@@ -953,7 +973,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
   __pyx_v_elementary_symmetric_polynomial = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_constants.pyx":28
+  /* "brainpy\_c\isotopic_constants.pyx":32
  * 
  *     elementary_symmetric_polynomial = make_double_vector()
  *     tail = coefficients.v[coefficients.used - 1]             # <<<<<<<<<<<<<<
@@ -962,7 +982,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
   __pyx_v_tail = (__pyx_v_coefficients->v[(__pyx_v_coefficients->used - 1)]);
 
-  /* "brainpy\_c\isotopic_constants.pyx":30
+  /* "brainpy\_c\isotopic_constants.pyx":34
  *     tail = coefficients.v[coefficients.used - 1]
  * 
  *     for i in range(coefficients.used):             # <<<<<<<<<<<<<<
@@ -973,7 +993,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_constants.pyx":31
+    /* "brainpy\_c\isotopic_constants.pyx":35
  * 
  *     for i in range(coefficients.used):
  *         sign = 1 if (i % 2) == 0 else -1             # <<<<<<<<<<<<<<
@@ -987,7 +1007,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     }
     __pyx_v_sign = __pyx_t_3;
 
-    /* "brainpy\_c\isotopic_constants.pyx":32
+    /* "brainpy\_c\isotopic_constants.pyx":36
  *     for i in range(coefficients.used):
  *         sign = 1 if (i % 2) == 0 else -1
  *         el = sign * coefficients.v[coefficients.used - i - 1] / tail             # <<<<<<<<<<<<<<
@@ -1003,11 +1023,11 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
       #ifdef WITH_THREAD
       PyGILState_Release(__pyx_gilstate_save);
       #endif
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_el = (__pyx_t_4 / __pyx_v_tail);
 
-    /* "brainpy\_c\isotopic_constants.pyx":33
+    /* "brainpy\_c\isotopic_constants.pyx":37
  *         sign = 1 if (i % 2) == 0 else -1
  *         el = sign * coefficients.v[coefficients.used - i - 1] / tail
  *         double_vector_append(elementary_symmetric_polynomial, el)             # <<<<<<<<<<<<<<
@@ -1017,7 +1037,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_elementary_symmetric_polynomial, __pyx_v_el);
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":35
+  /* "brainpy\_c\isotopic_constants.pyx":39
  *         double_vector_append(elementary_symmetric_polynomial, el)
  * 
  *     return elementary_symmetric_polynomial             # <<<<<<<<<<<<<<
@@ -1027,8 +1047,8 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   __pyx_r = __pyx_v_elementary_symmetric_polynomial;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":19
- * # PolynomialParameters
+  /* "brainpy\_c\isotopic_constants.pyx":23
+ * # PolynomialParameters Methods
  * 
  * cdef dvec* vietes(dvec* coefficients) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1043,7 +1063,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":38
+/* "brainpy\_c\isotopic_constants.pyx":42
  * 
  * 
  * cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1064,7 +1084,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
   size_t __pyx_t_4;
   size_t __pyx_t_5;
 
-  /* "brainpy\_c\isotopic_constants.pyx":44
+  /* "brainpy\_c\isotopic_constants.pyx":48
  *         double temp_ps
  * 
  *     begin = ps_vec.used             # <<<<<<<<<<<<<<
@@ -1074,7 +1094,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
   __pyx_t_1 = __pyx_v_ps_vec->used;
   __pyx_v_begin = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":45
+  /* "brainpy\_c\isotopic_constants.pyx":49
  * 
  *     begin = ps_vec.used
  *     end = esp_vec.used             # <<<<<<<<<<<<<<
@@ -1084,7 +1104,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
   __pyx_t_1 = __pyx_v_esp_vec->used;
   __pyx_v_end = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":47
+  /* "brainpy\_c\isotopic_constants.pyx":51
  *     end = esp_vec.used
  * 
  *     for k in range(begin, end):             # <<<<<<<<<<<<<<
@@ -1095,7 +1115,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
   for (__pyx_t_2 = __pyx_v_begin; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_k = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_constants.pyx":48
+    /* "brainpy\_c\isotopic_constants.pyx":52
  * 
  *     for k in range(begin, end):
  *         if k == 0:             # <<<<<<<<<<<<<<
@@ -1105,7 +1125,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
     __pyx_t_3 = ((__pyx_v_k == 0) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":49
+      /* "brainpy\_c\isotopic_constants.pyx":53
  *     for k in range(begin, end):
  *         if k == 0:
  *             double_vector_append(ps_vec, 0.0)             # <<<<<<<<<<<<<<
@@ -1114,7 +1134,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_ps_vec, 0.0);
 
-      /* "brainpy\_c\isotopic_constants.pyx":50
+      /* "brainpy\_c\isotopic_constants.pyx":54
  *         if k == 0:
  *             double_vector_append(ps_vec, 0.0)
  *             continue             # <<<<<<<<<<<<<<
@@ -1123,7 +1143,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_c\isotopic_constants.pyx":48
+      /* "brainpy\_c\isotopic_constants.pyx":52
  * 
  *     for k in range(begin, end):
  *         if k == 0:             # <<<<<<<<<<<<<<
@@ -1132,7 +1152,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":51
+    /* "brainpy\_c\isotopic_constants.pyx":55
  *             double_vector_append(ps_vec, 0.0)
  *             continue
  *         temp_ps = 0.             # <<<<<<<<<<<<<<
@@ -1141,7 +1161,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
     __pyx_v_temp_ps = 0.;
 
-    /* "brainpy\_c\isotopic_constants.pyx":52
+    /* "brainpy\_c\isotopic_constants.pyx":56
  *             continue
  *         temp_ps = 0.
  *         sign = -1             # <<<<<<<<<<<<<<
@@ -1150,7 +1170,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
     __pyx_v_sign = -1;
 
-    /* "brainpy\_c\isotopic_constants.pyx":54
+    /* "brainpy\_c\isotopic_constants.pyx":58
  *         sign = -1
  * 
  *         for j in range(1, k):             # <<<<<<<<<<<<<<
@@ -1161,7 +1181,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
     for (__pyx_t_5 = 1; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
       __pyx_v_j = __pyx_t_5;
 
-      /* "brainpy\_c\isotopic_constants.pyx":55
+      /* "brainpy\_c\isotopic_constants.pyx":59
  * 
  *         for j in range(1, k):
  *             sign *= -1             # <<<<<<<<<<<<<<
@@ -1170,7 +1190,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
       __pyx_v_sign = (__pyx_v_sign * -1L);
 
-      /* "brainpy\_c\isotopic_constants.pyx":56
+      /* "brainpy\_c\isotopic_constants.pyx":60
  *         for j in range(1, k):
  *             sign *= -1
  *             temp_ps += sign * (esp_vec.v[j]) * (ps_vec.v[k - j])             # <<<<<<<<<<<<<<
@@ -1180,7 +1200,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
       __pyx_v_temp_ps = (__pyx_v_temp_ps + ((__pyx_v_sign * (__pyx_v_esp_vec->v[__pyx_v_j])) * (__pyx_v_ps_vec->v[(__pyx_v_k - __pyx_v_j)])));
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":57
+    /* "brainpy\_c\isotopic_constants.pyx":61
  *             sign *= -1
  *             temp_ps += sign * (esp_vec.v[j]) * (ps_vec.v[k - j])
  *         sign *= -1             # <<<<<<<<<<<<<<
@@ -1189,7 +1209,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
     __pyx_v_sign = (__pyx_v_sign * -1L);
 
-    /* "brainpy\_c\isotopic_constants.pyx":58
+    /* "brainpy\_c\isotopic_constants.pyx":62
  *             temp_ps += sign * (esp_vec.v[j]) * (ps_vec.v[k - j])
  *         sign *= -1
  *         temp_ps += sign * (esp_vec.v[k]) * k             # <<<<<<<<<<<<<<
@@ -1198,7 +1218,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
  */
     __pyx_v_temp_ps = (__pyx_v_temp_ps + ((__pyx_v_sign * (__pyx_v_esp_vec->v[__pyx_v_k])) * __pyx_v_k));
 
-    /* "brainpy\_c\isotopic_constants.pyx":59
+    /* "brainpy\_c\isotopic_constants.pyx":63
  *         sign *= -1
  *         temp_ps += sign * (esp_vec.v[k]) * k
  *         double_vector_append(ps_vec, temp_ps)             # <<<<<<<<<<<<<<
@@ -1209,7 +1229,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":38
+  /* "brainpy\_c\isotopic_constants.pyx":42
  * 
  * 
  * cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1220,7 +1240,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_t_
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":62
+/* "brainpy\_c\isotopic_constants.pyx":66
  * 
  * 
  * cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1245,7 +1265,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":68
+  /* "brainpy\_c\isotopic_constants.pyx":72
  *         double el
  * 
  *     begin = esp_vec.used             # <<<<<<<<<<<<<<
@@ -1255,7 +1275,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
   __pyx_t_1 = __pyx_v_esp_vec->used;
   __pyx_v_begin = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":69
+  /* "brainpy\_c\isotopic_constants.pyx":73
  * 
  *     begin = esp_vec.used
  *     end = ps_vec.used             # <<<<<<<<<<<<<<
@@ -1265,7 +1285,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
   __pyx_t_1 = __pyx_v_ps_vec->used;
   __pyx_v_end = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":71
+  /* "brainpy\_c\isotopic_constants.pyx":75
  *     end = ps_vec.used
  * 
  *     for k in range(begin, end):             # <<<<<<<<<<<<<<
@@ -1276,7 +1296,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
   for (__pyx_t_2 = __pyx_v_begin; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_k = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_constants.pyx":72
+    /* "brainpy\_c\isotopic_constants.pyx":76
  * 
  *     for k in range(begin, end):
  *         if k == 0:             # <<<<<<<<<<<<<<
@@ -1286,7 +1306,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
     __pyx_t_3 = ((__pyx_v_k == 0) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":73
+      /* "brainpy\_c\isotopic_constants.pyx":77
  *     for k in range(begin, end):
  *         if k == 0:
  *             double_vector_append(esp_vec, 1.0)             # <<<<<<<<<<<<<<
@@ -1295,7 +1315,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_esp_vec, 1.0);
 
-      /* "brainpy\_c\isotopic_constants.pyx":72
+      /* "brainpy\_c\isotopic_constants.pyx":76
  * 
  *     for k in range(begin, end):
  *         if k == 0:             # <<<<<<<<<<<<<<
@@ -1305,7 +1325,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
       goto __pyx_L5;
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":74
+    /* "brainpy\_c\isotopic_constants.pyx":78
  *         if k == 0:
  *             double_vector_append(esp_vec, 1.0)
  *         elif k > order:             # <<<<<<<<<<<<<<
@@ -1315,7 +1335,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
     __pyx_t_3 = ((__pyx_v_k > __pyx_v_order) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":75
+      /* "brainpy\_c\isotopic_constants.pyx":79
  *             double_vector_append(esp_vec, 1.0)
  *         elif k > order:
  *             double_vector_append(esp_vec, 0.0)             # <<<<<<<<<<<<<<
@@ -1324,7 +1344,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_esp_vec, 0.0);
 
-      /* "brainpy\_c\isotopic_constants.pyx":74
+      /* "brainpy\_c\isotopic_constants.pyx":78
  *         if k == 0:
  *             double_vector_append(esp_vec, 1.0)
  *         elif k > order:             # <<<<<<<<<<<<<<
@@ -1334,7 +1354,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
       goto __pyx_L5;
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":77
+    /* "brainpy\_c\isotopic_constants.pyx":81
  *             double_vector_append(esp_vec, 0.0)
  *         else:
  *             el = 0.             # <<<<<<<<<<<<<<
@@ -1344,7 +1364,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
     /*else*/ {
       __pyx_v_el = 0.;
 
-      /* "brainpy\_c\isotopic_constants.pyx":78
+      /* "brainpy\_c\isotopic_constants.pyx":82
  *         else:
  *             el = 0.
  *             for j in range(1, k + 1):             # <<<<<<<<<<<<<<
@@ -1355,7 +1375,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
       for (__pyx_t_5 = 1; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
         __pyx_v_j = __pyx_t_5;
 
-        /* "brainpy\_c\isotopic_constants.pyx":79
+        /* "brainpy\_c\isotopic_constants.pyx":83
  *             el = 0.
  *             for j in range(1, k + 1):
  *                 sign = 1 if (j % 2) == 1 else -1             # <<<<<<<<<<<<<<
@@ -1369,7 +1389,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
         }
         __pyx_v_sign = __pyx_t_6;
 
-        /* "brainpy\_c\isotopic_constants.pyx":80
+        /* "brainpy\_c\isotopic_constants.pyx":84
  *             for j in range(1, k + 1):
  *                 sign = 1 if (j % 2) == 1 else -1
  *                 el += sign * ps_vec.v[j] * esp_vec.v[k - j]             # <<<<<<<<<<<<<<
@@ -1379,7 +1399,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
         __pyx_v_el = (__pyx_v_el + ((__pyx_v_sign * (__pyx_v_ps_vec->v[__pyx_v_j])) * (__pyx_v_esp_vec->v[(__pyx_v_k - __pyx_v_j)])));
       }
 
-      /* "brainpy\_c\isotopic_constants.pyx":81
+      /* "brainpy\_c\isotopic_constants.pyx":85
  *                 sign = 1 if (j % 2) == 1 else -1
  *                 el += sign * ps_vec.v[j] * esp_vec.v[k - j]
  *             el /= <double>k             # <<<<<<<<<<<<<<
@@ -1394,11 +1414,11 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
         #ifdef WITH_THREAD
         PyGILState_Release(__pyx_gilstate_save);
         #endif
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_el = (__pyx_v_el / ((double)__pyx_v_k));
 
-      /* "brainpy\_c\isotopic_constants.pyx":82
+      /* "brainpy\_c\isotopic_constants.pyx":86
  *                 el += sign * ps_vec.v[j] * esp_vec.v[k - j]
  *             el /= <double>k
  *             double_vector_append(esp_vec, el)             # <<<<<<<<<<<<<<
@@ -1410,7 +1430,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
     __pyx_L5:;
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":62
+  /* "brainpy\_c\isotopic_constants.pyx":66
  * 
  * 
  * cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1425,7 +1445,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
   __pyx_L0:;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":85
+/* "brainpy\_c\isotopic_constants.pyx":89
  * 
  * 
  * cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1436,7 +1456,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetr
 static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_v_ps_vec, __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_v_esp_vec, int __pyx_v_order) {
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":86
+  /* "brainpy\_c\isotopic_constants.pyx":90
  * 
  * cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:
  *     if ps_vec.used > esp_vec.used:             # <<<<<<<<<<<<<<
@@ -1446,7 +1466,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
   __pyx_t_1 = ((__pyx_v_ps_vec->used > __pyx_v_esp_vec->used) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_constants.pyx":87
+    /* "brainpy\_c\isotopic_constants.pyx":91
  * cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:
  *     if ps_vec.used > esp_vec.used:
  *         _update_elementary_symmetric_polynomial(ps_vec, esp_vec, order)             # <<<<<<<<<<<<<<
@@ -1455,7 +1475,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants__update_elementary_symmetric_polynomial(__pyx_v_ps_vec, __pyx_v_esp_vec, __pyx_v_order);
 
-    /* "brainpy\_c\isotopic_constants.pyx":86
+    /* "brainpy\_c\isotopic_constants.pyx":90
  * 
  * cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:
  *     if ps_vec.used > esp_vec.used:             # <<<<<<<<<<<<<<
@@ -1465,7 +1485,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":88
+  /* "brainpy\_c\isotopic_constants.pyx":92
  *     if ps_vec.used > esp_vec.used:
  *         _update_elementary_symmetric_polynomial(ps_vec, esp_vec, order)
  *     elif ps_vec.used < esp_vec.used:             # <<<<<<<<<<<<<<
@@ -1475,7 +1495,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
   __pyx_t_1 = ((__pyx_v_ps_vec->used < __pyx_v_esp_vec->used) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_constants.pyx":89
+    /* "brainpy\_c\isotopic_constants.pyx":93
  *         _update_elementary_symmetric_polynomial(ps_vec, esp_vec, order)
  *     elif ps_vec.used < esp_vec.used:
  *         _update_power_sum(ps_vec, esp_vec, order)             # <<<<<<<<<<<<<<
@@ -1484,7 +1504,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants__update_power_sum(__pyx_v_ps_vec, __pyx_v_esp_vec, __pyx_v_order);
 
-    /* "brainpy\_c\isotopic_constants.pyx":88
+    /* "brainpy\_c\isotopic_constants.pyx":92
  *     if ps_vec.used > esp_vec.used:
  *         _update_elementary_symmetric_polynomial(ps_vec, esp_vec, order)
  *     elif ps_vec.used < esp_vec.used:             # <<<<<<<<<<<<<<
@@ -1494,7 +1514,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\isotopic_constants.pyx":85
+  /* "brainpy\_c\isotopic_constants.pyx":89
  * 
  * 
  * cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1505,7 +1525,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_t_7brainpy_2_
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":92
+/* "brainpy\_c\isotopic_constants.pyx":96
  * 
  * 
  * cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass) nogil:             # <<<<<<<<<<<<<<
@@ -1530,7 +1550,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   int __pyx_t_5;
   size_t __pyx_t_6;
 
-  /* "brainpy\_c\isotopic_constants.pyx":100
+  /* "brainpy\_c\isotopic_constants.pyx":104
  *         size_t i, j, k
  * 
  *     max_isotope_number = element_max_neutron_shift(element)             # <<<<<<<<<<<<<<
@@ -1539,7 +1559,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
   __pyx_v_max_isotope_number = __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(__pyx_v_element);
 
-  /* "brainpy\_c\isotopic_constants.pyx":101
+  /* "brainpy\_c\isotopic_constants.pyx":105
  * 
  *     max_isotope_number = element_max_neutron_shift(element)
  *     accumulator = make_double_vector()             # <<<<<<<<<<<<<<
@@ -1548,7 +1568,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
   __pyx_v_accumulator = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_constants.pyx":102
+  /* "brainpy\_c\isotopic_constants.pyx":106
  *     max_isotope_number = element_max_neutron_shift(element)
  *     accumulator = make_double_vector()
  *     for i in range(element.isotopes.size):             # <<<<<<<<<<<<<<
@@ -1559,7 +1579,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_constants.pyx":103
+    /* "brainpy\_c\isotopic_constants.pyx":107
  *     accumulator = make_double_vector()
  *     for i in range(element.isotopes.size):
  *         k = element.isotopes.size - i - 1             # <<<<<<<<<<<<<<
@@ -1568,7 +1588,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
     __pyx_v_k = ((__pyx_v_element->isotopes->size - __pyx_v_i) - 1);
 
-    /* "brainpy\_c\isotopic_constants.pyx":104
+    /* "brainpy\_c\isotopic_constants.pyx":108
  *     for i in range(element.isotopes.size):
  *         k = element.isotopes.size - i - 1
  *         isotope = &(element.isotopes.bins[k])             # <<<<<<<<<<<<<<
@@ -1577,7 +1597,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
     __pyx_v_isotope = (&(__pyx_v_element->isotopes->bins[__pyx_v_k]));
 
-    /* "brainpy\_c\isotopic_constants.pyx":105
+    /* "brainpy\_c\isotopic_constants.pyx":109
  *         k = element.isotopes.size - i - 1
  *         isotope = &(element.isotopes.bins[k])
  *         current_order = max_isotope_number - isotope.neutron_shift             # <<<<<<<<<<<<<<
@@ -1586,7 +1606,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
     __pyx_v_current_order = (__pyx_v_max_isotope_number - __pyx_v_isotope->neutron_shift);
 
-    /* "brainpy\_c\isotopic_constants.pyx":106
+    /* "brainpy\_c\isotopic_constants.pyx":110
  *         isotope = &(element.isotopes.bins[k])
  *         current_order = max_isotope_number - isotope.neutron_shift
  *         if with_mass:             # <<<<<<<<<<<<<<
@@ -1596,7 +1616,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     __pyx_t_3 = (__pyx_v_with_mass != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":107
+      /* "brainpy\_c\isotopic_constants.pyx":111
  *         current_order = max_isotope_number - isotope.neutron_shift
  *         if with_mass:
  *             coef = isotope.mass             # <<<<<<<<<<<<<<
@@ -1606,7 +1626,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
       __pyx_t_4 = __pyx_v_isotope->mass;
       __pyx_v_coef = __pyx_t_4;
 
-      /* "brainpy\_c\isotopic_constants.pyx":106
+      /* "brainpy\_c\isotopic_constants.pyx":110
  *         isotope = &(element.isotopes.bins[k])
  *         current_order = max_isotope_number - isotope.neutron_shift
  *         if with_mass:             # <<<<<<<<<<<<<<
@@ -1616,7 +1636,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
       goto __pyx_L5;
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":109
+    /* "brainpy\_c\isotopic_constants.pyx":113
  *             coef = isotope.mass
  *         else:
  *             coef = 1.0             # <<<<<<<<<<<<<<
@@ -1628,7 +1648,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     }
     __pyx_L5:;
 
-    /* "brainpy\_c\isotopic_constants.pyx":110
+    /* "brainpy\_c\isotopic_constants.pyx":114
  *         else:
  *             coef = 1.0
  *         if current_order > accumulator.used:             # <<<<<<<<<<<<<<
@@ -1638,7 +1658,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     __pyx_t_3 = ((__pyx_v_current_order > __pyx_v_accumulator->used) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":111
+      /* "brainpy\_c\isotopic_constants.pyx":115
  *             coef = 1.0
  *         if current_order > accumulator.used:
  *             for j in range(accumulator.used, current_order):             # <<<<<<<<<<<<<<
@@ -1649,7 +1669,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
       for (__pyx_t_6 = __pyx_v_accumulator->used; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
         __pyx_v_j = __pyx_t_6;
 
-        /* "brainpy\_c\isotopic_constants.pyx":112
+        /* "brainpy\_c\isotopic_constants.pyx":116
  *         if current_order > accumulator.used:
  *             for j in range(accumulator.used, current_order):
  *                 double_vector_append(accumulator, 0.)             # <<<<<<<<<<<<<<
@@ -1659,7 +1679,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
         __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_accumulator, 0.);
       }
 
-      /* "brainpy\_c\isotopic_constants.pyx":113
+      /* "brainpy\_c\isotopic_constants.pyx":117
  *             for j in range(accumulator.used, current_order):
  *                 double_vector_append(accumulator, 0.)
  *             double_vector_append(accumulator, isotope.abundance * coef)             # <<<<<<<<<<<<<<
@@ -1668,7 +1688,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_accumulator, (__pyx_v_isotope->abundance * __pyx_v_coef));
 
-      /* "brainpy\_c\isotopic_constants.pyx":110
+      /* "brainpy\_c\isotopic_constants.pyx":114
  *         else:
  *             coef = 1.0
  *         if current_order > accumulator.used:             # <<<<<<<<<<<<<<
@@ -1678,7 +1698,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
       goto __pyx_L6;
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":114
+    /* "brainpy\_c\isotopic_constants.pyx":118
  *                 double_vector_append(accumulator, 0.)
  *             double_vector_append(accumulator, isotope.abundance * coef)
  *         elif current_order == accumulator.used:             # <<<<<<<<<<<<<<
@@ -1688,7 +1708,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     __pyx_t_3 = ((__pyx_v_current_order == __pyx_v_accumulator->used) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":115
+      /* "brainpy\_c\isotopic_constants.pyx":119
  *             double_vector_append(accumulator, isotope.abundance * coef)
  *         elif current_order == accumulator.used:
  *             double_vector_append(accumulator, isotope.abundance * coef)             # <<<<<<<<<<<<<<
@@ -1697,7 +1717,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_accumulator, (__pyx_v_isotope->abundance * __pyx_v_coef));
 
-      /* "brainpy\_c\isotopic_constants.pyx":114
+      /* "brainpy\_c\isotopic_constants.pyx":118
  *                 double_vector_append(accumulator, 0.)
  *             double_vector_append(accumulator, isotope.abundance * coef)
  *         elif current_order == accumulator.used:             # <<<<<<<<<<<<<<
@@ -1707,7 +1727,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
       goto __pyx_L6;
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":117
+    /* "brainpy\_c\isotopic_constants.pyx":121
  *             double_vector_append(accumulator, isotope.abundance * coef)
  *         else:
  *             printf("Error, unordered isotopes for %s\n", element.symbol)             # <<<<<<<<<<<<<<
@@ -1720,7 +1740,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
     __pyx_L6:;
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":118
+  /* "brainpy\_c\isotopic_constants.pyx":122
  *         else:
  *             printf("Error, unordered isotopes for %s\n", element.symbol)
  *     return accumulator             # <<<<<<<<<<<<<<
@@ -1730,7 +1750,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   __pyx_r = __pyx_v_accumulator;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":92
+  /* "brainpy\_c\isotopic_constants.pyx":96
  * 
  * 
  * cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass) nogil:             # <<<<<<<<<<<<<<
@@ -1743,7 +1763,7 @@ static __pyx_t_7brainpy_2_c_18isotopic_constants_dvec *__pyx_f_7brainpy_2_c_18is
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":120
+/* "brainpy\_c\isotopic_constants.pyx":124
  *     return accumulator
  * 
  * cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass) nogil:             # <<<<<<<<<<<<<<
@@ -1758,7 +1778,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__pyx_v_result;
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__pyx_r;
 
-  /* "brainpy\_c\isotopic_constants.pyx":127
+  /* "brainpy\_c\isotopic_constants.pyx":131
  *         PolynomialParameters* result
  * 
  *     accumulator = compute_isotopic_coefficients(element, with_mass)             # <<<<<<<<<<<<<<
@@ -1767,7 +1787,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_v_accumulator = __pyx_f_7brainpy_2_c_18isotopic_constants_compute_isotopic_coefficients(__pyx_v_element, __pyx_v_with_mass);
 
-  /* "brainpy\_c\isotopic_constants.pyx":129
+  /* "brainpy\_c\isotopic_constants.pyx":133
  *     accumulator = compute_isotopic_coefficients(element, with_mass)
  * 
  *     elementary_symmetric_polynomial = vietes(accumulator)             # <<<<<<<<<<<<<<
@@ -1776,7 +1796,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_v_elementary_symmetric_polynomial = __pyx_f_7brainpy_2_c_18isotopic_constants_vietes(__pyx_v_accumulator);
 
-  /* "brainpy\_c\isotopic_constants.pyx":130
+  /* "brainpy\_c\isotopic_constants.pyx":134
  * 
  *     elementary_symmetric_polynomial = vietes(accumulator)
  *     power_sum = make_double_vector()             # <<<<<<<<<<<<<<
@@ -1785,7 +1805,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_v_power_sum = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_constants.pyx":131
+  /* "brainpy\_c\isotopic_constants.pyx":135
  *     elementary_symmetric_polynomial = vietes(accumulator)
  *     power_sum = make_double_vector()
  *     newton(power_sum, elementary_symmetric_polynomial, accumulator.used - 1)             # <<<<<<<<<<<<<<
@@ -1794,7 +1814,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_v_power_sum, __pyx_v_elementary_symmetric_polynomial, (__pyx_v_accumulator->used - 1));
 
-  /* "brainpy\_c\isotopic_constants.pyx":132
+  /* "brainpy\_c\isotopic_constants.pyx":136
  *     power_sum = make_double_vector()
  *     newton(power_sum, elementary_symmetric_polynomial, accumulator.used - 1)
  *     result = <PolynomialParameters*>malloc(sizeof(PolynomialParameters))             # <<<<<<<<<<<<<<
@@ -1803,7 +1823,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters))));
 
-  /* "brainpy\_c\isotopic_constants.pyx":133
+  /* "brainpy\_c\isotopic_constants.pyx":137
  *     newton(power_sum, elementary_symmetric_polynomial, accumulator.used - 1)
  *     result = <PolynomialParameters*>malloc(sizeof(PolynomialParameters))
  *     result.elementary_symmetric_polynomial = elementary_symmetric_polynomial             # <<<<<<<<<<<<<<
@@ -1812,7 +1832,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_v_result->elementary_symmetric_polynomial = __pyx_v_elementary_symmetric_polynomial;
 
-  /* "brainpy\_c\isotopic_constants.pyx":134
+  /* "brainpy\_c\isotopic_constants.pyx":138
  *     result = <PolynomialParameters*>malloc(sizeof(PolynomialParameters))
  *     result.elementary_symmetric_polynomial = elementary_symmetric_polynomial
  *     result.power_sum = power_sum             # <<<<<<<<<<<<<<
@@ -1821,7 +1841,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_v_result->power_sum = __pyx_v_power_sum;
 
-  /* "brainpy\_c\isotopic_constants.pyx":135
+  /* "brainpy\_c\isotopic_constants.pyx":139
  *     result.elementary_symmetric_polynomial = elementary_symmetric_polynomial
  *     result.power_sum = power_sum
  *     free_double_vector(accumulator)             # <<<<<<<<<<<<<<
@@ -1830,7 +1850,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
  */
   __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_accumulator);
 
-  /* "brainpy\_c\isotopic_constants.pyx":136
+  /* "brainpy\_c\isotopic_constants.pyx":140
  *     result.power_sum = power_sum
  *     free_double_vector(accumulator)
  *     return result             # <<<<<<<<<<<<<<
@@ -1840,7 +1860,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":120
+  /* "brainpy\_c\isotopic_constants.pyx":124
  *     return accumulator
  * 
  * cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass) nogil:             # <<<<<<<<<<<<<<
@@ -1853,7 +1873,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":139
+/* "brainpy\_c\isotopic_constants.pyx":143
  * 
  * 
  * cdef void print_polynomial_parameters(PolynomialParameters* params) nogil:             # <<<<<<<<<<<<<<
@@ -1863,7 +1883,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__
 
 static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameters(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__pyx_v_params) {
 
-  /* "brainpy\_c\isotopic_constants.pyx":140
+  /* "brainpy\_c\isotopic_constants.pyx":144
  * 
  * cdef void print_polynomial_parameters(PolynomialParameters* params) nogil:
  *     printf("PolynomialParameters: %d\n", <int>params)             # <<<<<<<<<<<<<<
@@ -1872,7 +1892,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
  */
   printf(__pyx_k_PolynomialParameters_d, ((int)__pyx_v_params));
 
-  /* "brainpy\_c\isotopic_constants.pyx":141
+  /* "brainpy\_c\isotopic_constants.pyx":145
  * cdef void print_polynomial_parameters(PolynomialParameters* params) nogil:
  *     printf("PolynomialParameters: %d\n", <int>params)
  *     printf("  ")             # <<<<<<<<<<<<<<
@@ -1881,7 +1901,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
  */
   printf(__pyx_k_);
 
-  /* "brainpy\_c\isotopic_constants.pyx":142
+  /* "brainpy\_c\isotopic_constants.pyx":146
  *     printf("PolynomialParameters: %d\n", <int>params)
  *     printf("  ")
  *     print_double_vector(params.elementary_symmetric_polynomial)             # <<<<<<<<<<<<<<
@@ -1890,7 +1910,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
  */
   __pyx_f_7brainpy_2_c_13double_vector_print_double_vector(__pyx_v_params->elementary_symmetric_polynomial);
 
-  /* "brainpy\_c\isotopic_constants.pyx":143
+  /* "brainpy\_c\isotopic_constants.pyx":147
  *     printf("  ")
  *     print_double_vector(params.elementary_symmetric_polynomial)
  *     printf("  ")             # <<<<<<<<<<<<<<
@@ -1899,7 +1919,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
  */
   printf(__pyx_k_);
 
-  /* "brainpy\_c\isotopic_constants.pyx":144
+  /* "brainpy\_c\isotopic_constants.pyx":148
  *     print_double_vector(params.elementary_symmetric_polynomial)
  *     printf("  ")
  *     print_double_vector(params.power_sum)             # <<<<<<<<<<<<<<
@@ -1908,7 +1928,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
  */
   __pyx_f_7brainpy_2_c_13double_vector_print_double_vector(__pyx_v_params->power_sum);
 
-  /* "brainpy\_c\isotopic_constants.pyx":145
+  /* "brainpy\_c\isotopic_constants.pyx":149
  *     printf("  ")
  *     print_double_vector(params.power_sum)
  *     printf("\n")             # <<<<<<<<<<<<<<
@@ -1917,7 +1937,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
  */
   printf(__pyx_k__2);
 
-  /* "brainpy\_c\isotopic_constants.pyx":139
+  /* "brainpy\_c\isotopic_constants.pyx":143
  * 
  * 
  * cdef void print_polynomial_parameters(PolynomialParameters* params) nogil:             # <<<<<<<<<<<<<<
@@ -1928,7 +1948,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":148
+/* "brainpy\_c\isotopic_constants.pyx":152
  * 
  * 
  * cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:             # <<<<<<<<<<<<<<
@@ -1938,7 +1958,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameter
 
 static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PolynomialParameters *__pyx_v_params) {
 
-  /* "brainpy\_c\isotopic_constants.pyx":149
+  /* "brainpy\_c\isotopic_constants.pyx":153
  * 
  * cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:
  *     free_double_vector(params.elementary_symmetric_polynomial)             # <<<<<<<<<<<<<<
@@ -1947,7 +1967,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters
  */
   __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_params->elementary_symmetric_polynomial);
 
-  /* "brainpy\_c\isotopic_constants.pyx":150
+  /* "brainpy\_c\isotopic_constants.pyx":154
  * cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:
  *     free_double_vector(params.elementary_symmetric_polynomial)
  *     free_double_vector(params.power_sum)             # <<<<<<<<<<<<<<
@@ -1956,16 +1976,16 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters
  */
   __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_params->power_sum);
 
-  /* "brainpy\_c\isotopic_constants.pyx":151
+  /* "brainpy\_c\isotopic_constants.pyx":155
  *     free_double_vector(params.elementary_symmetric_polynomial)
  *     free_double_vector(params.power_sum)
  *     free(params)             # <<<<<<<<<<<<<<
  * 
- * 
+ * # -----------------------------------------------------------------------------
  */
   free(__pyx_v_params);
 
-  /* "brainpy\_c\isotopic_constants.pyx":148
+  /* "brainpy\_c\isotopic_constants.pyx":152
  * 
  * 
  * cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:             # <<<<<<<<<<<<<<
@@ -1976,7 +1996,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":157
+/* "brainpy\_c\isotopic_constants.pyx":161
  * 
  * 
  * cdef void print_phi_constants(PhiConstants* constants) nogil:             # <<<<<<<<<<<<<<
@@ -1986,7 +2006,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters
 
 static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *__pyx_v_constants) {
 
-  /* "brainpy\_c\isotopic_constants.pyx":158
+  /* "brainpy\_c\isotopic_constants.pyx":162
  * 
  * cdef void print_phi_constants(PhiConstants* constants) nogil:
  *     printf("PhiConstants: %d\n", <int>constants)             # <<<<<<<<<<<<<<
@@ -1995,7 +2015,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   printf(__pyx_k_PhiConstants_d, ((int)__pyx_v_constants));
 
-  /* "brainpy\_c\isotopic_constants.pyx":159
+  /* "brainpy\_c\isotopic_constants.pyx":163
  * cdef void print_phi_constants(PhiConstants* constants) nogil:
  *     printf("PhiConstants: %d\n", <int>constants)
  *     printf("Element: %s, Order: %d\n", constants.element.symbol, constants.order)             # <<<<<<<<<<<<<<
@@ -2004,7 +2024,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   printf(__pyx_k_Element_s_Order_d, __pyx_v_constants->element->symbol, __pyx_v_constants->order);
 
-  /* "brainpy\_c\isotopic_constants.pyx":160
+  /* "brainpy\_c\isotopic_constants.pyx":164
  *     printf("PhiConstants: %d\n", <int>constants)
  *     printf("Element: %s, Order: %d\n", constants.element.symbol, constants.order)
  *     printf("Element Coefficients:\n")             # <<<<<<<<<<<<<<
@@ -2013,7 +2033,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   printf(__pyx_k_Element_Coefficients);
 
-  /* "brainpy\_c\isotopic_constants.pyx":161
+  /* "brainpy\_c\isotopic_constants.pyx":165
  *     printf("Element: %s, Order: %d\n", constants.element.symbol, constants.order)
  *     printf("Element Coefficients:\n")
  *     print_polynomial_parameters(constants.element_coefficients)             # <<<<<<<<<<<<<<
@@ -2022,7 +2042,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameters(__pyx_v_constants->element_coefficients);
 
-  /* "brainpy\_c\isotopic_constants.pyx":162
+  /* "brainpy\_c\isotopic_constants.pyx":166
  *     printf("Element Coefficients:\n")
  *     print_polynomial_parameters(constants.element_coefficients)
  *     printf("Mass Coefficients:\n")             # <<<<<<<<<<<<<<
@@ -2031,7 +2051,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   printf(__pyx_k_Mass_Coefficients);
 
-  /* "brainpy\_c\isotopic_constants.pyx":163
+  /* "brainpy\_c\isotopic_constants.pyx":167
  *     print_polynomial_parameters(constants.element_coefficients)
  *     printf("Mass Coefficients:\n")
  *     print_polynomial_parameters(constants.mass_coefficients)             # <<<<<<<<<<<<<<
@@ -2040,7 +2060,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_print_polynomial_parameters(__pyx_v_constants->mass_coefficients);
 
-  /* "brainpy\_c\isotopic_constants.pyx":164
+  /* "brainpy\_c\isotopic_constants.pyx":168
  *     printf("Mass Coefficients:\n")
  *     print_polynomial_parameters(constants.mass_coefficients)
  *     printf("\n")             # <<<<<<<<<<<<<<
@@ -2049,7 +2069,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
  */
   printf(__pyx_k__2);
 
-  /* "brainpy\_c\isotopic_constants.pyx":157
+  /* "brainpy\_c\isotopic_constants.pyx":161
  * 
  * 
  * cdef void print_phi_constants(PhiConstants* constants) nogil:             # <<<<<<<<<<<<<<
@@ -2060,7 +2080,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":167
+/* "brainpy\_c\isotopic_constants.pyx":171
  * 
  * 
  * cdef void free_phi_constants(PhiConstants* constants) nogil:             # <<<<<<<<<<<<<<
@@ -2070,7 +2090,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(struct
 
 static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_phi_constants(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *__pyx_v_constants) {
 
-  /* "brainpy\_c\isotopic_constants.pyx":168
+  /* "brainpy\_c\isotopic_constants.pyx":172
  * 
  * cdef void free_phi_constants(PhiConstants* constants) nogil:
  *     free_polynomial_parameters(constants.element_coefficients)             # <<<<<<<<<<<<<<
@@ -2079,7 +2099,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_phi_constants(struct 
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters(__pyx_v_constants->element_coefficients);
 
-  /* "brainpy\_c\isotopic_constants.pyx":169
+  /* "brainpy\_c\isotopic_constants.pyx":173
  * cdef void free_phi_constants(PhiConstants* constants) nogil:
  *     free_polynomial_parameters(constants.element_coefficients)
  *     free_polynomial_parameters(constants.mass_coefficients)             # <<<<<<<<<<<<<<
@@ -2088,7 +2108,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_phi_constants(struct 
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_free_polynomial_parameters(__pyx_v_constants->mass_coefficients);
 
-  /* "brainpy\_c\isotopic_constants.pyx":170
+  /* "brainpy\_c\isotopic_constants.pyx":174
  *     free_polynomial_parameters(constants.element_coefficients)
  *     free_polynomial_parameters(constants.mass_coefficients)
  *     free(constants)             # <<<<<<<<<<<<<<
@@ -2097,7 +2117,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_phi_constants(struct 
  */
   free(__pyx_v_constants);
 
-  /* "brainpy\_c\isotopic_constants.pyx":167
+  /* "brainpy\_c\isotopic_constants.pyx":171
  * 
  * 
  * cdef void free_phi_constants(PhiConstants* constants) nogil:             # <<<<<<<<<<<<<<
@@ -2108,7 +2128,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_phi_constants(struct 
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":177
+/* "brainpy\_c\isotopic_constants.pyx":183
  * 
  * 
  * cdef IsotopicConstants* make_isotopic_constants() nogil:             # <<<<<<<<<<<<<<
@@ -2120,7 +2140,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx_v_result;
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx_r;
 
-  /* "brainpy\_c\isotopic_constants.pyx":180
+  /* "brainpy\_c\isotopic_constants.pyx":186
  *     cdef:
  *         IsotopicConstants* result
  *     result = <IsotopicConstants*>malloc(sizeof(IsotopicConstants))             # <<<<<<<<<<<<<<
@@ -2129,7 +2149,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
  */
   __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants))));
 
-  /* "brainpy\_c\isotopic_constants.pyx":181
+  /* "brainpy\_c\isotopic_constants.pyx":187
  *         IsotopicConstants* result
  *     result = <IsotopicConstants*>malloc(sizeof(IsotopicConstants))
  *     result.constants = <PhiConstants**>malloc(sizeof(PhiConstants*) * DEFAULT_ISOTOPIC_CONSTANTS_SIZE)             # <<<<<<<<<<<<<<
@@ -2138,7 +2158,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
  */
   __pyx_v_result->constants = ((struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants **)malloc(((sizeof(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *)) * __pyx_v_7brainpy_2_c_18isotopic_constants_DEFAULT_ISOTOPIC_CONSTANTS_SIZE)));
 
-  /* "brainpy\_c\isotopic_constants.pyx":182
+  /* "brainpy\_c\isotopic_constants.pyx":188
  *     result = <IsotopicConstants*>malloc(sizeof(IsotopicConstants))
  *     result.constants = <PhiConstants**>malloc(sizeof(PhiConstants*) * DEFAULT_ISOTOPIC_CONSTANTS_SIZE)
  *     result.size = DEFAULT_ISOTOPIC_CONSTANTS_SIZE             # <<<<<<<<<<<<<<
@@ -2147,7 +2167,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
  */
   __pyx_v_result->size = __pyx_v_7brainpy_2_c_18isotopic_constants_DEFAULT_ISOTOPIC_CONSTANTS_SIZE;
 
-  /* "brainpy\_c\isotopic_constants.pyx":183
+  /* "brainpy\_c\isotopic_constants.pyx":189
  *     result.constants = <PhiConstants**>malloc(sizeof(PhiConstants*) * DEFAULT_ISOTOPIC_CONSTANTS_SIZE)
  *     result.size = DEFAULT_ISOTOPIC_CONSTANTS_SIZE
  *     result.used = 0             # <<<<<<<<<<<<<<
@@ -2156,7 +2176,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
  */
   __pyx_v_result->used = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":184
+  /* "brainpy\_c\isotopic_constants.pyx":190
  *     result.size = DEFAULT_ISOTOPIC_CONSTANTS_SIZE
  *     result.used = 0
  *     return result             # <<<<<<<<<<<<<<
@@ -2166,7 +2186,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":177
+  /* "brainpy\_c\isotopic_constants.pyx":183
  * 
  * 
  * cdef IsotopicConstants* make_isotopic_constants() nogil:             # <<<<<<<<<<<<<<
@@ -2179,7 +2199,7 @@ static struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *__pyx
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":187
+/* "brainpy\_c\isotopic_constants.pyx":193
  * 
  * 
  * cdef int isotopic_constants_resize(IsotopicConstants* ics) nogil:             # <<<<<<<<<<<<<<
@@ -2191,7 +2211,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":188
+  /* "brainpy\_c\isotopic_constants.pyx":194
  * 
  * cdef int isotopic_constants_resize(IsotopicConstants* ics) nogil:
  *     ics.constants = <PhiConstants**>realloc(ics.constants, sizeof(PhiConstants*) * ics.size * 2)             # <<<<<<<<<<<<<<
@@ -2200,7 +2220,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
  */
   __pyx_v_ics->constants = ((struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants **)realloc(__pyx_v_ics->constants, (((sizeof(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *)) * __pyx_v_ics->size) * 2)));
 
-  /* "brainpy\_c\isotopic_constants.pyx":189
+  /* "brainpy\_c\isotopic_constants.pyx":195
  * cdef int isotopic_constants_resize(IsotopicConstants* ics) nogil:
  *     ics.constants = <PhiConstants**>realloc(ics.constants, sizeof(PhiConstants*) * ics.size * 2)
  *     ics.size *= 2             # <<<<<<<<<<<<<<
@@ -2209,7 +2229,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
  */
   __pyx_v_ics->size = (__pyx_v_ics->size * 2);
 
-  /* "brainpy\_c\isotopic_constants.pyx":190
+  /* "brainpy\_c\isotopic_constants.pyx":196
  *     ics.constants = <PhiConstants**>realloc(ics.constants, sizeof(PhiConstants*) * ics.size * 2)
  *     ics.size *= 2
  *     if ics.constants == NULL:             # <<<<<<<<<<<<<<
@@ -2219,7 +2239,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
   __pyx_t_1 = ((__pyx_v_ics->constants == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_constants.pyx":191
+    /* "brainpy\_c\isotopic_constants.pyx":197
  *     ics.size *= 2
  *     if ics.constants == NULL:
  *         return -1             # <<<<<<<<<<<<<<
@@ -2229,7 +2249,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
     __pyx_r = -1;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_constants.pyx":190
+    /* "brainpy\_c\isotopic_constants.pyx":196
  *     ics.constants = <PhiConstants**>realloc(ics.constants, sizeof(PhiConstants*) * ics.size * 2)
  *     ics.size *= 2
  *     if ics.constants == NULL:             # <<<<<<<<<<<<<<
@@ -2238,7 +2258,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
  */
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":192
+  /* "brainpy\_c\isotopic_constants.pyx":198
  *     if ics.constants == NULL:
  *         return -1
  *     return 0             # <<<<<<<<<<<<<<
@@ -2248,7 +2268,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":187
+  /* "brainpy\_c\isotopic_constants.pyx":193
  * 
  * 
  * cdef int isotopic_constants_resize(IsotopicConstants* ics) nogil:             # <<<<<<<<<<<<<<
@@ -2261,7 +2281,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(s
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":195
+/* "brainpy\_c\isotopic_constants.pyx":201
  * 
  * 
  * cdef void free_isotopic_constants(IsotopicConstants* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -2273,7 +2293,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
   size_t __pyx_v_i;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":199
+  /* "brainpy\_c\isotopic_constants.pyx":205
  *         size_t i
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -2282,7 +2302,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":200
+  /* "brainpy\_c\isotopic_constants.pyx":206
  * 
  *     i = 0
  *     while i < isotopes.used:             # <<<<<<<<<<<<<<
@@ -2293,7 +2313,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_isotopes->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\isotopic_constants.pyx":201
+    /* "brainpy\_c\isotopic_constants.pyx":207
  *     i = 0
  *     while i < isotopes.used:
  *         free_phi_constants(isotopes.constants[i])             # <<<<<<<<<<<<<<
@@ -2302,7 +2322,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants_free_phi_constants((__pyx_v_isotopes->constants[__pyx_v_i]));
 
-    /* "brainpy\_c\isotopic_constants.pyx":202
+    /* "brainpy\_c\isotopic_constants.pyx":208
  *     while i < isotopes.used:
  *         free_phi_constants(isotopes.constants[i])
  *         i += 1             # <<<<<<<<<<<<<<
@@ -2312,7 +2332,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":203
+  /* "brainpy\_c\isotopic_constants.pyx":209
  *         free_phi_constants(isotopes.constants[i])
  *         i += 1
  *     free(isotopes.constants)             # <<<<<<<<<<<<<<
@@ -2321,7 +2341,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
  */
   free(__pyx_v_isotopes->constants);
 
-  /* "brainpy\_c\isotopic_constants.pyx":204
+  /* "brainpy\_c\isotopic_constants.pyx":210
  *         i += 1
  *     free(isotopes.constants)
  *     free(isotopes)             # <<<<<<<<<<<<<<
@@ -2330,7 +2350,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
  */
   free(__pyx_v_isotopes);
 
-  /* "brainpy\_c\isotopic_constants.pyx":195
+  /* "brainpy\_c\isotopic_constants.pyx":201
  * 
  * 
  * cdef void free_isotopic_constants(IsotopicConstants* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -2341,7 +2361,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(st
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":207
+/* "brainpy\_c\isotopic_constants.pyx":213
  * 
  * 
  * cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* element_symbol) nogil:             # <<<<<<<<<<<<<<
@@ -2358,8 +2378,8 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *__pyx_v_phi_constants;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":215
- *         PhiConstants* phi_constants
+  /* "brainpy\_c\isotopic_constants.pyx":222
+ *         char* element_buffer
  * 
  *     status = isotopic_constants_get(isotopes, element_symbol, &phi_constants)             # <<<<<<<<<<<<<<
  *     if status == 0:
@@ -2367,7 +2387,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_status = __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(__pyx_v_isotopes, __pyx_v_element_symbol, (&__pyx_v_phi_constants));
 
-  /* "brainpy\_c\isotopic_constants.pyx":216
+  /* "brainpy\_c\isotopic_constants.pyx":223
  * 
  *     status = isotopic_constants_get(isotopes, element_symbol, &phi_constants)
  *     if status == 0:             # <<<<<<<<<<<<<<
@@ -2377,7 +2397,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
   __pyx_t_1 = ((__pyx_v_status == 0) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_constants.pyx":217
+    /* "brainpy\_c\isotopic_constants.pyx":224
  *     status = isotopic_constants_get(isotopes, element_symbol, &phi_constants)
  *     if status == 0:
  *         return             # <<<<<<<<<<<<<<
@@ -2386,7 +2406,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_constants.pyx":216
+    /* "brainpy\_c\isotopic_constants.pyx":223
  * 
  *     status = isotopic_constants_get(isotopes, element_symbol, &phi_constants)
  *     if status == 0:             # <<<<<<<<<<<<<<
@@ -2395,35 +2415,72 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":219
+  /* "brainpy\_c\isotopic_constants.pyx":226
  *         return
  * 
  *     phi_constants = NULL             # <<<<<<<<<<<<<<
  * 
- *     status = get_element_from_periodic_table2(_PeriodicTable, element_symbol, &element)
+ *     status = element_hash_table_get(_ElementTable, element_symbol, &element)
  */
   __pyx_v_phi_constants = NULL;
 
-  /* "brainpy\_c\isotopic_constants.pyx":221
+  /* "brainpy\_c\isotopic_constants.pyx":228
  *     phi_constants = NULL
  * 
- *     status = get_element_from_periodic_table2(_PeriodicTable, element_symbol, &element)             # <<<<<<<<<<<<<<
- *     order = element_max_neutron_shift(element)
- *     element_parameters = make_polynomial_parameters(element, False)
+ *     status = element_hash_table_get(_ElementTable, element_symbol, &element)             # <<<<<<<<<<<<<<
+ *     if status == -1:
+ *         printf("Could not resolve element_symbol %s\n", element_symbol)
  */
-  __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(__pyx_v_7brainpy_2_c_11composition__PeriodicTable, __pyx_v_element_symbol, (&__pyx_v_element));
+  __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element_symbol, (&__pyx_v_element));
 
-  /* "brainpy\_c\isotopic_constants.pyx":222
+  /* "brainpy\_c\isotopic_constants.pyx":229
  * 
- *     status = get_element_from_periodic_table2(_PeriodicTable, element_symbol, &element)
+ *     status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ *     if status == -1:             # <<<<<<<<<<<<<<
+ *         printf("Could not resolve element_symbol %s\n", element_symbol)
+ *         return
+ */
+  __pyx_t_1 = ((__pyx_v_status == -1L) != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\isotopic_constants.pyx":230
+ *     status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ *     if status == -1:
+ *         printf("Could not resolve element_symbol %s\n", element_symbol)             # <<<<<<<<<<<<<<
+ *         return
+ * 
+ */
+    printf(__pyx_k_Could_not_resolve_element_symbol, __pyx_v_element_symbol);
+
+    /* "brainpy\_c\isotopic_constants.pyx":231
+ *     if status == -1:
+ *         printf("Could not resolve element_symbol %s\n", element_symbol)
+ *         return             # <<<<<<<<<<<<<<
+ * 
+ *     order = element_max_neutron_shift(element)
+ */
+    goto __pyx_L0;
+
+    /* "brainpy\_c\isotopic_constants.pyx":229
+ * 
+ *     status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ *     if status == -1:             # <<<<<<<<<<<<<<
+ *         printf("Could not resolve element_symbol %s\n", element_symbol)
+ *         return
+ */
+  }
+
+  /* "brainpy\_c\isotopic_constants.pyx":233
+ *         return
+ * 
  *     order = element_max_neutron_shift(element)             # <<<<<<<<<<<<<<
  *     element_parameters = make_polynomial_parameters(element, False)
  *     mass_parameters = make_polynomial_parameters(element, True)
  */
   __pyx_v_order = __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(__pyx_v_element);
 
-  /* "brainpy\_c\isotopic_constants.pyx":223
- *     status = get_element_from_periodic_table2(_PeriodicTable, element_symbol, &element)
+  /* "brainpy\_c\isotopic_constants.pyx":234
+ * 
  *     order = element_max_neutron_shift(element)
  *     element_parameters = make_polynomial_parameters(element, False)             # <<<<<<<<<<<<<<
  *     mass_parameters = make_polynomial_parameters(element, True)
@@ -2431,7 +2488,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_element_parameters = __pyx_f_7brainpy_2_c_18isotopic_constants_make_polynomial_parameters(__pyx_v_element, 0);
 
-  /* "brainpy\_c\isotopic_constants.pyx":224
+  /* "brainpy\_c\isotopic_constants.pyx":235
  *     order = element_max_neutron_shift(element)
  *     element_parameters = make_polynomial_parameters(element, False)
  *     mass_parameters = make_polynomial_parameters(element, True)             # <<<<<<<<<<<<<<
@@ -2440,7 +2497,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_mass_parameters = __pyx_f_7brainpy_2_c_18isotopic_constants_make_polynomial_parameters(__pyx_v_element, 1);
 
-  /* "brainpy\_c\isotopic_constants.pyx":225
+  /* "brainpy\_c\isotopic_constants.pyx":236
  *     element_parameters = make_polynomial_parameters(element, False)
  *     mass_parameters = make_polynomial_parameters(element, True)
  *     phi_constants = <PhiConstants*>malloc(sizeof(PhiConstants))             # <<<<<<<<<<<<<<
@@ -2449,7 +2506,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_phi_constants = ((struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants))));
 
-  /* "brainpy\_c\isotopic_constants.pyx":226
+  /* "brainpy\_c\isotopic_constants.pyx":237
  *     mass_parameters = make_polynomial_parameters(element, True)
  *     phi_constants = <PhiConstants*>malloc(sizeof(PhiConstants))
  *     phi_constants.order = order             # <<<<<<<<<<<<<<
@@ -2458,7 +2515,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_phi_constants->order = __pyx_v_order;
 
-  /* "brainpy\_c\isotopic_constants.pyx":227
+  /* "brainpy\_c\isotopic_constants.pyx":238
  *     phi_constants = <PhiConstants*>malloc(sizeof(PhiConstants))
  *     phi_constants.order = order
  *     phi_constants.element = element             # <<<<<<<<<<<<<<
@@ -2467,7 +2524,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_phi_constants->element = __pyx_v_element;
 
-  /* "brainpy\_c\isotopic_constants.pyx":228
+  /* "brainpy\_c\isotopic_constants.pyx":239
  *     phi_constants.order = order
  *     phi_constants.element = element
  *     phi_constants.element_coefficients = element_parameters             # <<<<<<<<<<<<<<
@@ -2476,7 +2533,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_phi_constants->element_coefficients = __pyx_v_element_parameters;
 
-  /* "brainpy\_c\isotopic_constants.pyx":229
+  /* "brainpy\_c\isotopic_constants.pyx":240
  *     phi_constants.element = element
  *     phi_constants.element_coefficients = element_parameters
  *     phi_constants.mass_coefficients = mass_parameters             # <<<<<<<<<<<<<<
@@ -2485,7 +2542,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_phi_constants->mass_coefficients = __pyx_v_mass_parameters;
 
-  /* "brainpy\_c\isotopic_constants.pyx":230
+  /* "brainpy\_c\isotopic_constants.pyx":241
  *     phi_constants.element_coefficients = element_parameters
  *     phi_constants.mass_coefficients = mass_parameters
  *     if isotopes.used + 1 == isotopes.size:             # <<<<<<<<<<<<<<
@@ -2495,7 +2552,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
   __pyx_t_1 = (((__pyx_v_isotopes->used + 1) == __pyx_v_isotopes->size) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_constants.pyx":231
+    /* "brainpy\_c\isotopic_constants.pyx":242
  *     phi_constants.mass_coefficients = mass_parameters
  *     if isotopes.used + 1 == isotopes.size:
  *         isotopic_constants_resize(isotopes)             # <<<<<<<<<<<<<<
@@ -2504,7 +2561,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_resize(__pyx_v_isotopes);
 
-    /* "brainpy\_c\isotopic_constants.pyx":230
+    /* "brainpy\_c\isotopic_constants.pyx":241
  *     phi_constants.element_coefficients = element_parameters
  *     phi_constants.mass_coefficients = mass_parameters
  *     if isotopes.used + 1 == isotopes.size:             # <<<<<<<<<<<<<<
@@ -2513,7 +2570,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":232
+  /* "brainpy\_c\isotopic_constants.pyx":243
  *     if isotopes.used + 1 == isotopes.size:
  *         isotopic_constants_resize(isotopes)
  *     isotopes.constants[isotopes.used] = phi_constants             # <<<<<<<<<<<<<<
@@ -2522,7 +2579,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   (__pyx_v_isotopes->constants[__pyx_v_isotopes->used]) = __pyx_v_phi_constants;
 
-  /* "brainpy\_c\isotopic_constants.pyx":233
+  /* "brainpy\_c\isotopic_constants.pyx":244
  *         isotopic_constants_resize(isotopes)
  *     isotopes.constants[isotopes.used] = phi_constants
  *     isotopes.used += 1             # <<<<<<<<<<<<<<
@@ -2531,7 +2588,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
  */
   __pyx_v_isotopes->used = (__pyx_v_isotopes->used + 1);
 
-  /* "brainpy\_c\isotopic_constants.pyx":207
+  /* "brainpy\_c\isotopic_constants.pyx":213
  * 
  * 
  * cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* element_symbol) nogil:             # <<<<<<<<<<<<<<
@@ -2543,7 +2600,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_ele
   __pyx_L0:;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":236
+/* "brainpy\_c\isotopic_constants.pyx":247
  * 
  * 
  * cdef int isotopic_constants_get(IsotopicConstants* isotopes, char* element_symbol, PhiConstants** out) nogil:             # <<<<<<<<<<<<<<
@@ -2556,7 +2613,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_constants.pyx":241
+  /* "brainpy\_c\isotopic_constants.pyx":252
  *         int status
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -2565,7 +2622,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":242
+  /* "brainpy\_c\isotopic_constants.pyx":253
  * 
  *     i = 0
  *     while i < isotopes.used:             # <<<<<<<<<<<<<<
@@ -2576,7 +2633,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_isotopes->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\isotopic_constants.pyx":243
+    /* "brainpy\_c\isotopic_constants.pyx":254
  *     i = 0
  *     while i < isotopes.used:
  *         if strcmp(isotopes.constants[i].element.symbol, element_symbol) == 0:             # <<<<<<<<<<<<<<
@@ -2586,7 +2643,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
     __pyx_t_1 = ((strcmp((__pyx_v_isotopes->constants[__pyx_v_i])->element->symbol, __pyx_v_element_symbol) == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":244
+      /* "brainpy\_c\isotopic_constants.pyx":255
  *     while i < isotopes.used:
  *         if strcmp(isotopes.constants[i].element.symbol, element_symbol) == 0:
  *             out[0] = (isotopes.constants[i])             # <<<<<<<<<<<<<<
@@ -2595,7 +2652,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
  */
       (__pyx_v_out[0]) = (__pyx_v_isotopes->constants[__pyx_v_i]);
 
-      /* "brainpy\_c\isotopic_constants.pyx":245
+      /* "brainpy\_c\isotopic_constants.pyx":256
  *         if strcmp(isotopes.constants[i].element.symbol, element_symbol) == 0:
  *             out[0] = (isotopes.constants[i])
  *             return 0             # <<<<<<<<<<<<<<
@@ -2605,7 +2662,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
       __pyx_r = 0;
       goto __pyx_L0;
 
-      /* "brainpy\_c\isotopic_constants.pyx":243
+      /* "brainpy\_c\isotopic_constants.pyx":254
  *     i = 0
  *     while i < isotopes.used:
  *         if strcmp(isotopes.constants[i].element.symbol, element_symbol) == 0:             # <<<<<<<<<<<<<<
@@ -2614,7 +2671,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
  */
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":246
+    /* "brainpy\_c\isotopic_constants.pyx":257
  *             out[0] = (isotopes.constants[i])
  *             return 0
  *         i += 1             # <<<<<<<<<<<<<<
@@ -2624,7 +2681,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":247
+  /* "brainpy\_c\isotopic_constants.pyx":258
  *             return 0
  *         i += 1
  *     return 1             # <<<<<<<<<<<<<<
@@ -2634,7 +2691,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
   __pyx_r = 1;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":236
+  /* "brainpy\_c\isotopic_constants.pyx":247
  * 
  * 
  * cdef int isotopic_constants_get(IsotopicConstants* isotopes, char* element_symbol, PhiConstants** out) nogil:             # <<<<<<<<<<<<<<
@@ -2647,7 +2704,7 @@ static int __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(stru
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":250
+/* "brainpy\_c\isotopic_constants.pyx":261
  * 
  * 
  * cdef void isotopic_constants_update_coefficients(IsotopicConstants* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -2665,7 +2722,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
   long __pyx_t_4;
   size_t __pyx_t_5;
 
-  /* "brainpy\_c\isotopic_constants.pyx":255
+  /* "brainpy\_c\isotopic_constants.pyx":266
  *         PhiConstants* constants
  * 
  *     for i in range(isotopes.used):             # <<<<<<<<<<<<<<
@@ -2676,7 +2733,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_constants.pyx":256
+    /* "brainpy\_c\isotopic_constants.pyx":267
  * 
  *     for i in range(isotopes.used):
  *         constants = isotopes.constants[i]             # <<<<<<<<<<<<<<
@@ -2685,7 +2742,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
  */
     __pyx_v_constants = (__pyx_v_isotopes->constants[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_constants.pyx":258
+    /* "brainpy\_c\isotopic_constants.pyx":269
  *         constants = isotopes.constants[i]
  * 
  *         if isotopes.order < constants.order:             # <<<<<<<<<<<<<<
@@ -2695,7 +2752,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
     __pyx_t_3 = ((__pyx_v_isotopes->order < __pyx_v_constants->order) != 0);
     if (__pyx_t_3) {
 
-      /* "brainpy\_c\isotopic_constants.pyx":259
+      /* "brainpy\_c\isotopic_constants.pyx":270
  * 
  *         if isotopes.order < constants.order:
  *             continue             # <<<<<<<<<<<<<<
@@ -2704,7 +2761,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
  */
       goto __pyx_L3_continue;
 
-      /* "brainpy\_c\isotopic_constants.pyx":258
+      /* "brainpy\_c\isotopic_constants.pyx":269
  *         constants = isotopes.constants[i]
  * 
  *         if isotopes.order < constants.order:             # <<<<<<<<<<<<<<
@@ -2713,7 +2770,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
  */
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":261
+    /* "brainpy\_c\isotopic_constants.pyx":272
  *             continue
  * 
  *         for j in range(constants.order, isotopes.order + 1):             # <<<<<<<<<<<<<<
@@ -2724,7 +2781,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
     for (__pyx_t_5 = __pyx_v_constants->order; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
       __pyx_v_j = __pyx_t_5;
 
-      /* "brainpy\_c\isotopic_constants.pyx":262
+      /* "brainpy\_c\isotopic_constants.pyx":273
  * 
  *         for j in range(constants.order, isotopes.order + 1):
  *             double_vector_append(constants.element_coefficients.elementary_symmetric_polynomial, 0.)             # <<<<<<<<<<<<<<
@@ -2733,7 +2790,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_constants->element_coefficients->elementary_symmetric_polynomial, 0.);
 
-      /* "brainpy\_c\isotopic_constants.pyx":263
+      /* "brainpy\_c\isotopic_constants.pyx":274
  *         for j in range(constants.order, isotopes.order + 1):
  *             double_vector_append(constants.element_coefficients.elementary_symmetric_polynomial, 0.)
  *             double_vector_append(constants.mass_coefficients.elementary_symmetric_polynomial, 0.)             # <<<<<<<<<<<<<<
@@ -2743,7 +2800,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_constants->mass_coefficients->elementary_symmetric_polynomial, 0.);
     }
 
-    /* "brainpy\_c\isotopic_constants.pyx":265
+    /* "brainpy\_c\isotopic_constants.pyx":276
  *             double_vector_append(constants.mass_coefficients.elementary_symmetric_polynomial, 0.)
  * 
  *         constants.order = constants.element_coefficients.elementary_symmetric_polynomial.used             # <<<<<<<<<<<<<<
@@ -2753,7 +2810,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
     __pyx_t_5 = __pyx_v_constants->element_coefficients->elementary_symmetric_polynomial->used;
     __pyx_v_constants->order = __pyx_t_5;
 
-    /* "brainpy\_c\isotopic_constants.pyx":267
+    /* "brainpy\_c\isotopic_constants.pyx":278
  *         constants.order = constants.element_coefficients.elementary_symmetric_polynomial.used
  * 
  *         newton(constants.element_coefficients.power_sum,             # <<<<<<<<<<<<<<
@@ -2762,7 +2819,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_v_constants->element_coefficients->power_sum, __pyx_v_constants->element_coefficients->elementary_symmetric_polynomial, __pyx_v_constants->order);
 
-    /* "brainpy\_c\isotopic_constants.pyx":270
+    /* "brainpy\_c\isotopic_constants.pyx":281
  *                constants.element_coefficients.elementary_symmetric_polynomial,
  *                constants.order)
  *         newton(constants.mass_coefficients.power_sum,             # <<<<<<<<<<<<<<
@@ -2773,7 +2830,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
     __pyx_L3_continue:;
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":250
+  /* "brainpy\_c\isotopic_constants.pyx":261
  * 
  * 
  * cdef void isotopic_constants_update_coefficients(IsotopicConstants* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -2784,7 +2841,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":275
+/* "brainpy\_c\isotopic_constants.pyx":286
  * 
  * 
  * cdef double isotopic_constants_nth_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2796,7 +2853,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_e
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *__pyx_v_constants;
   double __pyx_r;
 
-  /* "brainpy\_c\isotopic_constants.pyx":278
+  /* "brainpy\_c\isotopic_constants.pyx":289
  *     cdef:
  *         PhiConstants* constants
  *     isotopic_constants_get(isotopes, symbol, &constants)             # <<<<<<<<<<<<<<
@@ -2805,7 +2862,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_e
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(__pyx_v_isotopes, __pyx_v_symbol, (&__pyx_v_constants));
 
-  /* "brainpy\_c\isotopic_constants.pyx":279
+  /* "brainpy\_c\isotopic_constants.pyx":290
  *         PhiConstants* constants
  *     isotopic_constants_get(isotopes, symbol, &constants)
  *     return constants.element_coefficients.power_sum.v[order]             # <<<<<<<<<<<<<<
@@ -2815,7 +2872,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_e
   __pyx_r = (__pyx_v_constants->element_coefficients->power_sum->v[__pyx_v_order]);
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":275
+  /* "brainpy\_c\isotopic_constants.pyx":286
  * 
  * 
  * cdef double isotopic_constants_nth_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2828,7 +2885,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_e
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":282
+/* "brainpy\_c\isotopic_constants.pyx":293
  * 
  * 
  * cdef double isotopic_constants_nth_modified_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2840,7 +2897,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_m
   struct __pyx_t_7brainpy_2_c_18isotopic_constants_PhiConstants *__pyx_v_constants;
   double __pyx_r;
 
-  /* "brainpy\_c\isotopic_constants.pyx":285
+  /* "brainpy\_c\isotopic_constants.pyx":296
  *     cdef:
  *         PhiConstants* constants
  *     isotopic_constants_get(isotopes, symbol, &constants)             # <<<<<<<<<<<<<<
@@ -2849,7 +2906,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_m
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(__pyx_v_isotopes, __pyx_v_symbol, (&__pyx_v_constants));
 
-  /* "brainpy\_c\isotopic_constants.pyx":286
+  /* "brainpy\_c\isotopic_constants.pyx":297
  *         PhiConstants* constants
  *     isotopic_constants_get(isotopes, symbol, &constants)
  *     return constants.mass_coefficients.power_sum.v[order]             # <<<<<<<<<<<<<<
@@ -2859,7 +2916,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_m
   __pyx_r = (__pyx_v_constants->mass_coefficients->power_sum->v[__pyx_v_order]);
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":282
+  /* "brainpy\_c\isotopic_constants.pyx":293
  * 
  * 
  * cdef double isotopic_constants_nth_modified_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2872,7 +2929,7 @@ static double __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_m
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":289
+/* "brainpy\_c\isotopic_constants.pyx":300
  * 
  * 
  * cdef void print_isotopic_constants(IsotopicConstants* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -2885,7 +2942,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
   size_t __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_constants.pyx":293
+  /* "brainpy\_c\isotopic_constants.pyx":304
  *         size_t i
  * 
  *     i = 0             # <<<<<<<<<<<<<<
@@ -2894,7 +2951,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":294
+  /* "brainpy\_c\isotopic_constants.pyx":305
  * 
  *     i = 0
  *     for i in range(isotopes.used):             # <<<<<<<<<<<<<<
@@ -2905,7 +2962,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_constants.pyx":295
+    /* "brainpy\_c\isotopic_constants.pyx":306
  *     i = 0
  *     for i in range(isotopes.used):
  *         printf("%d\n", i)             # <<<<<<<<<<<<<<
@@ -2914,7 +2971,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
  */
     printf(__pyx_k_d, __pyx_v_i);
 
-    /* "brainpy\_c\isotopic_constants.pyx":296
+    /* "brainpy\_c\isotopic_constants.pyx":307
  *     for i in range(isotopes.used):
  *         printf("%d\n", i)
  *         print_phi_constants(isotopes.constants[i])             # <<<<<<<<<<<<<<
@@ -2924,7 +2981,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
     __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants((__pyx_v_isotopes->constants[__pyx_v_i]));
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":289
+  /* "brainpy\_c\isotopic_constants.pyx":300
  * 
  * 
  * cdef void print_isotopic_constants(IsotopicConstants* isotopes) nogil:             # <<<<<<<<<<<<<<
@@ -2935,7 +2992,7 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_constants.pyx":300
+/* "brainpy\_c\isotopic_constants.pyx":310
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
@@ -2945,7 +3002,8 @@ static void __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(s
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_18isotopic_constants_1main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_7brainpy_2_c_18isotopic_constants_1main = {"main", (PyCFunction)__pyx_pw_7brainpy_2_c_18isotopic_constants_1main, METH_NOARGS, 0};
+static char __pyx_doc_7brainpy_2_c_18isotopic_constants_main[] = "main()";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_18isotopic_constants_1main = {"main", (PyCFunction)__pyx_pw_7brainpy_2_c_18isotopic_constants_1main, METH_NOARGS, __pyx_doc_7brainpy_2_c_18isotopic_constants_main};
 static PyObject *__pyx_pw_7brainpy_2_c_18isotopic_constants_1main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2970,7 +3028,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("main", 0);
 
-  /* "brainpy\_c\isotopic_constants.pyx":309
+  /* "brainpy\_c\isotopic_constants.pyx":319
  *         char* sym
  * 
  *     sym = "O"             # <<<<<<<<<<<<<<
@@ -2979,7 +3037,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  */
   __pyx_v_sym = __pyx_k_O;
 
-  /* "brainpy\_c\isotopic_constants.pyx":310
+  /* "brainpy\_c\isotopic_constants.pyx":320
  * 
  *     sym = "O"
  *     ic = make_isotopic_constants()             # <<<<<<<<<<<<<<
@@ -2988,19 +3046,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  */
   __pyx_v_ic = __pyx_f_7brainpy_2_c_18isotopic_constants_make_isotopic_constants();
 
-  /* "brainpy\_c\isotopic_constants.pyx":311
+  /* "brainpy\_c\isotopic_constants.pyx":321
  *     sym = "O"
  *     ic = make_isotopic_constants()
  *     print ic.used             # <<<<<<<<<<<<<<
  *     isotopic_constants_add_element(ic, sym)
  *     print ic.used
  */
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_ic->used); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_ic->used); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 321; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":312
+  /* "brainpy\_c\isotopic_constants.pyx":322
  *     ic = make_isotopic_constants()
  *     print ic.used
  *     isotopic_constants_add_element(ic, sym)             # <<<<<<<<<<<<<<
@@ -3009,19 +3067,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_element(__pyx_v_ic, __pyx_v_sym);
 
-  /* "brainpy\_c\isotopic_constants.pyx":313
+  /* "brainpy\_c\isotopic_constants.pyx":323
  *     print ic.used
  *     isotopic_constants_add_element(ic, sym)
  *     print ic.used             # <<<<<<<<<<<<<<
  *     isotopic_constants_add_element(ic, "C")
  *     isotopic_constants_add_element(ic, "H")
  */
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_ic->used); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 313; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_ic->used); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 323; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 313; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 323; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\isotopic_constants.pyx":314
+  /* "brainpy\_c\isotopic_constants.pyx":324
  *     isotopic_constants_add_element(ic, sym)
  *     print ic.used
  *     isotopic_constants_add_element(ic, "C")             # <<<<<<<<<<<<<<
@@ -3030,7 +3088,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_element(__pyx_v_ic, __pyx_k_C);
 
-  /* "brainpy\_c\isotopic_constants.pyx":315
+  /* "brainpy\_c\isotopic_constants.pyx":325
  *     print ic.used
  *     isotopic_constants_add_element(ic, "C")
  *     isotopic_constants_add_element(ic, "H")             # <<<<<<<<<<<<<<
@@ -3039,7 +3097,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_element(__pyx_v_ic, __pyx_k_H);
 
-  /* "brainpy\_c\isotopic_constants.pyx":317
+  /* "brainpy\_c\isotopic_constants.pyx":327
  *     isotopic_constants_add_element(ic, "H")
  * 
  *     if isotopic_constants_get(ic, "O", &constant) == 0:             # <<<<<<<<<<<<<<
@@ -3049,7 +3107,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
   __pyx_t_2 = ((__pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_get(__pyx_v_ic, __pyx_k_O, (&__pyx_v_constant)) == 0) != 0);
   if (__pyx_t_2) {
 
-    /* "brainpy\_c\isotopic_constants.pyx":318
+    /* "brainpy\_c\isotopic_constants.pyx":328
  * 
  *     if isotopic_constants_get(ic, "O", &constant) == 0:
  *         print_phi_constants(constant)             # <<<<<<<<<<<<<<
@@ -3058,7 +3116,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants_print_phi_constants(__pyx_v_constant);
 
-    /* "brainpy\_c\isotopic_constants.pyx":317
+    /* "brainpy\_c\isotopic_constants.pyx":327
  *     isotopic_constants_add_element(ic, "H")
  * 
  *     if isotopic_constants_get(ic, "O", &constant) == 0:             # <<<<<<<<<<<<<<
@@ -3068,7 +3126,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\isotopic_constants.pyx":320
+  /* "brainpy\_c\isotopic_constants.pyx":330
  *         print_phi_constants(constant)
  *     else:
  *         print "Nope"             # <<<<<<<<<<<<<<
@@ -3076,18 +3134,18 @@ static PyObject *__pyx_pf_7brainpy_2_c_18isotopic_constants_main(CYTHON_UNUSED P
  *     free_isotopic_constants(ic)
  */
   /*else*/ {
-    if (__Pyx_PrintOne(0, __pyx_n_s_Nope) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (__Pyx_PrintOne(0, __pyx_n_s_Nope) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 330; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\isotopic_constants.pyx":322
+  /* "brainpy\_c\isotopic_constants.pyx":332
  *         print "Nope"
  * 
  *     free_isotopic_constants(ic)             # <<<<<<<<<<<<<<
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(__pyx_v_ic);
 
-  /* "brainpy\_c\isotopic_constants.pyx":300
+  /* "brainpy\_c\isotopic_constants.pyx":310
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
@@ -3153,7 +3211,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3163,17 +3221,17 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "brainpy\_c\isotopic_constants.pyx":300
+  /* "brainpy\_c\isotopic_constants.pyx":310
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef:
  *         IsotopicConstants* ic
  */
-  __pyx_tuple__3 = PyTuple_Pack(6, __pyx_n_s_ic, __pyx_n_s_coefficients, __pyx_n_s_elementary_symmetric_polynomial, __pyx_n_s_constant, __pyx_n_s_elem, __pyx_n_s_sym); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__3 = PyTuple_Pack(6, __pyx_n_s_ic, __pyx_n_s_coefficients, __pyx_n_s_elementary_symmetric_polynomial, __pyx_n_s_constant, __pyx_n_s_elem, __pyx_n_s_sym); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
-  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(0, 0, 6, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__3, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_main_2, 300, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(0, 0, 6, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__3, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_main_2, 310, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -3298,18 +3356,21 @@ PyMODINIT_FUNC PyInit_isotopic_constants(void)
   if (__Pyx_ExportFunction("print_isotopic_constants", (void (*)(void))__pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants, "void (struct __pyx_t_7brainpy_2_c_18isotopic_constants_IsotopicConstants *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Type init code ---*/
   /*--- Type import code ---*/
-  __pyx_ptype_7brainpy_2_c_11composition_PyComposition = __Pyx_ImportType("brainpy._c.composition", "PyComposition", sizeof(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition), 1); if (unlikely(!__pyx_ptype_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition = (struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition*)__Pyx_GetVtable(__pyx_ptype_7brainpy_2_c_11composition_PyComposition->tp_dict); if (unlikely(!__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_7brainpy_2_c_11composition_PyComposition = __Pyx_ImportType("brainpy._c.composition", "PyComposition", sizeof(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition), 1); if (unlikely(!__pyx_ptype_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition = (struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition*)__Pyx_GetVtable(__pyx_ptype_7brainpy_2_c_11composition_PyComposition->tp_dict); if (unlikely(!__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Variable import code ---*/
   __pyx_t_1 = __Pyx_ImportModule("brainpy._c.composition"); if (!__pyx_t_1) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportVoidPtr(__pyx_t_1, "nist_mass", (void **)&__pyx_vp_7brainpy_2_c_11composition_nist_mass, "PyObject *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportVoidPtr(__pyx_t_1, "PROTON", (void **)&__pyx_vp_7brainpy_2_c_11composition_PROTON, "double") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ImportVoidPtr(__pyx_t_1, "_PeriodicTable", (void **)&__pyx_vp_7brainpy_2_c_11composition__PeriodicTable, "struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportVoidPtr(__pyx_t_1, "_ElementTable", (void **)&__pyx_vp_7brainpy_2_c_11composition__ElementTable, "struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   Py_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   /*--- Function import code ---*/
   __pyx_t_2 = __Pyx_ImportModule("brainpy._c.composition"); if (!__pyx_t_2) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_2, "_parse_isotope_string", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition__parse_isotope_string, "char *(char *, int *, char *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_2, "element_max_neutron_shift", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift, "int (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ImportFunction(__pyx_t_2, "get_element_from_periodic_table2", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2, "int (struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_2, "make_fixed_isotope_element", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element, "struct __pyx_t_7brainpy_2_c_11composition_Element *(struct __pyx_t_7brainpy_2_c_11composition_Element *, int)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_2, "element_hash_table_get", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_hash_table_get, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_2, "element_hash_table_put", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_hash_table_put, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   Py_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_3 = __Pyx_ImportModule("brainpy._c.double_vector"); if (!__pyx_t_3) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "make_double_vector", (void (**)(void))&__pyx_f_7brainpy_2_c_13double_vector_make_double_vector, "struct __pyx_t_7brainpy_2_c_13double_vector_DoubleVector *(void)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -3323,31 +3384,31 @@ PyMODINIT_FUNC PyInit_isotopic_constants(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "brainpy\_c\isotopic_constants.pyx":174
+  /* "brainpy\_c\isotopic_constants.pyx":180
+ * # IsotopicConstants Methods
  * 
- * # IsotopicConstants
  * cdef size_t DEFAULT_ISOTOPIC_CONSTANTS_SIZE = 7             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __pyx_v_7brainpy_2_c_18isotopic_constants_DEFAULT_ISOTOPIC_CONSTANTS_SIZE = 7;
 
-  /* "brainpy\_c\isotopic_constants.pyx":300
+  /* "brainpy\_c\isotopic_constants.pyx":310
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef:
  *         IsotopicConstants* ic
  */
-  __pyx_t_4 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_18isotopic_constants_1main, NULL, __pyx_n_s_brainpy__c_isotopic_constants); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_18isotopic_constants_1main, NULL, __pyx_n_s_brainpy__c_isotopic_constants); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_main_2, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_main_2, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
   /* "brainpy\_c\isotopic_constants.pyx":1
- * from brainpy._c.composition cimport (             # <<<<<<<<<<<<<<
- *     _PeriodicTable, Element, Isotope, Composition,
- *     get_element_from_periodic_table2, element_max_neutron_shift)
+ * # cython: embedsignature=True             # <<<<<<<<<<<<<<
+ * 
+ * from brainpy._c.composition cimport (
  */
   __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);

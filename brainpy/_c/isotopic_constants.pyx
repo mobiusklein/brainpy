@@ -1,6 +1,10 @@
+# cython: embedsignature=True
+
 from brainpy._c.composition cimport (
-    _PeriodicTable, Element, Isotope, Composition,
-    get_element_from_periodic_table2, element_max_neutron_shift)
+    Element, Isotope, Composition,
+    element_max_neutron_shift, _parse_isotope_string,
+    _ElementTable, element_hash_table_get, make_fixed_isotope_element,
+    element_hash_table_put)
 
 from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
@@ -13,8 +17,8 @@ from libc cimport *
 cdef extern from * nogil:
     int printf (const char *template, ...)
 
-
-# PolynomialParameters
+# -----------------------------------------------------------------------------
+# PolynomialParameters Methods
 
 cdef dvec* vietes(dvec* coefficients) nogil:
     cdef:
@@ -150,8 +154,8 @@ cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:
     free_double_vector(params.power_sum)
     free(params)
 
-
-# PhiConstants
+# -----------------------------------------------------------------------------
+# PhiConstants Methods
 
 
 cdef void print_phi_constants(PhiConstants* constants) nogil:
@@ -170,7 +174,9 @@ cdef void free_phi_constants(PhiConstants* constants) nogil:
     free(constants)
 
 
-# IsotopicConstants
+# -----------------------------------------------------------------------------
+# IsotopicConstants Methods
+
 cdef size_t DEFAULT_ISOTOPIC_CONSTANTS_SIZE = 7
 
 
@@ -207,10 +213,11 @@ cdef void free_isotopic_constants(IsotopicConstants* isotopes) nogil:
 cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* element_symbol) nogil:
     cdef:
         Element* element
-        int order, status
+        int order, status, isotope_number
         PolynomialParameters* element_parameters
         PolynomialParameters* mass_parameters
         PhiConstants* phi_constants
+        char* element_buffer
 
     status = isotopic_constants_get(isotopes, element_symbol, &phi_constants)
     if status == 0:
@@ -218,7 +225,11 @@ cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* elem
 
     phi_constants = NULL
 
-    status = get_element_from_periodic_table2(_PeriodicTable, element_symbol, &element)
+    status = element_hash_table_get(_ElementTable, element_symbol, &element)
+    if status == -1:
+        printf("Could not resolve element_symbol %s\n", element_symbol)
+        return
+
     order = element_max_neutron_shift(element)
     element_parameters = make_polynomial_parameters(element, False)
     mass_parameters = make_polynomial_parameters(element, True)

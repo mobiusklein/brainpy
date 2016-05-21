@@ -1,10 +1,13 @@
+# cython: embedsignature=True
+
 from brainpy._c.composition cimport (
-    _PeriodicTable, Element, Isotope, Composition,
-    mass_charge_ratio, PROTON,
-    get_element_from_periodic_table2, element_max_neutron_shift,
+    Element, Isotope, Composition,
+    mass_charge_ratio, PROTON, element_max_neutron_shift,
     composition_get_element_count, element_monoisotopic_mass,
     composition_mass, get_isotope_by_neutron_shift, dict_to_composition,
-    print_composition, free_composition, count_type)
+    print_composition, free_composition, count_type,
+    _ElementTable, element_hash_table_get, make_fixed_isotope_element,
+    _parse_isotope_string, element_hash_table_put)
 
 from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
@@ -35,11 +38,79 @@ cdef extern from * nogil:
     int printf (const char *template, ...)
     void qsort (void *base, unsigned short n, unsigned short w, int (*cmp_func)(void*, void*))
 
-cdef struct Peak:
-    double mz
-    double intensity
-    int charge
 
+# -----------------------------------------------------------------------------
+# ElementPolynomialMap Declaration and Methods
+
+cdef struct ElementPolynomialMap:
+    char** elements
+    dvec** polynomials
+    size_t used
+    size_t size
+
+cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:
+    cdef ElementPolynomialMap* result
+    result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
+    result.elements = <char**>malloc(sizeof(char*) * sizehint)
+    result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
+    result.size = sizehint
+    result.used = 0
+
+    return result
+
+cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:
+    cdef:
+        size_t i
+        int status
+        bint done
+
+    done = False
+    i = 0
+    while (i < ep_map.used):
+        if strcmp(element, ep_map.elements[i]) == 0:
+            done = True
+            ep_map.polynomials[i] = polynomial
+            return 0
+        i += 1
+    if not done:
+        ep_map.used += 1
+        if ep_map.used >= ep_map.size:
+            printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
+            return -1
+        ep_map.elements[i] = element
+        ep_map.polynomials[i] = polynomial
+        return 0
+    return 1
+
+cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:
+    cdef:
+        size_t i
+        int status
+        bint done
+
+    done = False
+    i = 0
+    while i < ep_map.used:
+        if strcmp(ep_map.elements[i], element) == 0:
+            polynomial[0] = ep_map.polynomials[i]
+            return 0
+        i += 1
+    return 1
+
+cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:
+    cdef:
+        size_t i
+    i = 0
+    while i < ep_map.used:
+        free_double_vector(ep_map.polynomials[i])
+        i += 1
+    free(ep_map.elements)
+    free(ep_map.polynomials)
+    free(ep_map)
+
+
+# -----------------------------------------------------------------------------
+# Peak Methods
 
 cdef void print_peak(Peak* peak) nogil:
     printf("Peak: %f, %f, %d\n", peak.mz, peak.intensity, peak.charge)
@@ -53,6 +124,8 @@ cdef Peak* make_peak(double mz, double intensity, int charge) nogil:
     peak.charge = charge
     return peak
 
+# -----------------------------------------------------------------------------
+# PeakList Methods
 
 cdef PeakList* make_peak_list() nogil:
     cdef PeakList* result
@@ -87,14 +160,8 @@ cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:
     peaklist.peaks[peaklist.used] = peak[0]
     peaklist.used += 1
 
-
-cdef struct IsotopicDistribution:
-    Composition* composition
-    IsotopicConstants* _isotopic_constants
-    int order
-    double average_mass
-    Peak* monoisotopic_peak
-
+# -----------------------------------------------------------------------------
+# Support Functions
 
 cdef int max_variants(Composition* composition) nogil:
     cdef:
@@ -108,10 +175,40 @@ cdef int max_variants(Composition* composition) nogil:
     for i in range(composition.used):
         symbol = composition.elements[i]
         count = composition.counts[i]
-        get_element_from_periodic_table2(_PeriodicTable, symbol, &element)
+        element_hash_table_get(_ElementTable, symbol, &element)
         max_variants += <int>(count) * element_max_neutron_shift(element)
     return max_variants
 
+
+cdef void validate_composition(Composition* composition) nogil:
+    cdef:
+        size_t i
+        char* element_symbol
+        char* element_buffer
+        int status, isotope_number
+        Element* element
+
+    for i in range(composition.used):
+        element_symbol = composition.elements[i]
+        status = element_hash_table_get(_ElementTable, element_symbol, &element)
+        # printf("Element %s, Status %d\n", element_symbol, status)
+        if status == -1:
+            element_buffer = <char*>malloc(sizeof(char) * 10)
+            # printf("Could not resolve element %s, attempting to generate fixed isotope\n", element_symbol)
+            _parse_isotope_string(element_symbol, &isotope_number, element_buffer)
+            # printf("Element: %s, Isotope: %d\n", element_buffer, isotope_number)
+            if isotope_number != 0:
+                element_hash_table_get(_ElementTable, element_buffer, &element)
+                element = make_fixed_isotope_element(element, isotope_number)
+                element_hash_table_put(_ElementTable, element)
+                free(element_buffer)
+            else:
+                # printf("Could not resolve element %s\n", element_symbol)
+                free(element_buffer)
+                return
+
+# -----------------------------------------------------------------------------
+# IsotopicDistribution Methods
 
 cdef void isotopic_distribution_update_isotopic_constants(IsotopicDistribution* distribution) nogil:
     cdef:
@@ -155,7 +252,7 @@ cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* di
 
     intensity = 0
     for i in range(distribution.composition.used):
-        status = get_element_from_periodic_table2(_PeriodicTable, distribution.composition.elements[i], &element)
+        status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)
         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)
     intensity = exp(intensity)
     peak.intensity = intensity
@@ -168,6 +265,7 @@ cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, 
 
     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))
     result.composition = composition
+    validate_composition(composition)
     result.order = 0
     result._isotopic_constants = make_isotopic_constants()
     isotopic_distribution_update_order(result, order)
@@ -276,73 +374,6 @@ cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
     return probability_vector
 
 
-cdef struct ElementPolynomialMap:
-    char** elements
-    dvec** polynomials
-    size_t used
-    size_t size
-
-cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:
-    cdef ElementPolynomialMap* result
-    result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
-    result.elements = <char**>malloc(sizeof(char*) * sizehint)
-    result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
-    result.size = sizehint
-    result.used = 0
-
-    return result
-
-cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:
-    cdef:
-        size_t i
-        int status
-        bint done
-
-    done = False
-    i = 0
-    while (i < ep_map.used):
-        if strcmp(element, ep_map.elements[i]) == 0:
-            done = True
-            ep_map.polynomials[i] = polynomial
-            return 0
-        i += 1
-    if not done:
-        ep_map.used += 1
-        if ep_map.used >= ep_map.size:
-            printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
-            return -1
-        ep_map.elements[i] = element
-        ep_map.polynomials[i] = polynomial
-        return 0
-    return 1
-
-cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:
-    cdef:
-        size_t i
-        int status
-        bint done
-
-    done = False
-    i = 0
-    while i < ep_map.used:
-        if strcmp(ep_map.elements[i], element) == 0:
-            polynomial[0] = ep_map.polynomials[i]
-            return 0
-        i += 1
-    return 1
-
-cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:
-    cdef:
-        size_t i
-    i = 0
-    while i < ep_map.used:
-        free_double_vector(ep_map.polynomials[i])
-        i += 1
-    free(ep_map.elements)
-    free(ep_map.polynomials)
-    free(ep_map)
-
-
 cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* probability_vector) nogil:
     cdef:
         dvec* mass_vector
@@ -381,7 +412,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
             element_polynomial_map_get(ep_map, element, &ele_sym_poly)
 
             composition_get_element_count(distribution.composition, element, &_element_count)
-            get_element_from_periodic_table2(_PeriodicTable, element, &element_struct)
+            element_hash_table_get(_ElementTable, element, &element_struct)
 
             _monoisotopic_mass = element_monoisotopic_mass(element_struct)
 
@@ -467,15 +498,34 @@ cdef int compare_by_mz(const void * a, const void * b) nogil:
         return 1
 
 
+cpdef bint check_composition_non_negative(dict composition):
+    cdef:
+        bint negative_element
+        str k
+        object v
+
+    negative_element = False
+    for k, v in composition.items():
+        if v < 0:
+            negative_element = True
+            break
+    return negative_element
+
+
 def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0, charge_carrier=PROTON):
     cdef:
         Composition* composition_struct
+        dict composition_dict
         list peaklist
         PeakList* peak_set
         IsotopicDistribution* dist
         int _npeaks, max_n_varaints
 
-    composition_struct = dict_to_composition(dict(composition))
+    composition_dict = dict(composition)
+    if check_composition_non_negative(composition_dict):
+        raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
+    composition_struct = dict_to_composition(composition_dict)
+    validate_composition(composition_struct)
 
     if npeaks is None:
         max_n_variants = max_variants(composition_struct)
@@ -506,6 +556,7 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
         int _npeaks, max_n_varaints
 
     composition_struct = dict_to_composition(dict(composition))
+    validate_composition(composition_struct)
 
     if npeaks is None:
         max_n_variants = max_variants(composition_struct)
@@ -532,6 +583,8 @@ cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charg
         IsotopicDistribution* dist
         PeakList* peaklist
         int max_n_variants
+
+    validate_composition(composition)
 
     if npeaks == 0:
         max_n_variants = max_variants(composition)

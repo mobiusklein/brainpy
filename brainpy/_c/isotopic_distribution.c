@@ -477,7 +477,8 @@ struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio;
 struct __pyx_t_7brainpy_2_c_11composition_Isotope;
 struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap;
 struct __pyx_t_7brainpy_2_c_11composition_Element;
-struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable;
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket;
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable;
 struct __pyx_t_7brainpy_2_c_11composition_Composition;
 
 /* "brainpy\_c\composition.pxd":10
@@ -485,7 +486,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Composition;
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil             # <<<<<<<<<<<<<<
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
- * 
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
  */
 struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass {
   int __pyx_n;
@@ -496,16 +497,16 @@ struct __pyx_opt_args_7brainpy_2_c_11composition_neutral_mass {
  * 
  * cdef double neutral_mass(double mz,  int z, double charge_carrier=*) nogil
  * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil             # <<<<<<<<<<<<<<
+ * cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil
  * 
- * cdef struct Isotope:
  */
 struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio {
   int __pyx_n;
   double charge_carrier;
 };
 
-/* "brainpy\_c\composition.pxd":13
- * cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=*) nogil
+/* "brainpy\_c\composition.pxd":17
+ * # Isotope and IsotopeMap Declarations
  * 
  * cdef struct Isotope:             # <<<<<<<<<<<<<<
  *     double mass
@@ -518,7 +519,7 @@ struct __pyx_t_7brainpy_2_c_11composition_Isotope {
   int neutron_shift;
 };
 
-/* "brainpy\_c\composition.pxd":19
+/* "brainpy\_c\composition.pxd":23
  *     int neutron_shift
  * 
  * cdef struct IsotopeMap:             # <<<<<<<<<<<<<<
@@ -530,8 +531,8 @@ struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap {
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":23
- *     size_t size
+/* "brainpy\_c\composition.pxd":35
+ * # Element Declarations
  * 
  * cdef struct Element:             # <<<<<<<<<<<<<<
  *     char* symbol
@@ -542,20 +543,33 @@ struct __pyx_t_7brainpy_2_c_11composition_Element {
   struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *isotopes;
 };
 
-/* "brainpy\_c\composition.pxd":27
- *     IsotopeMap* isotopes
+/* "brainpy\_c\composition.pxd":53
+ * # ElementHashTable and ElementHashBucket Declarations
  * 
- * cdef struct PeriodicTable:             # <<<<<<<<<<<<<<
+ * cdef struct ElementHashBucket:             # <<<<<<<<<<<<<<
  *     Element** elements
- *     size_t size
+ *     size_t used
  */
-struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable {
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket {
   struct __pyx_t_7brainpy_2_c_11composition_Element **elements;
+  size_t used;
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":33
- * cdef PeriodicTable* _PeriodicTable
+/* "brainpy\_c\composition.pxd":59
+ * 
+ * 
+ * cdef struct ElementHashTable:             # <<<<<<<<<<<<<<
+ *     ElementHashBucket* buckets
+ *     size_t size
+ */
+struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable {
+  struct __pyx_t_7brainpy_2_c_11composition_ElementHashBucket *buckets;
+  size_t size;
+};
+
+/* "brainpy\_c\composition.pxd":81
+ * # Composition Declarations
  * 
  * cdef struct Composition:             # <<<<<<<<<<<<<<
  *     char** elements
@@ -704,7 +718,7 @@ struct __pyx_opt_args_7brainpy_2_c_21isotopic_distribution_isotopic_variants {
   double charge_carrier;
 };
 
-/* "brainpy\_c\isotopic_distribution.pyx":31
+/* "brainpy\_c\isotopic_distribution.pyx":34
  *     double_vector_append, print_double_vector)
  * 
  * ctypedef DoubleVector dvec             # <<<<<<<<<<<<<<
@@ -713,8 +727,8 @@ struct __pyx_opt_args_7brainpy_2_c_21isotopic_distribution_isotopic_variants {
  */
 typedef struct __pyx_t_7brainpy_2_c_13double_vector_DoubleVector __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec;
 
-/* "brainpy\_c\isotopic_distribution.pyx":279
- * 
+/* "brainpy\_c\isotopic_distribution.pyx":45
+ * # ElementPolynomialMap Declaration and Methods
  * 
  * cdef struct ElementPolynomialMap:             # <<<<<<<<<<<<<<
  *     char** elements
@@ -727,7 +741,7 @@ struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap {
   size_t size;
 };
 
-/* "brainpy\_c\composition.pxd":81
+/* "brainpy\_c\composition.pxd":105
  * cdef Composition* dict_to_composition(dict comp_dict)
  * 
  * cdef class PyComposition(object):             # <<<<<<<<<<<<<<
@@ -759,7 +773,7 @@ struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak {
 
 
 
-/* "brainpy\_c\composition.pxd":81
+/* "brainpy\_c\composition.pxd":105
  * cdef Composition* dict_to_composition(dict comp_dict)
  * 
  * cdef class PyComposition(object):             # <<<<<<<<<<<<<<
@@ -769,6 +783,8 @@ struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak {
 
 struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition {
   double (*mass)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch);
+  int (*__pyx___equality_pycomposition)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, int __pyx_skip_dispatch);
+  int (*__pyx___equality_dict)(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition *, PyObject *, int __pyx_skip_dispatch);
 };
 static struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition *__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition;
 
@@ -863,6 +879,45 @@ static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
 
+static CYTHON_INLINE PyObject* __Pyx_PyDict_Items(PyObject* d);
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#endif
+
+typedef struct {
+    PyObject *type;
+    PyObject **method_name;
+    PyCFunction func;
+    PyObject *method;
+    int flag;
+} __Pyx_CachedCFunction;
+
+static PyObject* __Pyx__CallUnboundCMethod0(__Pyx_CachedCFunction* cfunc, PyObject* self);
+#if CYTHON_COMPILING_IN_CPYTHON
+#define __Pyx_CallUnboundCMethod0(cfunc, self)\
+    ((likely((cfunc)->func)) ?\
+        (likely((cfunc)->flag == METH_NOARGS) ?  (*((cfunc)->func))(self, NULL) :\
+         (likely((cfunc)->flag == (METH_VARARGS | METH_KEYWORDS)) ?  ((*(PyCFunctionWithKeywords)(cfunc)->func)(self, __pyx_empty_tuple, NULL)) :\
+             ((cfunc)->flag == METH_VARARGS ?  (*((cfunc)->func))(self, __pyx_empty_tuple) : __Pyx__CallUnboundCMethod0(cfunc, self)))) :\
+        __Pyx__CallUnboundCMethod0(cfunc, self))
+#else
+#define __Pyx_CallUnboundCMethod0(cfunc, self)  __Pyx__CallUnboundCMethod0(cfunc, self)
+#endif
+
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
+
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
+
+static CYTHON_INLINE int __Pyx_IterFinish(void);
+
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
+
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact);
+
 static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
 
 static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
@@ -872,11 +927,7 @@ static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
 static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
     Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
 
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
-#else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
-#endif
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
 #if CYTHON_COMPILING_IN_CPYTHON
 static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, long intval, int inplace);
@@ -973,13 +1024,16 @@ static PyObject **__pyx_vp_7brainpy_2_c_11composition_nist_mass = 0;
 #define __pyx_v_7brainpy_2_c_11composition_nist_mass (*__pyx_vp_7brainpy_2_c_11composition_nist_mass)
 static double *__pyx_vp_7brainpy_2_c_11composition_PROTON = 0;
 #define __pyx_v_7brainpy_2_c_11composition_PROTON (*__pyx_vp_7brainpy_2_c_11composition_PROTON)
-static struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable **__pyx_vp_7brainpy_2_c_11composition__PeriodicTable = 0;
-#define __pyx_v_7brainpy_2_c_11composition__PeriodicTable (*__pyx_vp_7brainpy_2_c_11composition__PeriodicTable)
+static struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable **__pyx_vp_7brainpy_2_c_11composition__ElementTable = 0;
+#define __pyx_v_7brainpy_2_c_11composition__ElementTable (*__pyx_vp_7brainpy_2_c_11composition__ElementTable)
 static double (*__pyx_f_7brainpy_2_c_11composition_mass_charge_ratio)(double, int, struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio *__pyx_optional_args); /*proto*/
+static char *(*__pyx_f_7brainpy_2_c_11composition__parse_isotope_string)(char *, int *, char *); /*proto*/
 static struct __pyx_t_7brainpy_2_c_11composition_Isotope *(*__pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_shift)(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *, int); /*proto*/
 static double (*__pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass)(struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
 static int (*__pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift)(struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
-static int (*__pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2)(struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static struct __pyx_t_7brainpy_2_c_11composition_Element *(*__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element)(struct __pyx_t_7brainpy_2_c_11composition_Element *, int); /*proto*/
+static int (*__pyx_f_7brainpy_2_c_11composition_element_hash_table_get)(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **); /*proto*/
+static int (*__pyx_f_7brainpy_2_c_11composition_element_hash_table_put)(struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, struct __pyx_t_7brainpy_2_c_11composition_Element *); /*proto*/
 static void (*__pyx_f_7brainpy_2_c_11composition_print_composition)(struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
 static int (*__pyx_f_7brainpy_2_c_11composition_composition_get_element_count)(struct __pyx_t_7brainpy_2_c_11composition_Composition *, char *, __pyx_t_7brainpy_2_c_11composition_count_type *); /*proto*/
 static double (*__pyx_f_7brainpy_2_c_11composition_composition_mass)(struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
@@ -1019,9 +1073,14 @@ static PyTypeObject *__pyx_ptype_7brainpy_2_c_21isotopic_distribution_Theoretica
 static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7brainpy_2_c_21isotopic_distribution_make_peak_list(void); /*proto*/
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *); /*proto*/
 static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants(PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_2_c_21isotopic_distribution__isotopic_variants *__pyx_optional_args); /*proto*/
+static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_f_7brainpy_2_c_21isotopic_distribution_make_element_polynomial_map(size_t); /*proto*/
+static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_set(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *, char *, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *); /*proto*/
+static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_get(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *, char *, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec **); /*proto*/
+static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_element_polynomial_map(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *); /*proto*/
 static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *); /*proto*/
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *, struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *); /*proto*/
 static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
+static void __pyx_f_7brainpy_2_c_21isotopic_distribution_validate_composition(struct __pyx_t_7brainpy_2_c_11composition_Composition *); /*proto*/
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_update_isotopic_constants(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *); /*proto*/
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_update_order(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *, int); /*proto*/
 static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_make_monoisotopic_peak(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *); /*proto*/
@@ -1032,19 +1091,17 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
 static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_21isotopic_distribution_id_modified_phi_values(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *, char *); /*proto*/
 static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_value(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *, char *, int); /*proto*/
 static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_21isotopic_distribution_id_probability_vector(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *); /*proto*/
-static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_f_7brainpy_2_c_21isotopic_distribution_make_element_polynomial_map(size_t); /*proto*/
-static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_set(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *, char *, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *); /*proto*/
-static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_get(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *, char *, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec **); /*proto*/
-static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_element_polynomial_map(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *); /*proto*/
 static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_21isotopic_distribution_id_center_mass_vector(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *); /*proto*/
 static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7brainpy_2_c_21isotopic_distribution_id_aggregated_isotopic_variants(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *, int, double); /*proto*/
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_sort_by_mz(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *); /*proto*/
 static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const *, void const *); /*proto*/
+static int __pyx_f_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(PyObject *, int __pyx_skip_dispatch); /*proto*/
 #define __Pyx_MODULE_NAME "brainpy._c.isotopic_distribution"
 int __pyx_module_is_main_brainpy___c__isotopic_distribution = 0;
 
 /* Implementation of 'brainpy._c.isotopic_distribution' */
 static PyObject *__pyx_builtin_range;
+static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_all;
 static char __pyx_k_H[] = "H";
 static char __pyx_k_O[] = "O";
@@ -1059,6 +1116,7 @@ static char __pyx_k_file[] = "file";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
 static char __pyx_k_class[] = "__class__";
+static char __pyx_k_items[] = "items";
 static char __pyx_k_print[] = "print";
 static char __pyx_k_range[] = "range";
 static char __pyx_k_charge[] = "charge";
@@ -1070,7 +1128,10 @@ static char __pyx_k_peaklist[] = "peaklist";
 static char __pyx_k_Free_Done[] = "Free Done";
 static char __pyx_k_comp_dict[] = "comp_dict";
 static char __pyx_k_intensity[] = "intensity";
+static char __pyx_k_mz_double[] = "mz: 'double'";
 static char __pyx_k_Peak_f_f_d[] = "Peak: %f, %f, %d\n";
+static char __pyx_k_ValueError[] = "ValueError";
+static char __pyx_k_charge_int[] = "charge: 'int'";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static char __pyx_k_Really_done[] = "Really done";
 static char __pyx_k_Second_Free[] = "Second Free";
@@ -1081,6 +1142,8 @@ static char __pyx_k_Trying_to_free[] = "Trying to free";
 static char __pyx_k_charge_carrier[] = "charge_carrier";
 static char __pyx_k_max_n_varaints[] = "max_n_varaints";
 static char __pyx_k_max_n_variants[] = "max_n_variants";
+static char __pyx_k_composition_dict[] = "composition_dict";
+static char __pyx_k_intensity_double[] = "intensity: 'double'";
 static char __pyx_k_composition_struct[] = "composition_struct";
 static char __pyx_k_Seconc_construction[] = "Seconc construction";
 static char __pyx_k_pyisotopic_variants[] = "pyisotopic_variants";
@@ -1088,8 +1151,10 @@ static char __pyx_k_Going_to_print_constants[] = "Going to print constants";
 static char __pyx_k_Peak_mz_f_intensity_f_charge_d[] = "Peak(mz=%f, intensity=%f, charge=%d)";
 static char __pyx_k_realloc_peaklist_returned_NULL[] = "realloc peaklist returned NULL\n";
 static char __pyx_k_Overloaded_ElementPolynomialMap[] = "Overloaded ElementPolynomialMap\n %d, %d\n";
+static char __pyx_k_A_composition_cannot_have_negati[] = "A composition cannot have negative element counts. %r";
 static char __pyx_k_D_Programming_exploration_brainp[] = "D:\\Programming\\exploration\\brainpy\\brainpy\\_c\\isotopic_distribution.pyx";
 static char __pyx_k_brainpy__c_isotopic_distribution[] = "brainpy._c.isotopic_distribution";
+static PyObject *__pyx_kp_s_A_composition_cannot_have_negati;
 static PyObject *__pyx_kp_s_D_Programming_exploration_brainp;
 static PyObject *__pyx_n_s_Done;
 static PyObject *__pyx_kp_s_Free_Done;
@@ -1101,6 +1166,7 @@ static PyObject *__pyx_kp_s_Really_done;
 static PyObject *__pyx_kp_s_Seconc_construction;
 static PyObject *__pyx_kp_s_Second_Free;
 static PyObject *__pyx_kp_s_Trying_to_free;
+static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_all;
 static PyObject *__pyx_n_s_brainpy__c_isotopic_distribution;
 static PyObject *__pyx_n_s_charge;
@@ -1108,6 +1174,7 @@ static PyObject *__pyx_n_s_charge_carrier;
 static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_comp_dict;
 static PyObject *__pyx_n_s_composition;
+static PyObject *__pyx_n_s_composition_dict;
 static PyObject *__pyx_n_s_composition_struct;
 static PyObject *__pyx_n_s_dist;
 static PyObject *__pyx_n_s_distribution;
@@ -1117,6 +1184,7 @@ static PyObject *__pyx_n_s_eq;
 static PyObject *__pyx_n_s_file;
 static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_intensity;
+static PyObject *__pyx_n_s_items;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_main_2;
 static PyObject *__pyx_n_s_max_n_varaints;
@@ -1131,8 +1199,9 @@ static PyObject *__pyx_n_s_pyisotopic_variants;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_test;
-static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier); /* proto */
-static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_2_isotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_2pyisotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4_isotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier); /* proto */
 static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak___init__(struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *__pyx_v_self, PyObject *__pyx_v_mz, PyObject *__pyx_v_intensity, PyObject *__pyx_v_charge); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_2__repr__(struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_4_eq(struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *__pyx_v_self, PyObject *__pyx_v_other); /* proto */
@@ -1146,9 +1215,11 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
 static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_9intensity_2__set__(struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_6charge___get__(struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *__pyx_v_self); /* proto */
 static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_6charge_2__set__(struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
-static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_6main(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_tp_new_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_items = {0, &__pyx_n_s_items, 0, 0, 0};
 static PyObject *__pyx_float_1eneg_10;
+static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_2;
 static PyObject *__pyx_k_;
@@ -1159,8 +1230,508 @@ static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_codeobj__5;
 static PyObject *__pyx_codeobj__7;
 
-/* "brainpy\_c\isotopic_distribution.pyx":44
+/* "brainpy\_c\isotopic_distribution.pyx":51
+ *     size_t size
  * 
+ * cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:             # <<<<<<<<<<<<<<
+ *     cdef ElementPolynomialMap* result
+ *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
+ */
+
+static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_f_7brainpy_2_c_21isotopic_distribution_make_element_polynomial_map(size_t __pyx_v_sizehint) {
+  struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_result;
+  struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_r;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":53
+ * cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:
+ *     cdef ElementPolynomialMap* result
+ *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))             # <<<<<<<<<<<<<<
+ *     result.elements = <char**>malloc(sizeof(char*) * sizehint)
+ *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
+ */
+  __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap))));
+
+  /* "brainpy\_c\isotopic_distribution.pyx":54
+ *     cdef ElementPolynomialMap* result
+ *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
+ *     result.elements = <char**>malloc(sizeof(char*) * sizehint)             # <<<<<<<<<<<<<<
+ *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
+ *     result.size = sizehint
+ */
+  __pyx_v_result->elements = ((char **)malloc(((sizeof(char *)) * __pyx_v_sizehint)));
+
+  /* "brainpy\_c\isotopic_distribution.pyx":55
+ *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
+ *     result.elements = <char**>malloc(sizeof(char*) * sizehint)
+ *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)             # <<<<<<<<<<<<<<
+ *     result.size = sizehint
+ *     result.used = 0
+ */
+  __pyx_v_result->polynomials = ((__pyx_t_7brainpy_2_c_21isotopic_distribution_dvec **)malloc(((sizeof(__pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *)) * __pyx_v_sizehint)));
+
+  /* "brainpy\_c\isotopic_distribution.pyx":56
+ *     result.elements = <char**>malloc(sizeof(char*) * sizehint)
+ *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
+ *     result.size = sizehint             # <<<<<<<<<<<<<<
+ *     result.used = 0
+ * 
+ */
+  __pyx_v_result->size = __pyx_v_sizehint;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":57
+ *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
+ *     result.size = sizehint
+ *     result.used = 0             # <<<<<<<<<<<<<<
+ * 
+ *     return result
+ */
+  __pyx_v_result->used = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":59
+ *     result.used = 0
+ * 
+ *     return result             # <<<<<<<<<<<<<<
+ * 
+ * cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:
+ */
+  __pyx_r = __pyx_v_result;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":51
+ *     size_t size
+ * 
+ * cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:             # <<<<<<<<<<<<<<
+ *     cdef ElementPolynomialMap* result
+ *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\isotopic_distribution.pyx":61
+ *     return result
+ * 
+ * cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_set(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_ep_map, char *__pyx_v_element, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_v_polynomial) {
+  size_t __pyx_v_i;
+  int __pyx_v_done;
+  int __pyx_r;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":67
+ *         bint done
+ * 
+ *     done = False             # <<<<<<<<<<<<<<
+ *     i = 0
+ *     while (i < ep_map.used):
+ */
+  __pyx_v_done = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":68
+ * 
+ *     done = False
+ *     i = 0             # <<<<<<<<<<<<<<
+ *     while (i < ep_map.used):
+ *         if strcmp(element, ep_map.elements[i]) == 0:
+ */
+  __pyx_v_i = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":69
+ *     done = False
+ *     i = 0
+ *     while (i < ep_map.used):             # <<<<<<<<<<<<<<
+ *         if strcmp(element, ep_map.elements[i]) == 0:
+ *             done = True
+ */
+  while (1) {
+    __pyx_t_1 = ((__pyx_v_i < __pyx_v_ep_map->used) != 0);
+    if (!__pyx_t_1) break;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":70
+ *     i = 0
+ *     while (i < ep_map.used):
+ *         if strcmp(element, ep_map.elements[i]) == 0:             # <<<<<<<<<<<<<<
+ *             done = True
+ *             ep_map.polynomials[i] = polynomial
+ */
+    __pyx_t_1 = ((strcmp(__pyx_v_element, (__pyx_v_ep_map->elements[__pyx_v_i])) == 0) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\isotopic_distribution.pyx":71
+ *     while (i < ep_map.used):
+ *         if strcmp(element, ep_map.elements[i]) == 0:
+ *             done = True             # <<<<<<<<<<<<<<
+ *             ep_map.polynomials[i] = polynomial
+ *             return 0
+ */
+      __pyx_v_done = 1;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":72
+ *         if strcmp(element, ep_map.elements[i]) == 0:
+ *             done = True
+ *             ep_map.polynomials[i] = polynomial             # <<<<<<<<<<<<<<
+ *             return 0
+ *         i += 1
+ */
+      (__pyx_v_ep_map->polynomials[__pyx_v_i]) = __pyx_v_polynomial;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":73
+ *             done = True
+ *             ep_map.polynomials[i] = polynomial
+ *             return 0             # <<<<<<<<<<<<<<
+ *         i += 1
+ *     if not done:
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":70
+ *     i = 0
+ *     while (i < ep_map.used):
+ *         if strcmp(element, ep_map.elements[i]) == 0:             # <<<<<<<<<<<<<<
+ *             done = True
+ *             ep_map.polynomials[i] = polynomial
+ */
+    }
+
+    /* "brainpy\_c\isotopic_distribution.pyx":74
+ *             ep_map.polynomials[i] = polynomial
+ *             return 0
+ *         i += 1             # <<<<<<<<<<<<<<
+ *     if not done:
+ *         ep_map.used += 1
+ */
+    __pyx_v_i = (__pyx_v_i + 1);
+  }
+
+  /* "brainpy\_c\isotopic_distribution.pyx":75
+ *             return 0
+ *         i += 1
+ *     if not done:             # <<<<<<<<<<<<<<
+ *         ep_map.used += 1
+ *         if ep_map.used >= ep_map.size:
+ */
+  __pyx_t_1 = ((!(__pyx_v_done != 0)) != 0);
+  if (__pyx_t_1) {
+
+    /* "brainpy\_c\isotopic_distribution.pyx":76
+ *         i += 1
+ *     if not done:
+ *         ep_map.used += 1             # <<<<<<<<<<<<<<
+ *         if ep_map.used >= ep_map.size:
+ *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
+ */
+    __pyx_v_ep_map->used = (__pyx_v_ep_map->used + 1);
+
+    /* "brainpy\_c\isotopic_distribution.pyx":77
+ *     if not done:
+ *         ep_map.used += 1
+ *         if ep_map.used >= ep_map.size:             # <<<<<<<<<<<<<<
+ *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
+ *             return -1
+ */
+    __pyx_t_1 = ((__pyx_v_ep_map->used >= __pyx_v_ep_map->size) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\isotopic_distribution.pyx":78
+ *         ep_map.used += 1
+ *         if ep_map.used >= ep_map.size:
+ *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)             # <<<<<<<<<<<<<<
+ *             return -1
+ *         ep_map.elements[i] = element
+ */
+      printf(__pyx_k_Overloaded_ElementPolynomialMap, __pyx_v_i, __pyx_v_ep_map->size);
+
+      /* "brainpy\_c\isotopic_distribution.pyx":79
+ *         if ep_map.used >= ep_map.size:
+ *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
+ *             return -1             # <<<<<<<<<<<<<<
+ *         ep_map.elements[i] = element
+ *         ep_map.polynomials[i] = polynomial
+ */
+      __pyx_r = -1;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":77
+ *     if not done:
+ *         ep_map.used += 1
+ *         if ep_map.used >= ep_map.size:             # <<<<<<<<<<<<<<
+ *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
+ *             return -1
+ */
+    }
+
+    /* "brainpy\_c\isotopic_distribution.pyx":80
+ *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
+ *             return -1
+ *         ep_map.elements[i] = element             # <<<<<<<<<<<<<<
+ *         ep_map.polynomials[i] = polynomial
+ *         return 0
+ */
+    (__pyx_v_ep_map->elements[__pyx_v_i]) = __pyx_v_element;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":81
+ *             return -1
+ *         ep_map.elements[i] = element
+ *         ep_map.polynomials[i] = polynomial             # <<<<<<<<<<<<<<
+ *         return 0
+ *     return 1
+ */
+    (__pyx_v_ep_map->polynomials[__pyx_v_i]) = __pyx_v_polynomial;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":82
+ *         ep_map.elements[i] = element
+ *         ep_map.polynomials[i] = polynomial
+ *         return 0             # <<<<<<<<<<<<<<
+ *     return 1
+ * 
+ */
+    __pyx_r = 0;
+    goto __pyx_L0;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":75
+ *             return 0
+ *         i += 1
+ *     if not done:             # <<<<<<<<<<<<<<
+ *         ep_map.used += 1
+ *         if ep_map.used >= ep_map.size:
+ */
+  }
+
+  /* "brainpy\_c\isotopic_distribution.pyx":83
+ *         ep_map.polynomials[i] = polynomial
+ *         return 0
+ *     return 1             # <<<<<<<<<<<<<<
+ * 
+ * cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":61
+ *     return result
+ * 
+ * cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\isotopic_distribution.pyx":85
+ *     return 1
+ * 
+ * cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_get(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_ep_map, char *__pyx_v_element, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec **__pyx_v_polynomial) {
+  size_t __pyx_v_i;
+  CYTHON_UNUSED int __pyx_v_done;
+  int __pyx_r;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":91
+ *         bint done
+ * 
+ *     done = False             # <<<<<<<<<<<<<<
+ *     i = 0
+ *     while i < ep_map.used:
+ */
+  __pyx_v_done = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":92
+ * 
+ *     done = False
+ *     i = 0             # <<<<<<<<<<<<<<
+ *     while i < ep_map.used:
+ *         if strcmp(ep_map.elements[i], element) == 0:
+ */
+  __pyx_v_i = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":93
+ *     done = False
+ *     i = 0
+ *     while i < ep_map.used:             # <<<<<<<<<<<<<<
+ *         if strcmp(ep_map.elements[i], element) == 0:
+ *             polynomial[0] = ep_map.polynomials[i]
+ */
+  while (1) {
+    __pyx_t_1 = ((__pyx_v_i < __pyx_v_ep_map->used) != 0);
+    if (!__pyx_t_1) break;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":94
+ *     i = 0
+ *     while i < ep_map.used:
+ *         if strcmp(ep_map.elements[i], element) == 0:             # <<<<<<<<<<<<<<
+ *             polynomial[0] = ep_map.polynomials[i]
+ *             return 0
+ */
+    __pyx_t_1 = ((strcmp((__pyx_v_ep_map->elements[__pyx_v_i]), __pyx_v_element) == 0) != 0);
+    if (__pyx_t_1) {
+
+      /* "brainpy\_c\isotopic_distribution.pyx":95
+ *     while i < ep_map.used:
+ *         if strcmp(ep_map.elements[i], element) == 0:
+ *             polynomial[0] = ep_map.polynomials[i]             # <<<<<<<<<<<<<<
+ *             return 0
+ *         i += 1
+ */
+      (__pyx_v_polynomial[0]) = (__pyx_v_ep_map->polynomials[__pyx_v_i]);
+
+      /* "brainpy\_c\isotopic_distribution.pyx":96
+ *         if strcmp(ep_map.elements[i], element) == 0:
+ *             polynomial[0] = ep_map.polynomials[i]
+ *             return 0             # <<<<<<<<<<<<<<
+ *         i += 1
+ *     return 1
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":94
+ *     i = 0
+ *     while i < ep_map.used:
+ *         if strcmp(ep_map.elements[i], element) == 0:             # <<<<<<<<<<<<<<
+ *             polynomial[0] = ep_map.polynomials[i]
+ *             return 0
+ */
+    }
+
+    /* "brainpy\_c\isotopic_distribution.pyx":97
+ *             polynomial[0] = ep_map.polynomials[i]
+ *             return 0
+ *         i += 1             # <<<<<<<<<<<<<<
+ *     return 1
+ * 
+ */
+    __pyx_v_i = (__pyx_v_i + 1);
+  }
+
+  /* "brainpy\_c\isotopic_distribution.pyx":98
+ *             return 0
+ *         i += 1
+ *     return 1             # <<<<<<<<<<<<<<
+ * 
+ * cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":85
+ *     return 1
+ * 
+ * cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "brainpy\_c\isotopic_distribution.pyx":100
+ *     return 1
+ * 
+ * cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_element_polynomial_map(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_ep_map) {
+  size_t __pyx_v_i;
+  int __pyx_t_1;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":103
+ *     cdef:
+ *         size_t i
+ *     i = 0             # <<<<<<<<<<<<<<
+ *     while i < ep_map.used:
+ *         free_double_vector(ep_map.polynomials[i])
+ */
+  __pyx_v_i = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":104
+ *         size_t i
+ *     i = 0
+ *     while i < ep_map.used:             # <<<<<<<<<<<<<<
+ *         free_double_vector(ep_map.polynomials[i])
+ *         i += 1
+ */
+  while (1) {
+    __pyx_t_1 = ((__pyx_v_i < __pyx_v_ep_map->used) != 0);
+    if (!__pyx_t_1) break;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":105
+ *     i = 0
+ *     while i < ep_map.used:
+ *         free_double_vector(ep_map.polynomials[i])             # <<<<<<<<<<<<<<
+ *         i += 1
+ *     free(ep_map.elements)
+ */
+    __pyx_f_7brainpy_2_c_13double_vector_free_double_vector((__pyx_v_ep_map->polynomials[__pyx_v_i]));
+
+    /* "brainpy\_c\isotopic_distribution.pyx":106
+ *     while i < ep_map.used:
+ *         free_double_vector(ep_map.polynomials[i])
+ *         i += 1             # <<<<<<<<<<<<<<
+ *     free(ep_map.elements)
+ *     free(ep_map.polynomials)
+ */
+    __pyx_v_i = (__pyx_v_i + 1);
+  }
+
+  /* "brainpy\_c\isotopic_distribution.pyx":107
+ *         free_double_vector(ep_map.polynomials[i])
+ *         i += 1
+ *     free(ep_map.elements)             # <<<<<<<<<<<<<<
+ *     free(ep_map.polynomials)
+ *     free(ep_map)
+ */
+  free(__pyx_v_ep_map->elements);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":108
+ *         i += 1
+ *     free(ep_map.elements)
+ *     free(ep_map.polynomials)             # <<<<<<<<<<<<<<
+ *     free(ep_map)
+ * 
+ */
+  free(__pyx_v_ep_map->polynomials);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":109
+ *     free(ep_map.elements)
+ *     free(ep_map.polynomials)
+ *     free(ep_map)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  free(__pyx_v_ep_map);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":100
+ *     return 1
+ * 
+ * cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+  /* function exit code */
+}
+
+/* "brainpy\_c\isotopic_distribution.pyx":115
+ * # Peak Methods
  * 
  * cdef void print_peak(Peak* peak) nogil:             # <<<<<<<<<<<<<<
  *     printf("Peak: %f, %f, %d\n", peak.mz, peak.intensity, peak.charge)
@@ -1169,7 +1740,7 @@ static PyObject *__pyx_codeobj__7;
 
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_print_peak(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_v_peak) {
 
-  /* "brainpy\_c\isotopic_distribution.pyx":45
+  /* "brainpy\_c\isotopic_distribution.pyx":116
  * 
  * cdef void print_peak(Peak* peak) nogil:
  *     printf("Peak: %f, %f, %d\n", peak.mz, peak.intensity, peak.charge)             # <<<<<<<<<<<<<<
@@ -1178,8 +1749,8 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_print_peak(struct __pyx
  */
   printf(__pyx_k_Peak_f_f_d, __pyx_v_peak->mz, __pyx_v_peak->intensity, __pyx_v_peak->charge);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":44
- * 
+  /* "brainpy\_c\isotopic_distribution.pyx":115
+ * # Peak Methods
  * 
  * cdef void print_peak(Peak* peak) nogil:             # <<<<<<<<<<<<<<
  *     printf("Peak: %f, %f, %d\n", peak.mz, peak.intensity, peak.charge)
@@ -1189,7 +1760,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_print_peak(struct __pyx
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":48
+/* "brainpy\_c\isotopic_distribution.pyx":119
  * 
  * 
  * cdef Peak* make_peak(double mz, double intensity, int charge) nogil:             # <<<<<<<<<<<<<<
@@ -1201,7 +1772,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_v_peak;
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_r;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":50
+  /* "brainpy\_c\isotopic_distribution.pyx":121
  * cdef Peak* make_peak(double mz, double intensity, int charge) nogil:
  *     cdef Peak* peak
  *     peak = <Peak*>malloc(sizeof(Peak))             # <<<<<<<<<<<<<<
@@ -1210,7 +1781,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak))));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":51
+  /* "brainpy\_c\isotopic_distribution.pyx":122
  *     cdef Peak* peak
  *     peak = <Peak*>malloc(sizeof(Peak))
  *     peak.mz = mz             # <<<<<<<<<<<<<<
@@ -1219,7 +1790,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak->mz = __pyx_v_mz;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":52
+  /* "brainpy\_c\isotopic_distribution.pyx":123
  *     peak = <Peak*>malloc(sizeof(Peak))
  *     peak.mz = mz
  *     peak.intensity = intensity             # <<<<<<<<<<<<<<
@@ -1228,7 +1799,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak->intensity = __pyx_v_intensity;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":53
+  /* "brainpy\_c\isotopic_distribution.pyx":124
  *     peak.mz = mz
  *     peak.intensity = intensity
  *     peak.charge = charge             # <<<<<<<<<<<<<<
@@ -1237,17 +1808,17 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak->charge = __pyx_v_charge;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":54
+  /* "brainpy\_c\isotopic_distribution.pyx":125
  *     peak.intensity = intensity
  *     peak.charge = charge
  *     return peak             # <<<<<<<<<<<<<<
  * 
- * 
+ * # -----------------------------------------------------------------------------
  */
   __pyx_r = __pyx_v_peak;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":48
+  /* "brainpy\_c\isotopic_distribution.pyx":119
  * 
  * 
  * cdef Peak* make_peak(double mz, double intensity, int charge) nogil:             # <<<<<<<<<<<<<<
@@ -1260,8 +1831,8 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":57
- * 
+/* "brainpy\_c\isotopic_distribution.pyx":130
+ * # PeakList Methods
  * 
  * cdef PeakList* make_peak_list() nogil:             # <<<<<<<<<<<<<<
  *     cdef PeakList* result
@@ -1272,7 +1843,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_v_result;
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_r;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":60
+  /* "brainpy\_c\isotopic_distribution.pyx":133
  *     cdef PeakList* result
  * 
  *     result = <PeakList*>malloc(sizeof(PeakList))             # <<<<<<<<<<<<<<
@@ -1281,7 +1852,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList))));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":61
+  /* "brainpy\_c\isotopic_distribution.pyx":134
  * 
  *     result = <PeakList*>malloc(sizeof(PeakList))
  *     result.peaks = <Peak*>malloc(sizeof(Peak) * 10)             # <<<<<<<<<<<<<<
@@ -1290,7 +1861,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_result->peaks = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)malloc(((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak)) * 10)));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":62
+  /* "brainpy\_c\isotopic_distribution.pyx":135
  *     result = <PeakList*>malloc(sizeof(PeakList))
  *     result.peaks = <Peak*>malloc(sizeof(Peak) * 10)
  *     result.size = 10             # <<<<<<<<<<<<<<
@@ -1299,7 +1870,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_result->size = 10;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":63
+  /* "brainpy\_c\isotopic_distribution.pyx":136
  *     result.peaks = <Peak*>malloc(sizeof(Peak) * 10)
  *     result.size = 10
  *     result.used = 0             # <<<<<<<<<<<<<<
@@ -1308,7 +1879,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_result->used = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":65
+  /* "brainpy\_c\isotopic_distribution.pyx":138
  *     result.used = 0
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -1318,8 +1889,8 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":57
- * 
+  /* "brainpy\_c\isotopic_distribution.pyx":130
+ * # PeakList Methods
  * 
  * cdef PeakList* make_peak_list() nogil:             # <<<<<<<<<<<<<<
  *     cdef PeakList* result
@@ -1331,7 +1902,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":68
+/* "brainpy\_c\isotopic_distribution.pyx":141
  * 
  * 
  * cdef void free_peak_list(PeakList* peaklist) nogil:             # <<<<<<<<<<<<<<
@@ -1341,7 +1912,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
 
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_v_peaklist) {
 
-  /* "brainpy\_c\isotopic_distribution.pyx":69
+  /* "brainpy\_c\isotopic_distribution.pyx":142
  * 
  * cdef void free_peak_list(PeakList* peaklist) nogil:
  *     free(peaklist.peaks)             # <<<<<<<<<<<<<<
@@ -1350,7 +1921,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(struct _
  */
   free(__pyx_v_peaklist->peaks);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":70
+  /* "brainpy\_c\isotopic_distribution.pyx":143
  * cdef void free_peak_list(PeakList* peaklist) nogil:
  *     free(peaklist.peaks)
  *     free(peaklist)             # <<<<<<<<<<<<<<
@@ -1359,7 +1930,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(struct _
  */
   free(__pyx_v_peaklist);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":68
+  /* "brainpy\_c\isotopic_distribution.pyx":141
  * 
  * 
  * cdef void free_peak_list(PeakList* peaklist) nogil:             # <<<<<<<<<<<<<<
@@ -1370,7 +1941,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(struct _
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":72
+/* "brainpy\_c\isotopic_distribution.pyx":145
  *     free(peaklist)
  * 
  * cdef int resize_peak_list(PeakList* peaklist) nogil:             # <<<<<<<<<<<<<<
@@ -1383,7 +1954,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":75
+  /* "brainpy\_c\isotopic_distribution.pyx":148
  *     cdef:
  *         Peak* peaks
  *     peaks = <Peak*>realloc(peaklist.peaks, sizeof(Peak) * peaklist.size * 2)             # <<<<<<<<<<<<<<
@@ -1392,7 +1963,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
  */
   __pyx_v_peaks = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)realloc(__pyx_v_peaklist->peaks, (((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak)) * __pyx_v_peaklist->size) * 2)));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":76
+  /* "brainpy\_c\isotopic_distribution.pyx":149
  *         Peak* peaks
  *     peaks = <Peak*>realloc(peaklist.peaks, sizeof(Peak) * peaklist.size * 2)
  *     if peaks == NULL:             # <<<<<<<<<<<<<<
@@ -1402,7 +1973,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
   __pyx_t_1 = ((__pyx_v_peaks == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":77
+    /* "brainpy\_c\isotopic_distribution.pyx":150
  *     peaks = <Peak*>realloc(peaklist.peaks, sizeof(Peak) * peaklist.size * 2)
  *     if peaks == NULL:
  *         printf("realloc peaklist returned NULL\n")             # <<<<<<<<<<<<<<
@@ -1411,7 +1982,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
  */
     printf(__pyx_k_realloc_peaklist_returned_NULL);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":78
+    /* "brainpy\_c\isotopic_distribution.pyx":151
  *     if peaks == NULL:
  *         printf("realloc peaklist returned NULL\n")
  *         return -1             # <<<<<<<<<<<<<<
@@ -1421,7 +1992,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
     __pyx_r = -1;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":76
+    /* "brainpy\_c\isotopic_distribution.pyx":149
  *         Peak* peaks
  *     peaks = <Peak*>realloc(peaklist.peaks, sizeof(Peak) * peaklist.size * 2)
  *     if peaks == NULL:             # <<<<<<<<<<<<<<
@@ -1430,7 +2001,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
  */
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":79
+  /* "brainpy\_c\isotopic_distribution.pyx":152
  *         printf("realloc peaklist returned NULL\n")
  *         return -1
  *     peaklist.peaks = peaks             # <<<<<<<<<<<<<<
@@ -1439,7 +2010,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
  */
   __pyx_v_peaklist->peaks = __pyx_v_peaks;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":80
+  /* "brainpy\_c\isotopic_distribution.pyx":153
  *         return -1
  *     peaklist.peaks = peaks
  *     peaklist.size *= 2             # <<<<<<<<<<<<<<
@@ -1448,7 +2019,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
  */
   __pyx_v_peaklist->size = (__pyx_v_peaklist->size * 2);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":81
+  /* "brainpy\_c\isotopic_distribution.pyx":154
  *     peaklist.peaks = peaks
  *     peaklist.size *= 2
  *     return 0             # <<<<<<<<<<<<<<
@@ -1458,7 +2029,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":72
+  /* "brainpy\_c\isotopic_distribution.pyx":145
  *     free(peaklist)
  * 
  * cdef int resize_peak_list(PeakList* peaklist) nogil:             # <<<<<<<<<<<<<<
@@ -1471,7 +2042,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":84
+/* "brainpy\_c\isotopic_distribution.pyx":157
  * 
  * 
  * cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:             # <<<<<<<<<<<<<<
@@ -1482,7 +2053,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(struct 
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_v_peaklist, struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_v_peak) {
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":85
+  /* "brainpy\_c\isotopic_distribution.pyx":158
  * 
  * cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:
  *     if peaklist.used == peaklist.size:             # <<<<<<<<<<<<<<
@@ -1492,7 +2063,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct
   __pyx_t_1 = ((__pyx_v_peaklist->used == __pyx_v_peaklist->size) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":86
+    /* "brainpy\_c\isotopic_distribution.pyx":159
  * cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:
  *     if peaklist.used == peaklist.size:
  *         resize_peak_list(peaklist)             # <<<<<<<<<<<<<<
@@ -1501,7 +2072,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct
  */
     __pyx_f_7brainpy_2_c_21isotopic_distribution_resize_peak_list(__pyx_v_peaklist);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":85
+    /* "brainpy\_c\isotopic_distribution.pyx":158
  * 
  * cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:
  *     if peaklist.used == peaklist.size:             # <<<<<<<<<<<<<<
@@ -1510,7 +2081,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct
  */
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":87
+  /* "brainpy\_c\isotopic_distribution.pyx":160
  *     if peaklist.used == peaklist.size:
  *         resize_peak_list(peaklist)
  *     peaklist.peaks[peaklist.used] = peak[0]             # <<<<<<<<<<<<<<
@@ -1519,16 +2090,16 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct
  */
   (__pyx_v_peaklist->peaks[__pyx_v_peaklist->used]) = (__pyx_v_peak[0]);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":88
+  /* "brainpy\_c\isotopic_distribution.pyx":161
  *         resize_peak_list(peaklist)
  *     peaklist.peaks[peaklist.used] = peak[0]
  *     peaklist.used += 1             # <<<<<<<<<<<<<<
  * 
- * 
+ * # -----------------------------------------------------------------------------
  */
   __pyx_v_peaklist->used = (__pyx_v_peaklist->used + 1);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":84
+  /* "brainpy\_c\isotopic_distribution.pyx":157
  * 
  * 
  * cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:             # <<<<<<<<<<<<<<
@@ -1539,8 +2110,8 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(struct
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":99
- * 
+/* "brainpy\_c\isotopic_distribution.pyx":166
+ * # Support Functions
  * 
  * cdef int max_variants(Composition* composition) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1557,7 +2128,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __py
   size_t __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":107
+  /* "brainpy\_c\isotopic_distribution.pyx":174
  *         Element* element
  * 
  *     max_variants = 0             # <<<<<<<<<<<<<<
@@ -1566,7 +2137,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __py
  */
   __pyx_v_max_variants = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":108
+  /* "brainpy\_c\isotopic_distribution.pyx":175
  * 
  *     max_variants = 0
  *     for i in range(composition.used):             # <<<<<<<<<<<<<<
@@ -1577,36 +2148,36 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __py
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":109
+    /* "brainpy\_c\isotopic_distribution.pyx":176
  *     max_variants = 0
  *     for i in range(composition.used):
  *         symbol = composition.elements[i]             # <<<<<<<<<<<<<<
  *         count = composition.counts[i]
- *         get_element_from_periodic_table2(_PeriodicTable, symbol, &element)
+ *         element_hash_table_get(_ElementTable, symbol, &element)
  */
     __pyx_v_symbol = (__pyx_v_composition->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":110
+    /* "brainpy\_c\isotopic_distribution.pyx":177
  *     for i in range(composition.used):
  *         symbol = composition.elements[i]
  *         count = composition.counts[i]             # <<<<<<<<<<<<<<
- *         get_element_from_periodic_table2(_PeriodicTable, symbol, &element)
+ *         element_hash_table_get(_ElementTable, symbol, &element)
  *         max_variants += <int>(count) * element_max_neutron_shift(element)
  */
     __pyx_v_count = (__pyx_v_composition->counts[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":111
+    /* "brainpy\_c\isotopic_distribution.pyx":178
  *         symbol = composition.elements[i]
  *         count = composition.counts[i]
- *         get_element_from_periodic_table2(_PeriodicTable, symbol, &element)             # <<<<<<<<<<<<<<
+ *         element_hash_table_get(_ElementTable, symbol, &element)             # <<<<<<<<<<<<<<
  *         max_variants += <int>(count) * element_max_neutron_shift(element)
  *     return max_variants
  */
-    __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(__pyx_v_7brainpy_2_c_11composition__PeriodicTable, __pyx_v_symbol, (&__pyx_v_element));
+    __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_symbol, (&__pyx_v_element));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":112
+    /* "brainpy\_c\isotopic_distribution.pyx":179
  *         count = composition.counts[i]
- *         get_element_from_periodic_table2(_PeriodicTable, symbol, &element)
+ *         element_hash_table_get(_ElementTable, symbol, &element)
  *         max_variants += <int>(count) * element_max_neutron_shift(element)             # <<<<<<<<<<<<<<
  *     return max_variants
  * 
@@ -1614,8 +2185,8 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __py
     __pyx_v_max_variants = (__pyx_v_max_variants + (((int)__pyx_v_count) * __pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift(__pyx_v_element)));
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":113
- *         get_element_from_periodic_table2(_PeriodicTable, symbol, &element)
+  /* "brainpy\_c\isotopic_distribution.pyx":180
+ *         element_hash_table_get(_ElementTable, symbol, &element)
  *         max_variants += <int>(count) * element_max_neutron_shift(element)
  *     return max_variants             # <<<<<<<<<<<<<<
  * 
@@ -1624,8 +2195,8 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __py
   __pyx_r = __pyx_v_max_variants;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":99
- * 
+  /* "brainpy\_c\isotopic_distribution.pyx":166
+ * # Support Functions
  * 
  * cdef int max_variants(Composition* composition) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1637,8 +2208,183 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(struct __py
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":116
+/* "brainpy\_c\isotopic_distribution.pyx":183
  * 
+ * 
+ * cdef void validate_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+static void __pyx_f_7brainpy_2_c_21isotopic_distribution_validate_composition(struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition) {
+  size_t __pyx_v_i;
+  char *__pyx_v_element_symbol;
+  char *__pyx_v_element_buffer;
+  int __pyx_v_status;
+  int __pyx_v_isotope_number;
+  struct __pyx_t_7brainpy_2_c_11composition_Element *__pyx_v_element;
+  size_t __pyx_t_1;
+  size_t __pyx_t_2;
+  int __pyx_t_3;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":191
+ *         Element* element
+ * 
+ *     for i in range(composition.used):             # <<<<<<<<<<<<<<
+ *         element_symbol = composition.elements[i]
+ *         status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ */
+  __pyx_t_1 = __pyx_v_composition->used;
+  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+    __pyx_v_i = __pyx_t_2;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":192
+ * 
+ *     for i in range(composition.used):
+ *         element_symbol = composition.elements[i]             # <<<<<<<<<<<<<<
+ *         status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ *         # printf("Element %s, Status %d\n", element_symbol, status)
+ */
+    __pyx_v_element_symbol = (__pyx_v_composition->elements[__pyx_v_i]);
+
+    /* "brainpy\_c\isotopic_distribution.pyx":193
+ *     for i in range(composition.used):
+ *         element_symbol = composition.elements[i]
+ *         status = element_hash_table_get(_ElementTable, element_symbol, &element)             # <<<<<<<<<<<<<<
+ *         # printf("Element %s, Status %d\n", element_symbol, status)
+ *         if status == -1:
+ */
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element_symbol, (&__pyx_v_element));
+
+    /* "brainpy\_c\isotopic_distribution.pyx":195
+ *         status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ *         # printf("Element %s, Status %d\n", element_symbol, status)
+ *         if status == -1:             # <<<<<<<<<<<<<<
+ *             element_buffer = <char*>malloc(sizeof(char) * 10)
+ *             # printf("Could not resolve element %s, attempting to generate fixed isotope\n", element_symbol)
+ */
+    __pyx_t_3 = ((__pyx_v_status == -1L) != 0);
+    if (__pyx_t_3) {
+
+      /* "brainpy\_c\isotopic_distribution.pyx":196
+ *         # printf("Element %s, Status %d\n", element_symbol, status)
+ *         if status == -1:
+ *             element_buffer = <char*>malloc(sizeof(char) * 10)             # <<<<<<<<<<<<<<
+ *             # printf("Could not resolve element %s, attempting to generate fixed isotope\n", element_symbol)
+ *             _parse_isotope_string(element_symbol, &isotope_number, element_buffer)
+ */
+      __pyx_v_element_buffer = ((char *)malloc(((sizeof(char)) * 10)));
+
+      /* "brainpy\_c\isotopic_distribution.pyx":198
+ *             element_buffer = <char*>malloc(sizeof(char) * 10)
+ *             # printf("Could not resolve element %s, attempting to generate fixed isotope\n", element_symbol)
+ *             _parse_isotope_string(element_symbol, &isotope_number, element_buffer)             # <<<<<<<<<<<<<<
+ *             # printf("Element: %s, Isotope: %d\n", element_buffer, isotope_number)
+ *             if isotope_number != 0:
+ */
+      __pyx_f_7brainpy_2_c_11composition__parse_isotope_string(__pyx_v_element_symbol, (&__pyx_v_isotope_number), __pyx_v_element_buffer);
+
+      /* "brainpy\_c\isotopic_distribution.pyx":200
+ *             _parse_isotope_string(element_symbol, &isotope_number, element_buffer)
+ *             # printf("Element: %s, Isotope: %d\n", element_buffer, isotope_number)
+ *             if isotope_number != 0:             # <<<<<<<<<<<<<<
+ *                 element_hash_table_get(_ElementTable, element_buffer, &element)
+ *                 element = make_fixed_isotope_element(element, isotope_number)
+ */
+      __pyx_t_3 = ((__pyx_v_isotope_number != 0) != 0);
+      if (__pyx_t_3) {
+
+        /* "brainpy\_c\isotopic_distribution.pyx":201
+ *             # printf("Element: %s, Isotope: %d\n", element_buffer, isotope_number)
+ *             if isotope_number != 0:
+ *                 element_hash_table_get(_ElementTable, element_buffer, &element)             # <<<<<<<<<<<<<<
+ *                 element = make_fixed_isotope_element(element, isotope_number)
+ *                 element_hash_table_put(_ElementTable, element)
+ */
+        __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element_buffer, (&__pyx_v_element));
+
+        /* "brainpy\_c\isotopic_distribution.pyx":202
+ *             if isotope_number != 0:
+ *                 element_hash_table_get(_ElementTable, element_buffer, &element)
+ *                 element = make_fixed_isotope_element(element, isotope_number)             # <<<<<<<<<<<<<<
+ *                 element_hash_table_put(_ElementTable, element)
+ *                 free(element_buffer)
+ */
+        __pyx_v_element = __pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element(__pyx_v_element, __pyx_v_isotope_number);
+
+        /* "brainpy\_c\isotopic_distribution.pyx":203
+ *                 element_hash_table_get(_ElementTable, element_buffer, &element)
+ *                 element = make_fixed_isotope_element(element, isotope_number)
+ *                 element_hash_table_put(_ElementTable, element)             # <<<<<<<<<<<<<<
+ *                 free(element_buffer)
+ *             else:
+ */
+        __pyx_f_7brainpy_2_c_11composition_element_hash_table_put(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element);
+
+        /* "brainpy\_c\isotopic_distribution.pyx":204
+ *                 element = make_fixed_isotope_element(element, isotope_number)
+ *                 element_hash_table_put(_ElementTable, element)
+ *                 free(element_buffer)             # <<<<<<<<<<<<<<
+ *             else:
+ *                 # printf("Could not resolve element %s\n", element_symbol)
+ */
+        free(__pyx_v_element_buffer);
+
+        /* "brainpy\_c\isotopic_distribution.pyx":200
+ *             _parse_isotope_string(element_symbol, &isotope_number, element_buffer)
+ *             # printf("Element: %s, Isotope: %d\n", element_buffer, isotope_number)
+ *             if isotope_number != 0:             # <<<<<<<<<<<<<<
+ *                 element_hash_table_get(_ElementTable, element_buffer, &element)
+ *                 element = make_fixed_isotope_element(element, isotope_number)
+ */
+        goto __pyx_L6;
+      }
+
+      /* "brainpy\_c\isotopic_distribution.pyx":207
+ *             else:
+ *                 # printf("Could not resolve element %s\n", element_symbol)
+ *                 free(element_buffer)             # <<<<<<<<<<<<<<
+ *                 return
+ * 
+ */
+      /*else*/ {
+        free(__pyx_v_element_buffer);
+
+        /* "brainpy\_c\isotopic_distribution.pyx":208
+ *                 # printf("Could not resolve element %s\n", element_symbol)
+ *                 free(element_buffer)
+ *                 return             # <<<<<<<<<<<<<<
+ * 
+ * # -----------------------------------------------------------------------------
+ */
+        goto __pyx_L0;
+      }
+      __pyx_L6:;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":195
+ *         status = element_hash_table_get(_ElementTable, element_symbol, &element)
+ *         # printf("Element %s, Status %d\n", element_symbol, status)
+ *         if status == -1:             # <<<<<<<<<<<<<<
+ *             element_buffer = <char*>malloc(sizeof(char) * 10)
+ *             # printf("Could not resolve element %s, attempting to generate fixed isotope\n", element_symbol)
+ */
+    }
+  }
+
+  /* "brainpy\_c\isotopic_distribution.pyx":183
+ * 
+ * 
+ * cdef void validate_composition(Composition* composition) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         size_t i
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+}
+
+/* "brainpy\_c\isotopic_distribution.pyx":213
+ * # IsotopicDistribution Methods
  * 
  * cdef void isotopic_distribution_update_isotopic_constants(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1656,7 +2402,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   size_t __pyx_t_4;
   int __pyx_t_5;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":123
+  /* "brainpy\_c\isotopic_distribution.pyx":220
  *         char* symbol
  * 
  *     composition = distribution.composition             # <<<<<<<<<<<<<<
@@ -1666,7 +2412,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   __pyx_t_1 = __pyx_v_distribution->composition;
   __pyx_v_composition = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":124
+  /* "brainpy\_c\isotopic_distribution.pyx":221
  * 
  *     composition = distribution.composition
  *     isotopes = distribution._isotopic_constants             # <<<<<<<<<<<<<<
@@ -1676,7 +2422,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   __pyx_t_2 = __pyx_v_distribution->_isotopic_constants;
   __pyx_v_isotopes = __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":126
+  /* "brainpy\_c\isotopic_distribution.pyx":223
  *     isotopes = distribution._isotopic_constants
  * 
  *     for i in range(composition.used):             # <<<<<<<<<<<<<<
@@ -1687,7 +2433,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i = __pyx_t_4;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":127
+    /* "brainpy\_c\isotopic_distribution.pyx":224
  * 
  *     for i in range(composition.used):
  *         symbol = composition.elements[i]             # <<<<<<<<<<<<<<
@@ -1696,7 +2442,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
  */
     __pyx_v_symbol = (__pyx_v_composition->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":128
+    /* "brainpy\_c\isotopic_distribution.pyx":225
  *     for i in range(composition.used):
  *         symbol = composition.elements[i]
  *         isotopic_constants_add_element(isotopes, symbol)             # <<<<<<<<<<<<<<
@@ -1706,7 +2452,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
     __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_add_element(__pyx_v_isotopes, __pyx_v_symbol);
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":129
+  /* "brainpy\_c\isotopic_distribution.pyx":226
  *         symbol = composition.elements[i]
  *         isotopic_constants_add_element(isotopes, symbol)
  *     isotopes.order = distribution.order             # <<<<<<<<<<<<<<
@@ -1716,7 +2462,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   __pyx_t_5 = __pyx_v_distribution->order;
   __pyx_v_isotopes->order = __pyx_t_5;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":130
+  /* "brainpy\_c\isotopic_distribution.pyx":227
  *         isotopic_constants_add_element(isotopes, symbol)
  *     isotopes.order = distribution.order
  *     isotopic_constants_update_coefficients(isotopes)             # <<<<<<<<<<<<<<
@@ -1725,8 +2471,8 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_update_coefficients(__pyx_v_isotopes);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":116
- * 
+  /* "brainpy\_c\isotopic_distribution.pyx":213
+ * # IsotopicDistribution Methods
  * 
  * cdef void isotopic_distribution_update_isotopic_constants(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -1736,7 +2482,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":133
+/* "brainpy\_c\isotopic_distribution.pyx":230
  * 
  * 
  * cdef void isotopic_distribution_update_order(IsotopicDistribution* distribution, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1751,7 +2497,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   int __pyx_t_3;
   int __pyx_t_4;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":137
+  /* "brainpy\_c\isotopic_distribution.pyx":234
  *         int possible_variants
  * 
  *     possible_variants = max_variants(distribution.composition)             # <<<<<<<<<<<<<<
@@ -1760,7 +2506,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
  */
   __pyx_v_possible_variants = __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_distribution->composition);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":138
+  /* "brainpy\_c\isotopic_distribution.pyx":235
  * 
  *     possible_variants = max_variants(distribution.composition)
  *     if order == -1:             # <<<<<<<<<<<<<<
@@ -1770,7 +2516,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   __pyx_t_1 = ((__pyx_v_order == -1L) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":139
+    /* "brainpy\_c\isotopic_distribution.pyx":236
  *     possible_variants = max_variants(distribution.composition)
  *     if order == -1:
  *         distribution.order = possible_variants             # <<<<<<<<<<<<<<
@@ -1779,7 +2525,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
  */
     __pyx_v_distribution->order = __pyx_v_possible_variants;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":138
+    /* "brainpy\_c\isotopic_distribution.pyx":235
  * 
  *     possible_variants = max_variants(distribution.composition)
  *     if order == -1:             # <<<<<<<<<<<<<<
@@ -1789,7 +2535,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":141
+  /* "brainpy\_c\isotopic_distribution.pyx":238
  *         distribution.order = possible_variants
  *     else:
  *         distribution.order = min(order, possible_variants)             # <<<<<<<<<<<<<<
@@ -1808,7 +2554,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":143
+  /* "brainpy\_c\isotopic_distribution.pyx":240
  *         distribution.order = min(order, possible_variants)
  * 
  *     isotopic_distribution_update_isotopic_constants(distribution)             # <<<<<<<<<<<<<<
@@ -1817,7 +2563,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_update_isotopic_constants(__pyx_v_distribution);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":133
+  /* "brainpy\_c\isotopic_distribution.pyx":230
  * 
  * 
  * cdef void isotopic_distribution_update_order(IsotopicDistribution* distribution, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1828,7 +2574,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_u
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":145
+/* "brainpy\_c\isotopic_distribution.pyx":242
  *     isotopic_distribution_update_isotopic_constants(distribution)
  * 
  * cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
@@ -1846,7 +2592,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
   size_t __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":153
+  /* "brainpy\_c\isotopic_distribution.pyx":250
  *         double intensity
  * 
  *     peak = <Peak*>malloc(sizeof(Peak))             # <<<<<<<<<<<<<<
@@ -1855,7 +2601,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak))));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":154
+  /* "brainpy\_c\isotopic_distribution.pyx":251
  * 
  *     peak = <Peak*>malloc(sizeof(Peak))
  *     peak.mz = composition_mass(distribution.composition)             # <<<<<<<<<<<<<<
@@ -1864,38 +2610,38 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak->mz = __pyx_f_7brainpy_2_c_11composition_composition_mass(__pyx_v_distribution->composition);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":156
+  /* "brainpy\_c\isotopic_distribution.pyx":253
  *     peak.mz = composition_mass(distribution.composition)
  * 
  *     intensity = 0             # <<<<<<<<<<<<<<
  *     for i in range(distribution.composition.used):
- *         status = get_element_from_periodic_table2(_PeriodicTable, distribution.composition.elements[i], &element)
+ *         status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)
  */
   __pyx_v_intensity = 0.0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":157
+  /* "brainpy\_c\isotopic_distribution.pyx":254
  * 
  *     intensity = 0
  *     for i in range(distribution.composition.used):             # <<<<<<<<<<<<<<
- *         status = get_element_from_periodic_table2(_PeriodicTable, distribution.composition.elements[i], &element)
+ *         status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)
  *         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)
  */
   __pyx_t_1 = __pyx_v_distribution->composition->used;
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":158
+    /* "brainpy\_c\isotopic_distribution.pyx":255
  *     intensity = 0
  *     for i in range(distribution.composition.used):
- *         status = get_element_from_periodic_table2(_PeriodicTable, distribution.composition.elements[i], &element)             # <<<<<<<<<<<<<<
+ *         status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)             # <<<<<<<<<<<<<<
  *         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)
  *     intensity = exp(intensity)
  */
-    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(__pyx_v_7brainpy_2_c_11composition__PeriodicTable, (__pyx_v_distribution->composition->elements[__pyx_v_i]), (&__pyx_v_element));
+    __pyx_v_status = __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, (__pyx_v_distribution->composition->elements[__pyx_v_i]), (&__pyx_v_element));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":159
+    /* "brainpy\_c\isotopic_distribution.pyx":256
  *     for i in range(distribution.composition.used):
- *         status = get_element_from_periodic_table2(_PeriodicTable, distribution.composition.elements[i], &element)
+ *         status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)
  *         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)             # <<<<<<<<<<<<<<
  *     intensity = exp(intensity)
  *     peak.intensity = intensity
@@ -1903,8 +2649,8 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
     __pyx_v_intensity = (__pyx_v_intensity + log(__pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_shift(__pyx_v_element->isotopes, 0)->abundance));
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":160
- *         status = get_element_from_periodic_table2(_PeriodicTable, distribution.composition.elements[i], &element)
+  /* "brainpy\_c\isotopic_distribution.pyx":257
+ *         status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)
  *         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)
  *     intensity = exp(intensity)             # <<<<<<<<<<<<<<
  *     peak.intensity = intensity
@@ -1912,7 +2658,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_intensity = exp(__pyx_v_intensity);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":161
+  /* "brainpy\_c\isotopic_distribution.pyx":258
  *         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)
  *     intensity = exp(intensity)
  *     peak.intensity = intensity             # <<<<<<<<<<<<<<
@@ -1921,7 +2667,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak->intensity = __pyx_v_intensity;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":162
+  /* "brainpy\_c\isotopic_distribution.pyx":259
  *     intensity = exp(intensity)
  *     peak.intensity = intensity
  *     peak.charge = 0             # <<<<<<<<<<<<<<
@@ -1930,7 +2676,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
  */
   __pyx_v_peak->charge = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":163
+  /* "brainpy\_c\isotopic_distribution.pyx":260
  *     peak.intensity = intensity
  *     peak.charge = 0
  *     return peak             # <<<<<<<<<<<<<<
@@ -1940,7 +2686,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
   __pyx_r = __pyx_v_peak;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":145
+  /* "brainpy\_c\isotopic_distribution.pyx":242
  *     isotopic_distribution_update_isotopic_constants(distribution)
  * 
  * cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
@@ -1953,7 +2699,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *__pyx_f_7brainp
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":165
+/* "brainpy\_c\isotopic_distribution.pyx":262
  *     return peak
  * 
  * cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order) nogil:             # <<<<<<<<<<<<<<
@@ -1965,35 +2711,44 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *__pyx_v_result;
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *__pyx_r;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":169
+  /* "brainpy\_c\isotopic_distribution.pyx":266
  *         IsotopicDistribution* result
  * 
  *     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))             # <<<<<<<<<<<<<<
  *     result.composition = composition
- *     result.order = 0
+ *     validate_composition(composition)
  */
   __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution))));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":170
+  /* "brainpy\_c\isotopic_distribution.pyx":267
  * 
  *     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))
  *     result.composition = composition             # <<<<<<<<<<<<<<
+ *     validate_composition(composition)
  *     result.order = 0
- *     result._isotopic_constants = make_isotopic_constants()
  */
   __pyx_v_result->composition = __pyx_v_composition;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":171
+  /* "brainpy\_c\isotopic_distribution.pyx":268
  *     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))
  *     result.composition = composition
+ *     validate_composition(composition)             # <<<<<<<<<<<<<<
+ *     result.order = 0
+ *     result._isotopic_constants = make_isotopic_constants()
+ */
+  __pyx_f_7brainpy_2_c_21isotopic_distribution_validate_composition(__pyx_v_composition);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":269
+ *     result.composition = composition
+ *     validate_composition(composition)
  *     result.order = 0             # <<<<<<<<<<<<<<
  *     result._isotopic_constants = make_isotopic_constants()
  *     isotopic_distribution_update_order(result, order)
  */
   __pyx_v_result->order = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":172
- *     result.composition = composition
+  /* "brainpy\_c\isotopic_distribution.pyx":270
+ *     validate_composition(composition)
  *     result.order = 0
  *     result._isotopic_constants = make_isotopic_constants()             # <<<<<<<<<<<<<<
  *     isotopic_distribution_update_order(result, order)
@@ -2001,7 +2756,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
  */
   __pyx_v_result->_isotopic_constants = __pyx_f_7brainpy_2_c_18isotopic_constants_make_isotopic_constants();
 
-  /* "brainpy\_c\isotopic_distribution.pyx":173
+  /* "brainpy\_c\isotopic_distribution.pyx":271
  *     result.order = 0
  *     result._isotopic_constants = make_isotopic_constants()
  *     isotopic_distribution_update_order(result, order)             # <<<<<<<<<<<<<<
@@ -2010,7 +2765,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_update_order(__pyx_v_result, __pyx_v_order);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":174
+  /* "brainpy\_c\isotopic_distribution.pyx":272
  *     result._isotopic_constants = make_isotopic_constants()
  *     isotopic_distribution_update_order(result, order)
  *     result.average_mass = 0             # <<<<<<<<<<<<<<
@@ -2019,7 +2774,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
  */
   __pyx_v_result->average_mass = 0.0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":175
+  /* "brainpy\_c\isotopic_distribution.pyx":273
  *     isotopic_distribution_update_order(result, order)
  *     result.average_mass = 0
  *     result.monoisotopic_peak = isotopic_distribution_make_monoisotopic_peak(result)             # <<<<<<<<<<<<<<
@@ -2028,7 +2783,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
  */
   __pyx_v_result->monoisotopic_peak = __pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_distribution_make_monoisotopic_peak(__pyx_v_result);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":176
+  /* "brainpy\_c\isotopic_distribution.pyx":274
  *     result.average_mass = 0
  *     result.monoisotopic_peak = isotopic_distribution_make_monoisotopic_peak(result)
  *     return result             # <<<<<<<<<<<<<<
@@ -2038,7 +2793,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":165
+  /* "brainpy\_c\isotopic_distribution.pyx":262
  *     return peak
  * 
  * cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2051,7 +2806,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":179
+/* "brainpy\_c\isotopic_distribution.pyx":277
  * 
  * 
  * cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:             # <<<<<<<<<<<<<<
@@ -2061,7 +2816,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution 
 
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribution(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *__pyx_v_distribution) {
 
-  /* "brainpy\_c\isotopic_distribution.pyx":180
+  /* "brainpy\_c\isotopic_distribution.pyx":278
  * 
  * cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:
  *     free(distribution.monoisotopic_peak)             # <<<<<<<<<<<<<<
@@ -2070,7 +2825,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribut
  */
   free(__pyx_v_distribution->monoisotopic_peak);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":181
+  /* "brainpy\_c\isotopic_distribution.pyx":279
  * cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:
  *     free(distribution.monoisotopic_peak)
  *     free_isotopic_constants(distribution._isotopic_constants)             # <<<<<<<<<<<<<<
@@ -2079,7 +2834,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribut
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_free_isotopic_constants(__pyx_v_distribution->_isotopic_constants);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":182
+  /* "brainpy\_c\isotopic_distribution.pyx":280
  *     free(distribution.monoisotopic_peak)
  *     free_isotopic_constants(distribution._isotopic_constants)
  *     free(distribution)             # <<<<<<<<<<<<<<
@@ -2088,7 +2843,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribut
  */
   free(__pyx_v_distribution);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":179
+  /* "brainpy\_c\isotopic_distribution.pyx":277
  * 
  * 
  * cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:             # <<<<<<<<<<<<<<
@@ -2099,7 +2854,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribut
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":185
+/* "brainpy\_c\isotopic_distribution.pyx":283
  * 
  * 
  * cdef dvec* id_phi_values(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
@@ -2114,7 +2869,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   long __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":190
+  /* "brainpy\_c\isotopic_distribution.pyx":288
  *         size_t i
  * 
  *     power_sum = make_double_vector()             # <<<<<<<<<<<<<<
@@ -2123,7 +2878,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_power_sum = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_distribution.pyx":191
+  /* "brainpy\_c\isotopic_distribution.pyx":289
  * 
  *     power_sum = make_double_vector()
  *     double_vector_append(power_sum, 0.)             # <<<<<<<<<<<<<<
@@ -2132,7 +2887,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_power_sum, 0.);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":192
+  /* "brainpy\_c\isotopic_distribution.pyx":290
  *     power_sum = make_double_vector()
  *     double_vector_append(power_sum, 0.)
  *     for i in range(1, distribution.order + 1):             # <<<<<<<<<<<<<<
@@ -2143,7 +2898,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   for (__pyx_t_2 = 1; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":193
+    /* "brainpy\_c\isotopic_distribution.pyx":291
  *     double_vector_append(power_sum, 0.)
  *     for i in range(1, distribution.order + 1):
  *         double_vector_append(power_sum, _id_phi_value(distribution, i))             # <<<<<<<<<<<<<<
@@ -2153,7 +2908,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_power_sum, __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(__pyx_v_distribution, __pyx_v_i));
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":194
+  /* "brainpy\_c\isotopic_distribution.pyx":292
  *     for i in range(1, distribution.order + 1):
  *         double_vector_append(power_sum, _id_phi_value(distribution, i))
  *     return power_sum             # <<<<<<<<<<<<<<
@@ -2163,7 +2918,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   __pyx_r = __pyx_v_power_sum;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":185
+  /* "brainpy\_c\isotopic_distribution.pyx":283
  * 
  * 
  * cdef dvec* id_phi_values(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
@@ -2176,7 +2931,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":197
+/* "brainpy\_c\isotopic_distribution.pyx":295
  * 
  * 
  * cdef double _id_phi_value(IsotopicDistribution* distribution, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2192,7 +2947,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
   double __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":204
+  /* "brainpy\_c\isotopic_distribution.pyx":302
  *         size_t i
  * 
  *     phi = 0             # <<<<<<<<<<<<<<
@@ -2201,7 +2956,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
  */
   __pyx_v_phi = 0.0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":205
+  /* "brainpy\_c\isotopic_distribution.pyx":303
  * 
  *     phi = 0
  *     i = 0             # <<<<<<<<<<<<<<
@@ -2210,7 +2965,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":206
+  /* "brainpy\_c\isotopic_distribution.pyx":304
  *     phi = 0
  *     i = 0
  *     while i < distribution.composition.used:             # <<<<<<<<<<<<<<
@@ -2221,7 +2976,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_distribution->composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":207
+    /* "brainpy\_c\isotopic_distribution.pyx":305
  *     i = 0
  *     while i < distribution.composition.used:
  *         element = distribution.composition.elements[i]             # <<<<<<<<<<<<<<
@@ -2230,7 +2985,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
  */
     __pyx_v_element = (__pyx_v_distribution->composition->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":208
+    /* "brainpy\_c\isotopic_distribution.pyx":306
  *     while i < distribution.composition.used:
  *         element = distribution.composition.elements[i]
  *         count = distribution.composition.counts[i]             # <<<<<<<<<<<<<<
@@ -2239,7 +2994,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
  */
     __pyx_v_count = (__pyx_v_distribution->composition->counts[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":209
+    /* "brainpy\_c\isotopic_distribution.pyx":307
  *         element = distribution.composition.elements[i]
  *         count = distribution.composition.counts[i]
  *         phi += isotopic_constants_nth_element_power_sum(             # <<<<<<<<<<<<<<
@@ -2248,7 +3003,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
  */
     __pyx_v_phi = (__pyx_v_phi + (__pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_element_power_sum(__pyx_v_distribution->_isotopic_constants, __pyx_v_element, __pyx_v_order) * __pyx_v_count));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":211
+    /* "brainpy\_c\isotopic_distribution.pyx":309
  *         phi += isotopic_constants_nth_element_power_sum(
  *             distribution._isotopic_constants, element, order) * count
  *         i += 1             # <<<<<<<<<<<<<<
@@ -2258,7 +3013,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":212
+  /* "brainpy\_c\isotopic_distribution.pyx":310
  *             distribution._isotopic_constants, element, order) * count
  *         i += 1
  *     return phi             # <<<<<<<<<<<<<<
@@ -2268,7 +3023,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
   __pyx_r = __pyx_v_phi;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":197
+  /* "brainpy\_c\isotopic_distribution.pyx":295
  * 
  * 
  * cdef double _id_phi_value(IsotopicDistribution* distribution, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2281,7 +3036,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_phi_value(struct 
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":215
+/* "brainpy\_c\isotopic_distribution.pyx":313
  * 
  * 
  * cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element) nogil:             # <<<<<<<<<<<<<<
@@ -2296,7 +3051,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   long __pyx_t_1;
   size_t __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":220
+  /* "brainpy\_c\isotopic_distribution.pyx":318
  *         size_t i
  * 
  *     power_sum = make_double_vector()             # <<<<<<<<<<<<<<
@@ -2305,7 +3060,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_power_sum = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_distribution.pyx":221
+  /* "brainpy\_c\isotopic_distribution.pyx":319
  * 
  *     power_sum = make_double_vector()
  *     double_vector_append(power_sum, 0.)             # <<<<<<<<<<<<<<
@@ -2314,7 +3069,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_power_sum, 0.);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":222
+  /* "brainpy\_c\isotopic_distribution.pyx":320
  *     power_sum = make_double_vector()
  *     double_vector_append(power_sum, 0.)
  *     for i in range(1, distribution.order + 1):             # <<<<<<<<<<<<<<
@@ -2325,7 +3080,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   for (__pyx_t_2 = 1; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":223
+    /* "brainpy\_c\isotopic_distribution.pyx":321
  *     double_vector_append(power_sum, 0.)
  *     for i in range(1, distribution.order + 1):
  *         double_vector_append(power_sum,             # <<<<<<<<<<<<<<
@@ -2335,7 +3090,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_power_sum, __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_value(__pyx_v_distribution, __pyx_v_element, __pyx_v_i));
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":225
+  /* "brainpy\_c\isotopic_distribution.pyx":323
  *         double_vector_append(power_sum,
  *                              _id_modified_phi_value(distribution, element, i))
  *     return power_sum             # <<<<<<<<<<<<<<
@@ -2345,7 +3100,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   __pyx_r = __pyx_v_power_sum;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":215
+  /* "brainpy\_c\isotopic_distribution.pyx":313
  * 
  * 
  * cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element) nogil:             # <<<<<<<<<<<<<<
@@ -2358,7 +3113,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":228
+/* "brainpy\_c\isotopic_distribution.pyx":326
  * 
  * 
  * cdef double _id_modified_phi_value(IsotopicDistribution* distribution, char* symbol, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2375,7 +3130,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
   double __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":236
+  /* "brainpy\_c\isotopic_distribution.pyx":334
  *         double coef
  * 
  *     phi = 0             # <<<<<<<<<<<<<<
@@ -2384,7 +3139,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
   __pyx_v_phi = 0.0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":237
+  /* "brainpy\_c\isotopic_distribution.pyx":335
  * 
  *     phi = 0
  *     i = 0             # <<<<<<<<<<<<<<
@@ -2393,7 +3148,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":238
+  /* "brainpy\_c\isotopic_distribution.pyx":336
  *     phi = 0
  *     i = 0
  *     while i < distribution.composition.used:             # <<<<<<<<<<<<<<
@@ -2404,7 +3159,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
     __pyx_t_1 = ((__pyx_v_i < __pyx_v_distribution->composition->used) != 0);
     if (!__pyx_t_1) break;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":239
+    /* "brainpy\_c\isotopic_distribution.pyx":337
  *     i = 0
  *     while i < distribution.composition.used:
  *         element = distribution.composition.elements[i]             # <<<<<<<<<<<<<<
@@ -2413,7 +3168,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
     __pyx_v_element = (__pyx_v_distribution->composition->elements[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":240
+    /* "brainpy\_c\isotopic_distribution.pyx":338
  *     while i < distribution.composition.used:
  *         element = distribution.composition.elements[i]
  *         count = distribution.composition.counts[i]             # <<<<<<<<<<<<<<
@@ -2422,7 +3177,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
     __pyx_v_count = (__pyx_v_distribution->composition->counts[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":242
+    /* "brainpy\_c\isotopic_distribution.pyx":340
  *         count = distribution.composition.counts[i]
  * 
  *         if strcmp(element, symbol) == 0:             # <<<<<<<<<<<<<<
@@ -2432,7 +3187,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
     __pyx_t_1 = ((strcmp(__pyx_v_element, __pyx_v_symbol) == 0) != 0);
     if (__pyx_t_1) {
 
-      /* "brainpy\_c\isotopic_distribution.pyx":243
+      /* "brainpy\_c\isotopic_distribution.pyx":341
  * 
  *         if strcmp(element, symbol) == 0:
  *             coef = count - 1             # <<<<<<<<<<<<<<
@@ -2441,7 +3196,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
       __pyx_v_coef = (__pyx_v_count - 1.0);
 
-      /* "brainpy\_c\isotopic_distribution.pyx":242
+      /* "brainpy\_c\isotopic_distribution.pyx":340
  *         count = distribution.composition.counts[i]
  * 
  *         if strcmp(element, symbol) == 0:             # <<<<<<<<<<<<<<
@@ -2451,7 +3206,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
       goto __pyx_L5;
     }
 
-    /* "brainpy\_c\isotopic_distribution.pyx":245
+    /* "brainpy\_c\isotopic_distribution.pyx":343
  *             coef = count - 1
  *         else:
  *             coef = count             # <<<<<<<<<<<<<<
@@ -2463,7 +3218,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
     }
     __pyx_L5:;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":247
+    /* "brainpy\_c\isotopic_distribution.pyx":345
  *             coef = count
  * 
  *         phi += isotopic_constants_nth_element_power_sum(             # <<<<<<<<<<<<<<
@@ -2472,7 +3227,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
     __pyx_v_phi = (__pyx_v_phi + (__pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_element_power_sum(__pyx_v_distribution->_isotopic_constants, __pyx_v_element, __pyx_v_order) * __pyx_v_coef));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":249
+    /* "brainpy\_c\isotopic_distribution.pyx":347
  *         phi += isotopic_constants_nth_element_power_sum(
  *             distribution._isotopic_constants, element, order) * coef
  *         i += 1             # <<<<<<<<<<<<<<
@@ -2482,7 +3237,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":251
+  /* "brainpy\_c\isotopic_distribution.pyx":349
  *         i += 1
  * 
  *     phi += isotopic_constants_nth_modified_element_power_sum(             # <<<<<<<<<<<<<<
@@ -2491,7 +3246,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
  */
   __pyx_v_phi = (__pyx_v_phi + __pyx_f_7brainpy_2_c_18isotopic_constants_isotopic_constants_nth_modified_element_power_sum(__pyx_v_distribution->_isotopic_constants, __pyx_v_symbol, __pyx_v_order));
 
-  /* "brainpy\_c\isotopic_distribution.pyx":254
+  /* "brainpy\_c\isotopic_distribution.pyx":352
  *         distribution._isotopic_constants, symbol, order)
  * 
  *     return phi             # <<<<<<<<<<<<<<
@@ -2501,7 +3256,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
   __pyx_r = __pyx_v_phi;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":228
+  /* "brainpy\_c\isotopic_distribution.pyx":326
  * 
  * 
  * cdef double _id_modified_phi_value(IsotopicDistribution* distribution, char* symbol, int order) nogil:             # <<<<<<<<<<<<<<
@@ -2514,7 +3269,7 @@ static double __pyx_f_7brainpy_2_c_21isotopic_distribution__id_modified_phi_valu
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":257
+/* "brainpy\_c\isotopic_distribution.pyx":355
  * 
  * 
  * cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
@@ -2534,7 +3289,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   int __pyx_t_3;
   size_t __pyx_t_4;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":265
+  /* "brainpy\_c\isotopic_distribution.pyx":363
  *         int sign
  * 
  *     probability_vector = make_double_vector()             # <<<<<<<<<<<<<<
@@ -2543,7 +3298,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_probability_vector = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_distribution.pyx":266
+  /* "brainpy\_c\isotopic_distribution.pyx":364
  * 
  *     probability_vector = make_double_vector()
  *     phi_values = id_phi_values(distribution)             # <<<<<<<<<<<<<<
@@ -2552,7 +3307,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_phi_values = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_phi_values(__pyx_v_distribution);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":267
+  /* "brainpy\_c\isotopic_distribution.pyx":365
  *     probability_vector = make_double_vector()
  *     phi_values = id_phi_values(distribution)
  *     max_variant_count = max_variants(distribution.composition)             # <<<<<<<<<<<<<<
@@ -2561,7 +3316,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_max_variant_count = __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_distribution->composition);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":269
+  /* "brainpy\_c\isotopic_distribution.pyx":367
  *     max_variant_count = max_variants(distribution.composition)
  * 
  *     newton(phi_values, probability_vector, max_variant_count)             # <<<<<<<<<<<<<<
@@ -2570,7 +3325,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_v_phi_values, __pyx_v_probability_vector, __pyx_v_max_variant_count);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":271
+  /* "brainpy\_c\isotopic_distribution.pyx":369
  *     newton(phi_values, probability_vector, max_variant_count)
  * 
  *     for i in range(0, probability_vector.used):             # <<<<<<<<<<<<<<
@@ -2581,7 +3336,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":272
+    /* "brainpy\_c\isotopic_distribution.pyx":370
  * 
  *     for i in range(0, probability_vector.used):
  *         sign = 1 if i % 2 == 0 else -1             # <<<<<<<<<<<<<<
@@ -2595,7 +3350,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     }
     __pyx_v_sign = __pyx_t_3;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":273
+    /* "brainpy\_c\isotopic_distribution.pyx":371
  *     for i in range(0, probability_vector.used):
  *         sign = 1 if i % 2 == 0 else -1
  *         probability_vector.v[i] *= distribution.monoisotopic_peak.intensity * sign             # <<<<<<<<<<<<<<
@@ -2606,7 +3361,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     (__pyx_v_probability_vector->v[__pyx_t_4]) = ((__pyx_v_probability_vector->v[__pyx_t_4]) * (__pyx_v_distribution->monoisotopic_peak->intensity * __pyx_v_sign));
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":275
+  /* "brainpy\_c\isotopic_distribution.pyx":373
  *         probability_vector.v[i] *= distribution.monoisotopic_peak.intensity * sign
  * 
  *     free_double_vector(phi_values)             # <<<<<<<<<<<<<<
@@ -2615,7 +3370,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_phi_values);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":276
+  /* "brainpy\_c\isotopic_distribution.pyx":374
  * 
  *     free_double_vector(phi_values)
  *     return probability_vector             # <<<<<<<<<<<<<<
@@ -2625,7 +3380,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   __pyx_r = __pyx_v_probability_vector;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":257
+  /* "brainpy\_c\isotopic_distribution.pyx":355
  * 
  * 
  * cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:             # <<<<<<<<<<<<<<
@@ -2638,507 +3393,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":285
- *     size_t size
- * 
- * cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:             # <<<<<<<<<<<<<<
- *     cdef ElementPolynomialMap* result
- *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
- */
-
-static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_f_7brainpy_2_c_21isotopic_distribution_make_element_polynomial_map(size_t __pyx_v_sizehint) {
-  struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_result;
-  struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_r;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":287
- * cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:
- *     cdef ElementPolynomialMap* result
- *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))             # <<<<<<<<<<<<<<
- *     result.elements = <char**>malloc(sizeof(char*) * sizehint)
- *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
- */
-  __pyx_v_result = ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *)malloc((sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap))));
-
-  /* "brainpy\_c\isotopic_distribution.pyx":288
- *     cdef ElementPolynomialMap* result
- *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
- *     result.elements = <char**>malloc(sizeof(char*) * sizehint)             # <<<<<<<<<<<<<<
- *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
- *     result.size = sizehint
- */
-  __pyx_v_result->elements = ((char **)malloc(((sizeof(char *)) * __pyx_v_sizehint)));
-
-  /* "brainpy\_c\isotopic_distribution.pyx":289
- *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
- *     result.elements = <char**>malloc(sizeof(char*) * sizehint)
- *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)             # <<<<<<<<<<<<<<
- *     result.size = sizehint
- *     result.used = 0
- */
-  __pyx_v_result->polynomials = ((__pyx_t_7brainpy_2_c_21isotopic_distribution_dvec **)malloc(((sizeof(__pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *)) * __pyx_v_sizehint)));
-
-  /* "brainpy\_c\isotopic_distribution.pyx":290
- *     result.elements = <char**>malloc(sizeof(char*) * sizehint)
- *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
- *     result.size = sizehint             # <<<<<<<<<<<<<<
- *     result.used = 0
- * 
- */
-  __pyx_v_result->size = __pyx_v_sizehint;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":291
- *     result.polynomials = <dvec**>malloc(sizeof(dvec*) * sizehint)
- *     result.size = sizehint
- *     result.used = 0             # <<<<<<<<<<<<<<
- * 
- *     return result
- */
-  __pyx_v_result->used = 0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":293
- *     result.used = 0
- * 
- *     return result             # <<<<<<<<<<<<<<
- * 
- * cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:
- */
-  __pyx_r = __pyx_v_result;
-  goto __pyx_L0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":285
- *     size_t size
- * 
- * cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:             # <<<<<<<<<<<<<<
- *     cdef ElementPolynomialMap* result
- *     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
- */
-
-  /* function exit code */
-  __pyx_L0:;
-  return __pyx_r;
-}
-
-/* "brainpy\_c\isotopic_distribution.pyx":295
- *     return result
- * 
- * cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
- */
-
-static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_set(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_ep_map, char *__pyx_v_element, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_v_polynomial) {
-  size_t __pyx_v_i;
-  int __pyx_v_done;
-  int __pyx_r;
-  int __pyx_t_1;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":301
- *         bint done
- * 
- *     done = False             # <<<<<<<<<<<<<<
- *     i = 0
- *     while (i < ep_map.used):
- */
-  __pyx_v_done = 0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":302
- * 
- *     done = False
- *     i = 0             # <<<<<<<<<<<<<<
- *     while (i < ep_map.used):
- *         if strcmp(element, ep_map.elements[i]) == 0:
- */
-  __pyx_v_i = 0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":303
- *     done = False
- *     i = 0
- *     while (i < ep_map.used):             # <<<<<<<<<<<<<<
- *         if strcmp(element, ep_map.elements[i]) == 0:
- *             done = True
- */
-  while (1) {
-    __pyx_t_1 = ((__pyx_v_i < __pyx_v_ep_map->used) != 0);
-    if (!__pyx_t_1) break;
-
-    /* "brainpy\_c\isotopic_distribution.pyx":304
- *     i = 0
- *     while (i < ep_map.used):
- *         if strcmp(element, ep_map.elements[i]) == 0:             # <<<<<<<<<<<<<<
- *             done = True
- *             ep_map.polynomials[i] = polynomial
- */
-    __pyx_t_1 = ((strcmp(__pyx_v_element, (__pyx_v_ep_map->elements[__pyx_v_i])) == 0) != 0);
-    if (__pyx_t_1) {
-
-      /* "brainpy\_c\isotopic_distribution.pyx":305
- *     while (i < ep_map.used):
- *         if strcmp(element, ep_map.elements[i]) == 0:
- *             done = True             # <<<<<<<<<<<<<<
- *             ep_map.polynomials[i] = polynomial
- *             return 0
- */
-      __pyx_v_done = 1;
-
-      /* "brainpy\_c\isotopic_distribution.pyx":306
- *         if strcmp(element, ep_map.elements[i]) == 0:
- *             done = True
- *             ep_map.polynomials[i] = polynomial             # <<<<<<<<<<<<<<
- *             return 0
- *         i += 1
- */
-      (__pyx_v_ep_map->polynomials[__pyx_v_i]) = __pyx_v_polynomial;
-
-      /* "brainpy\_c\isotopic_distribution.pyx":307
- *             done = True
- *             ep_map.polynomials[i] = polynomial
- *             return 0             # <<<<<<<<<<<<<<
- *         i += 1
- *     if not done:
- */
-      __pyx_r = 0;
-      goto __pyx_L0;
-
-      /* "brainpy\_c\isotopic_distribution.pyx":304
- *     i = 0
- *     while (i < ep_map.used):
- *         if strcmp(element, ep_map.elements[i]) == 0:             # <<<<<<<<<<<<<<
- *             done = True
- *             ep_map.polynomials[i] = polynomial
- */
-    }
-
-    /* "brainpy\_c\isotopic_distribution.pyx":308
- *             ep_map.polynomials[i] = polynomial
- *             return 0
- *         i += 1             # <<<<<<<<<<<<<<
- *     if not done:
- *         ep_map.used += 1
- */
-    __pyx_v_i = (__pyx_v_i + 1);
-  }
-
-  /* "brainpy\_c\isotopic_distribution.pyx":309
- *             return 0
- *         i += 1
- *     if not done:             # <<<<<<<<<<<<<<
- *         ep_map.used += 1
- *         if ep_map.used >= ep_map.size:
- */
-  __pyx_t_1 = ((!(__pyx_v_done != 0)) != 0);
-  if (__pyx_t_1) {
-
-    /* "brainpy\_c\isotopic_distribution.pyx":310
- *         i += 1
- *     if not done:
- *         ep_map.used += 1             # <<<<<<<<<<<<<<
- *         if ep_map.used >= ep_map.size:
- *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
- */
-    __pyx_v_ep_map->used = (__pyx_v_ep_map->used + 1);
-
-    /* "brainpy\_c\isotopic_distribution.pyx":311
- *     if not done:
- *         ep_map.used += 1
- *         if ep_map.used >= ep_map.size:             # <<<<<<<<<<<<<<
- *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
- *             return -1
- */
-    __pyx_t_1 = ((__pyx_v_ep_map->used >= __pyx_v_ep_map->size) != 0);
-    if (__pyx_t_1) {
-
-      /* "brainpy\_c\isotopic_distribution.pyx":312
- *         ep_map.used += 1
- *         if ep_map.used >= ep_map.size:
- *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)             # <<<<<<<<<<<<<<
- *             return -1
- *         ep_map.elements[i] = element
- */
-      printf(__pyx_k_Overloaded_ElementPolynomialMap, __pyx_v_i, __pyx_v_ep_map->size);
-
-      /* "brainpy\_c\isotopic_distribution.pyx":313
- *         if ep_map.used >= ep_map.size:
- *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
- *             return -1             # <<<<<<<<<<<<<<
- *         ep_map.elements[i] = element
- *         ep_map.polynomials[i] = polynomial
- */
-      __pyx_r = -1;
-      goto __pyx_L0;
-
-      /* "brainpy\_c\isotopic_distribution.pyx":311
- *     if not done:
- *         ep_map.used += 1
- *         if ep_map.used >= ep_map.size:             # <<<<<<<<<<<<<<
- *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
- *             return -1
- */
-    }
-
-    /* "brainpy\_c\isotopic_distribution.pyx":314
- *             printf("Overloaded ElementPolynomialMap\n %d, %d\n", i, ep_map.size)
- *             return -1
- *         ep_map.elements[i] = element             # <<<<<<<<<<<<<<
- *         ep_map.polynomials[i] = polynomial
- *         return 0
- */
-    (__pyx_v_ep_map->elements[__pyx_v_i]) = __pyx_v_element;
-
-    /* "brainpy\_c\isotopic_distribution.pyx":315
- *             return -1
- *         ep_map.elements[i] = element
- *         ep_map.polynomials[i] = polynomial             # <<<<<<<<<<<<<<
- *         return 0
- *     return 1
- */
-    (__pyx_v_ep_map->polynomials[__pyx_v_i]) = __pyx_v_polynomial;
-
-    /* "brainpy\_c\isotopic_distribution.pyx":316
- *         ep_map.elements[i] = element
- *         ep_map.polynomials[i] = polynomial
- *         return 0             # <<<<<<<<<<<<<<
- *     return 1
- * 
- */
-    __pyx_r = 0;
-    goto __pyx_L0;
-
-    /* "brainpy\_c\isotopic_distribution.pyx":309
- *             return 0
- *         i += 1
- *     if not done:             # <<<<<<<<<<<<<<
- *         ep_map.used += 1
- *         if ep_map.used >= ep_map.size:
- */
-  }
-
-  /* "brainpy\_c\isotopic_distribution.pyx":317
- *         ep_map.polynomials[i] = polynomial
- *         return 0
- *     return 1             # <<<<<<<<<<<<<<
- * 
- * cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:
- */
-  __pyx_r = 1;
-  goto __pyx_L0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":295
- *     return result
- * 
- * cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
- */
-
-  /* function exit code */
-  __pyx_L0:;
-  return __pyx_r;
-}
-
-/* "brainpy\_c\isotopic_distribution.pyx":319
- *     return 1
- * 
- * cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
- */
-
-static int __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_get(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_ep_map, char *__pyx_v_element, __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec **__pyx_v_polynomial) {
-  size_t __pyx_v_i;
-  CYTHON_UNUSED int __pyx_v_done;
-  int __pyx_r;
-  int __pyx_t_1;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":325
- *         bint done
- * 
- *     done = False             # <<<<<<<<<<<<<<
- *     i = 0
- *     while i < ep_map.used:
- */
-  __pyx_v_done = 0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":326
- * 
- *     done = False
- *     i = 0             # <<<<<<<<<<<<<<
- *     while i < ep_map.used:
- *         if strcmp(ep_map.elements[i], element) == 0:
- */
-  __pyx_v_i = 0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":327
- *     done = False
- *     i = 0
- *     while i < ep_map.used:             # <<<<<<<<<<<<<<
- *         if strcmp(ep_map.elements[i], element) == 0:
- *             polynomial[0] = ep_map.polynomials[i]
- */
-  while (1) {
-    __pyx_t_1 = ((__pyx_v_i < __pyx_v_ep_map->used) != 0);
-    if (!__pyx_t_1) break;
-
-    /* "brainpy\_c\isotopic_distribution.pyx":328
- *     i = 0
- *     while i < ep_map.used:
- *         if strcmp(ep_map.elements[i], element) == 0:             # <<<<<<<<<<<<<<
- *             polynomial[0] = ep_map.polynomials[i]
- *             return 0
- */
-    __pyx_t_1 = ((strcmp((__pyx_v_ep_map->elements[__pyx_v_i]), __pyx_v_element) == 0) != 0);
-    if (__pyx_t_1) {
-
-      /* "brainpy\_c\isotopic_distribution.pyx":329
- *     while i < ep_map.used:
- *         if strcmp(ep_map.elements[i], element) == 0:
- *             polynomial[0] = ep_map.polynomials[i]             # <<<<<<<<<<<<<<
- *             return 0
- *         i += 1
- */
-      (__pyx_v_polynomial[0]) = (__pyx_v_ep_map->polynomials[__pyx_v_i]);
-
-      /* "brainpy\_c\isotopic_distribution.pyx":330
- *         if strcmp(ep_map.elements[i], element) == 0:
- *             polynomial[0] = ep_map.polynomials[i]
- *             return 0             # <<<<<<<<<<<<<<
- *         i += 1
- *     return 1
- */
-      __pyx_r = 0;
-      goto __pyx_L0;
-
-      /* "brainpy\_c\isotopic_distribution.pyx":328
- *     i = 0
- *     while i < ep_map.used:
- *         if strcmp(ep_map.elements[i], element) == 0:             # <<<<<<<<<<<<<<
- *             polynomial[0] = ep_map.polynomials[i]
- *             return 0
- */
-    }
-
-    /* "brainpy\_c\isotopic_distribution.pyx":331
- *             polynomial[0] = ep_map.polynomials[i]
- *             return 0
- *         i += 1             # <<<<<<<<<<<<<<
- *     return 1
- * 
- */
-    __pyx_v_i = (__pyx_v_i + 1);
-  }
-
-  /* "brainpy\_c\isotopic_distribution.pyx":332
- *             return 0
- *         i += 1
- *     return 1             # <<<<<<<<<<<<<<
- * 
- * cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:
- */
-  __pyx_r = 1;
-  goto __pyx_L0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":319
- *     return 1
- * 
- * cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
- */
-
-  /* function exit code */
-  __pyx_L0:;
-  return __pyx_r;
-}
-
-/* "brainpy\_c\isotopic_distribution.pyx":334
- *     return 1
- * 
- * cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
- */
-
-static void __pyx_f_7brainpy_2_c_21isotopic_distribution_free_element_polynomial_map(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_ElementPolynomialMap *__pyx_v_ep_map) {
-  size_t __pyx_v_i;
-  int __pyx_t_1;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":337
- *     cdef:
- *         size_t i
- *     i = 0             # <<<<<<<<<<<<<<
- *     while i < ep_map.used:
- *         free_double_vector(ep_map.polynomials[i])
- */
-  __pyx_v_i = 0;
-
-  /* "brainpy\_c\isotopic_distribution.pyx":338
- *         size_t i
- *     i = 0
- *     while i < ep_map.used:             # <<<<<<<<<<<<<<
- *         free_double_vector(ep_map.polynomials[i])
- *         i += 1
- */
-  while (1) {
-    __pyx_t_1 = ((__pyx_v_i < __pyx_v_ep_map->used) != 0);
-    if (!__pyx_t_1) break;
-
-    /* "brainpy\_c\isotopic_distribution.pyx":339
- *     i = 0
- *     while i < ep_map.used:
- *         free_double_vector(ep_map.polynomials[i])             # <<<<<<<<<<<<<<
- *         i += 1
- *     free(ep_map.elements)
- */
-    __pyx_f_7brainpy_2_c_13double_vector_free_double_vector((__pyx_v_ep_map->polynomials[__pyx_v_i]));
-
-    /* "brainpy\_c\isotopic_distribution.pyx":340
- *     while i < ep_map.used:
- *         free_double_vector(ep_map.polynomials[i])
- *         i += 1             # <<<<<<<<<<<<<<
- *     free(ep_map.elements)
- *     free(ep_map.polynomials)
- */
-    __pyx_v_i = (__pyx_v_i + 1);
-  }
-
-  /* "brainpy\_c\isotopic_distribution.pyx":341
- *         free_double_vector(ep_map.polynomials[i])
- *         i += 1
- *     free(ep_map.elements)             # <<<<<<<<<<<<<<
- *     free(ep_map.polynomials)
- *     free(ep_map)
- */
-  free(__pyx_v_ep_map->elements);
-
-  /* "brainpy\_c\isotopic_distribution.pyx":342
- *         i += 1
- *     free(ep_map.elements)
- *     free(ep_map.polynomials)             # <<<<<<<<<<<<<<
- *     free(ep_map)
- * 
- */
-  free(__pyx_v_ep_map->polynomials);
-
-  /* "brainpy\_c\isotopic_distribution.pyx":343
- *     free(ep_map.elements)
- *     free(ep_map.polynomials)
- *     free(ep_map)             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  free(__pyx_v_ep_map);
-
-  /* "brainpy\_c\isotopic_distribution.pyx":334
- *     return 1
- * 
- * cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         size_t i
- */
-
-  /* function exit code */
-}
-
-/* "brainpy\_c\isotopic_distribution.pyx":346
+/* "brainpy\_c\isotopic_distribution.pyx":377
  * 
  * 
  * cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* probability_vector) nogil:             # <<<<<<<<<<<<<<
@@ -3174,7 +3429,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":360
+  /* "brainpy\_c\isotopic_distribution.pyx":391
  *         ElementPolynomialMap* ep_map
  * 
  *     mass_vector = make_double_vector()             # <<<<<<<<<<<<<<
@@ -3183,7 +3438,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_mass_vector = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-  /* "brainpy\_c\isotopic_distribution.pyx":361
+  /* "brainpy\_c\isotopic_distribution.pyx":392
  * 
  *     mass_vector = make_double_vector()
  *     max_variant_count = max_variants(distribution.composition)             # <<<<<<<<<<<<<<
@@ -3192,7 +3447,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_max_variant_count = __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_distribution->composition);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":362
+  /* "brainpy\_c\isotopic_distribution.pyx":393
  *     mass_vector = make_double_vector()
  *     max_variant_count = max_variants(distribution.composition)
  *     base_intensity = distribution.monoisotopic_peak.intensity             # <<<<<<<<<<<<<<
@@ -3202,7 +3457,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   __pyx_t_1 = __pyx_v_distribution->monoisotopic_peak->intensity;
   __pyx_v_base_intensity = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":363
+  /* "brainpy\_c\isotopic_distribution.pyx":394
  *     max_variant_count = max_variants(distribution.composition)
  *     base_intensity = distribution.monoisotopic_peak.intensity
  *     ep_map = make_element_polynomial_map(distribution.composition.size)             # <<<<<<<<<<<<<<
@@ -3211,7 +3466,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_ep_map = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_element_polynomial_map(__pyx_v_distribution->composition->size);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":365
+  /* "brainpy\_c\isotopic_distribution.pyx":396
  *     ep_map = make_element_polynomial_map(distribution.composition.size)
  * 
  *     j = 0             # <<<<<<<<<<<<<<
@@ -3220,7 +3475,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_j = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":366
+  /* "brainpy\_c\isotopic_distribution.pyx":397
  * 
  *     j = 0
  *     while j < distribution.composition.used:             # <<<<<<<<<<<<<<
@@ -3231,7 +3486,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     __pyx_t_2 = ((__pyx_v_j < __pyx_v_distribution->composition->used) != 0);
     if (!__pyx_t_2) break;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":367
+    /* "brainpy\_c\isotopic_distribution.pyx":398
  *     j = 0
  *     while j < distribution.composition.used:
  *         element = distribution.composition.elements[j]             # <<<<<<<<<<<<<<
@@ -3240,7 +3495,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_v_element = (__pyx_v_distribution->composition->elements[__pyx_v_j]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":368
+    /* "brainpy\_c\isotopic_distribution.pyx":399
  *     while j < distribution.composition.used:
  *         element = distribution.composition.elements[j]
  *         power_sum = id_modified_phi_values(distribution, element)             # <<<<<<<<<<<<<<
@@ -3249,7 +3504,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_v_power_sum = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_modified_phi_values(__pyx_v_distribution, __pyx_v_element);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":369
+    /* "brainpy\_c\isotopic_distribution.pyx":400
  *         element = distribution.composition.elements[j]
  *         power_sum = id_modified_phi_values(distribution, element)
  *         ele_sym_poly = make_double_vector()             # <<<<<<<<<<<<<<
@@ -3258,7 +3513,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_v_ele_sym_poly = __pyx_f_7brainpy_2_c_13double_vector_make_double_vector();
 
-    /* "brainpy\_c\isotopic_distribution.pyx":370
+    /* "brainpy\_c\isotopic_distribution.pyx":401
  *         power_sum = id_modified_phi_values(distribution, element)
  *         ele_sym_poly = make_double_vector()
  *         newton(power_sum, ele_sym_poly, max_variant_count)             # <<<<<<<<<<<<<<
@@ -3267,7 +3522,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_f_7brainpy_2_c_18isotopic_constants_newton(__pyx_v_power_sum, __pyx_v_ele_sym_poly, __pyx_v_max_variant_count);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":371
+    /* "brainpy\_c\isotopic_distribution.pyx":402
  *         ele_sym_poly = make_double_vector()
  *         newton(power_sum, ele_sym_poly, max_variant_count)
  *         element_polynomial_map_set(ep_map, element, ele_sym_poly)             # <<<<<<<<<<<<<<
@@ -3276,7 +3531,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_set(__pyx_v_ep_map, __pyx_v_element, __pyx_v_ele_sym_poly);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":372
+    /* "brainpy\_c\isotopic_distribution.pyx":403
  *         newton(power_sum, ele_sym_poly, max_variant_count)
  *         element_polynomial_map_set(ep_map, element, ele_sym_poly)
  *         free_double_vector(power_sum)             # <<<<<<<<<<<<<<
@@ -3285,7 +3540,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_power_sum);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":373
+    /* "brainpy\_c\isotopic_distribution.pyx":404
  *         element_polynomial_map_set(ep_map, element, ele_sym_poly)
  *         free_double_vector(power_sum)
  *         j += 1             # <<<<<<<<<<<<<<
@@ -3295,7 +3550,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     __pyx_v_j = (__pyx_v_j + 1);
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":374
+  /* "brainpy\_c\isotopic_distribution.pyx":405
  *         free_double_vector(power_sum)
  *         j += 1
  *     i = 0             # <<<<<<<<<<<<<<
@@ -3304,7 +3559,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":375
+  /* "brainpy\_c\isotopic_distribution.pyx":406
  *         j += 1
  *     i = 0
  *     for i in range(distribution.order + 1):             # <<<<<<<<<<<<<<
@@ -3315,7 +3570,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i = __pyx_t_4;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":376
+    /* "brainpy\_c\isotopic_distribution.pyx":407
  *     i = 0
  *     for i in range(distribution.order + 1):
  *         sign = 1 if i % 2 == 0 else -1             # <<<<<<<<<<<<<<
@@ -3329,7 +3584,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     }
     __pyx_v_sign = __pyx_t_5;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":377
+    /* "brainpy\_c\isotopic_distribution.pyx":408
  *     for i in range(distribution.order + 1):
  *         sign = 1 if i % 2 == 0 else -1
  *         center = 0.0             # <<<<<<<<<<<<<<
@@ -3338,7 +3593,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_v_center = 0.0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":378
+    /* "brainpy\_c\isotopic_distribution.pyx":409
  *         sign = 1 if i % 2 == 0 else -1
  *         center = 0.0
  *         k = 0             # <<<<<<<<<<<<<<
@@ -3347,7 +3602,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
     __pyx_v_k = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":379
+    /* "brainpy\_c\isotopic_distribution.pyx":410
  *         center = 0.0
  *         k = 0
  *         while k < ep_map.used:             # <<<<<<<<<<<<<<
@@ -3358,7 +3613,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
       __pyx_t_2 = ((__pyx_v_k < __pyx_v_ep_map->used) != 0);
       if (!__pyx_t_2) break;
 
-      /* "brainpy\_c\isotopic_distribution.pyx":380
+      /* "brainpy\_c\isotopic_distribution.pyx":411
  *         k = 0
  *         while k < ep_map.used:
  *             element = ep_map.elements[k]             # <<<<<<<<<<<<<<
@@ -3367,7 +3622,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v_element = (__pyx_v_ep_map->elements[__pyx_v_k]);
 
-      /* "brainpy\_c\isotopic_distribution.pyx":381
+      /* "brainpy\_c\isotopic_distribution.pyx":412
  *         while k < ep_map.used:
  *             element = ep_map.elements[k]
  *             element_polynomial_map_get(ep_map, element, &ele_sym_poly)             # <<<<<<<<<<<<<<
@@ -3376,26 +3631,26 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_f_7brainpy_2_c_21isotopic_distribution_element_polynomial_map_get(__pyx_v_ep_map, __pyx_v_element, (&__pyx_v_ele_sym_poly));
 
-      /* "brainpy\_c\isotopic_distribution.pyx":383
+      /* "brainpy\_c\isotopic_distribution.pyx":414
  *             element_polynomial_map_get(ep_map, element, &ele_sym_poly)
  * 
  *             composition_get_element_count(distribution.composition, element, &_element_count)             # <<<<<<<<<<<<<<
- *             get_element_from_periodic_table2(_PeriodicTable, element, &element_struct)
+ *             element_hash_table_get(_ElementTable, element, &element_struct)
  * 
  */
       __pyx_f_7brainpy_2_c_11composition_composition_get_element_count(__pyx_v_distribution->composition, __pyx_v_element, (&__pyx_v__element_count));
 
-      /* "brainpy\_c\isotopic_distribution.pyx":384
+      /* "brainpy\_c\isotopic_distribution.pyx":415
  * 
  *             composition_get_element_count(distribution.composition, element, &_element_count)
- *             get_element_from_periodic_table2(_PeriodicTable, element, &element_struct)             # <<<<<<<<<<<<<<
+ *             element_hash_table_get(_ElementTable, element, &element_struct)             # <<<<<<<<<<<<<<
  * 
  *             _monoisotopic_mass = element_monoisotopic_mass(element_struct)
  */
-      __pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2(__pyx_v_7brainpy_2_c_11composition__PeriodicTable, __pyx_v_element, (&__pyx_v_element_struct));
+      __pyx_f_7brainpy_2_c_11composition_element_hash_table_get(__pyx_v_7brainpy_2_c_11composition__ElementTable, __pyx_v_element, (&__pyx_v_element_struct));
 
-      /* "brainpy\_c\isotopic_distribution.pyx":386
- *             get_element_from_periodic_table2(_PeriodicTable, element, &element_struct)
+      /* "brainpy\_c\isotopic_distribution.pyx":417
+ *             element_hash_table_get(_ElementTable, element, &element_struct)
  * 
  *             _monoisotopic_mass = element_monoisotopic_mass(element_struct)             # <<<<<<<<<<<<<<
  * 
@@ -3403,7 +3658,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v__monoisotopic_mass = __pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass(__pyx_v_element_struct);
 
-      /* "brainpy\_c\isotopic_distribution.pyx":388
+      /* "brainpy\_c\isotopic_distribution.pyx":419
  *             _monoisotopic_mass = element_monoisotopic_mass(element_struct)
  * 
  *             polynomial_term = ele_sym_poly.v[i]             # <<<<<<<<<<<<<<
@@ -3412,7 +3667,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v_polynomial_term = (__pyx_v_ele_sym_poly->v[__pyx_v_i]);
 
-      /* "brainpy\_c\isotopic_distribution.pyx":389
+      /* "brainpy\_c\isotopic_distribution.pyx":420
  * 
  *             polynomial_term = ele_sym_poly.v[i]
  *             temp = _element_count             # <<<<<<<<<<<<<<
@@ -3421,7 +3676,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v_temp = __pyx_v__element_count;
 
-      /* "brainpy\_c\isotopic_distribution.pyx":390
+      /* "brainpy\_c\isotopic_distribution.pyx":421
  *             polynomial_term = ele_sym_poly.v[i]
  *             temp = _element_count
  *             temp *= sign * polynomial_term             # <<<<<<<<<<<<<<
@@ -3430,7 +3685,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v_temp = (__pyx_v_temp * (__pyx_v_sign * __pyx_v_polynomial_term));
 
-      /* "brainpy\_c\isotopic_distribution.pyx":391
+      /* "brainpy\_c\isotopic_distribution.pyx":422
  *             temp = _element_count
  *             temp *= sign * polynomial_term
  *             temp *= base_intensity * _monoisotopic_mass             # <<<<<<<<<<<<<<
@@ -3439,7 +3694,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v_temp = (__pyx_v_temp * (__pyx_v_base_intensity * __pyx_v__monoisotopic_mass));
 
-      /* "brainpy\_c\isotopic_distribution.pyx":392
+      /* "brainpy\_c\isotopic_distribution.pyx":423
  *             temp *= sign * polynomial_term
  *             temp *= base_intensity * _monoisotopic_mass
  *             center += temp             # <<<<<<<<<<<<<<
@@ -3448,7 +3703,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_v_center = (__pyx_v_center + __pyx_v_temp);
 
-      /* "brainpy\_c\isotopic_distribution.pyx":393
+      /* "brainpy\_c\isotopic_distribution.pyx":424
  *             temp *= base_intensity * _monoisotopic_mass
  *             center += temp
  *             k += 1             # <<<<<<<<<<<<<<
@@ -3458,7 +3713,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
       __pyx_v_k = (__pyx_v_k + 1);
     }
 
-    /* "brainpy\_c\isotopic_distribution.pyx":394
+    /* "brainpy\_c\isotopic_distribution.pyx":425
  *             center += temp
  *             k += 1
  *         if probability_vector.v[i] == 0:             # <<<<<<<<<<<<<<
@@ -3468,7 +3723,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
     __pyx_t_2 = (((__pyx_v_probability_vector->v[__pyx_v_i]) == 0.0) != 0);
     if (__pyx_t_2) {
 
-      /* "brainpy\_c\isotopic_distribution.pyx":395
+      /* "brainpy\_c\isotopic_distribution.pyx":426
  *             k += 1
  *         if probability_vector.v[i] == 0:
  *             double_vector_append(mass_vector, 0)             # <<<<<<<<<<<<<<
@@ -3477,7 +3732,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_mass_vector, 0.0);
 
-      /* "brainpy\_c\isotopic_distribution.pyx":394
+      /* "brainpy\_c\isotopic_distribution.pyx":425
  *             center += temp
  *             k += 1
  *         if probability_vector.v[i] == 0:             # <<<<<<<<<<<<<<
@@ -3487,7 +3742,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
       goto __pyx_L9;
     }
 
-    /* "brainpy\_c\isotopic_distribution.pyx":397
+    /* "brainpy\_c\isotopic_distribution.pyx":428
  *             double_vector_append(mass_vector, 0)
  *         else:
  *             double_vector_append(mass_vector, center / probability_vector.v[i])             # <<<<<<<<<<<<<<
@@ -3503,14 +3758,14 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
         #ifdef WITH_THREAD
         PyGILState_Release(__pyx_gilstate_save);
         #endif
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 397; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 428; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_f_7brainpy_2_c_13double_vector_double_vector_append(__pyx_v_mass_vector, (__pyx_v_center / (__pyx_v_probability_vector->v[__pyx_v_i])));
     }
     __pyx_L9:;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":399
+  /* "brainpy\_c\isotopic_distribution.pyx":430
  *             double_vector_append(mass_vector, center / probability_vector.v[i])
  * 
  *     free_element_polynomial_map(ep_map)             # <<<<<<<<<<<<<<
@@ -3519,7 +3774,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_element_polynomial_map(__pyx_v_ep_map);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":401
+  /* "brainpy\_c\isotopic_distribution.pyx":432
  *     free_element_polynomial_map(ep_map)
  * 
  *     return mass_vector             # <<<<<<<<<<<<<<
@@ -3529,7 +3784,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   __pyx_r = __pyx_v_mass_vector;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":346
+  /* "brainpy\_c\isotopic_distribution.pyx":377
  * 
  * 
  * cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* probability_vector) nogil:             # <<<<<<<<<<<<<<
@@ -3545,7 +3800,7 @@ static __pyx_t_7brainpy_2_c_21isotopic_distribution_dvec *__pyx_f_7brainpy_2_c_2
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":404
+/* "brainpy\_c\isotopic_distribution.pyx":435
  * 
  * 
  * cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distribution, int charge, double charge_carrier) nogil:             # <<<<<<<<<<<<<<
@@ -3575,7 +3830,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":415
+  /* "brainpy\_c\isotopic_distribution.pyx":446
  *         double center_mass_i, intensity_i
  * 
  *     probability_vector = id_probability_vector(distribution)             # <<<<<<<<<<<<<<
@@ -3584,7 +3839,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_probability_vector = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_probability_vector(__pyx_v_distribution);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":416
+  /* "brainpy\_c\isotopic_distribution.pyx":447
  * 
  *     probability_vector = id_probability_vector(distribution)
  *     center_mass_vector = id_center_mass_vector(distribution, probability_vector)             # <<<<<<<<<<<<<<
@@ -3593,7 +3848,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_center_mass_vector = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_center_mass_vector(__pyx_v_distribution, __pyx_v_probability_vector);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":418
+  /* "brainpy\_c\isotopic_distribution.pyx":449
  *     center_mass_vector = id_center_mass_vector(distribution, probability_vector)
  * 
  *     peak_set = make_peak_list()             # <<<<<<<<<<<<<<
@@ -3602,7 +3857,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_peak_set = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_peak_list();
 
-  /* "brainpy\_c\isotopic_distribution.pyx":420
+  /* "brainpy\_c\isotopic_distribution.pyx":451
  *     peak_set = make_peak_list()
  * 
  *     average_mass = 0             # <<<<<<<<<<<<<<
@@ -3611,7 +3866,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_average_mass = 0.0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":421
+  /* "brainpy\_c\isotopic_distribution.pyx":452
  * 
  *     average_mass = 0
  *     total = 0             # <<<<<<<<<<<<<<
@@ -3620,7 +3875,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_total = 0.0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":423
+  /* "brainpy\_c\isotopic_distribution.pyx":454
  *     total = 0
  * 
  *     for i in range(probability_vector.used):             # <<<<<<<<<<<<<<
@@ -3631,7 +3886,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_i = __pyx_t_2;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":424
+    /* "brainpy\_c\isotopic_distribution.pyx":455
  * 
  *     for i in range(probability_vector.used):
  *         total += probability_vector.v[i]             # <<<<<<<<<<<<<<
@@ -3641,7 +3896,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     __pyx_v_total = (__pyx_v_total + (__pyx_v_probability_vector->v[__pyx_v_i]));
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":426
+  /* "brainpy\_c\isotopic_distribution.pyx":457
  *         total += probability_vector.v[i]
  * 
  *     for i in range(distribution.order + 1):             # <<<<<<<<<<<<<<
@@ -3652,7 +3907,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   for (__pyx_t_1 = 0; __pyx_t_1 < __pyx_t_3; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":427
+    /* "brainpy\_c\isotopic_distribution.pyx":458
  * 
  *     for i in range(distribution.order + 1):
  *         center_mass_i = center_mass_vector.v[i]             # <<<<<<<<<<<<<<
@@ -3661,7 +3916,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_v_center_mass_i = (__pyx_v_center_mass_vector->v[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":428
+    /* "brainpy\_c\isotopic_distribution.pyx":459
  *     for i in range(distribution.order + 1):
  *         center_mass_i = center_mass_vector.v[i]
  *         intensity_i = probability_vector.v[i]             # <<<<<<<<<<<<<<
@@ -3670,7 +3925,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_v_intensity_i = (__pyx_v_probability_vector->v[__pyx_v_i]);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":431
+    /* "brainpy\_c\isotopic_distribution.pyx":462
  * 
  * 
  *         if charge != 0:             # <<<<<<<<<<<<<<
@@ -3680,7 +3935,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     __pyx_t_4 = ((__pyx_v_charge != 0) != 0);
     if (__pyx_t_4) {
 
-      /* "brainpy\_c\isotopic_distribution.pyx":432
+      /* "brainpy\_c\isotopic_distribution.pyx":463
  * 
  *         if charge != 0:
  *             adjusted_mz = mass_charge_ratio(center_mass_i, charge, charge_carrier)             # <<<<<<<<<<<<<<
@@ -3692,7 +3947,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
       __pyx_t_5 = __pyx_f_7brainpy_2_c_11composition_mass_charge_ratio(__pyx_v_center_mass_i, __pyx_v_charge, &__pyx_t_6); 
       __pyx_v_adjusted_mz = __pyx_t_5;
 
-      /* "brainpy\_c\isotopic_distribution.pyx":431
+      /* "brainpy\_c\isotopic_distribution.pyx":462
  * 
  * 
  *         if charge != 0:             # <<<<<<<<<<<<<<
@@ -3702,7 +3957,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
       goto __pyx_L7;
     }
 
-    /* "brainpy\_c\isotopic_distribution.pyx":434
+    /* "brainpy\_c\isotopic_distribution.pyx":465
  *             adjusted_mz = mass_charge_ratio(center_mass_i, charge, charge_carrier)
  *         else:
  *             adjusted_mz = center_mass_i             # <<<<<<<<<<<<<<
@@ -3714,7 +3969,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     }
     __pyx_L7:;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":437
+    /* "brainpy\_c\isotopic_distribution.pyx":468
  * 
  * 
  *         peak.mz = adjusted_mz             # <<<<<<<<<<<<<<
@@ -3723,7 +3978,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_v_peak.mz = __pyx_v_adjusted_mz;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":438
+    /* "brainpy\_c\isotopic_distribution.pyx":469
  * 
  *         peak.mz = adjusted_mz
  *         peak.intensity = intensity_i / total             # <<<<<<<<<<<<<<
@@ -3738,11 +3993,11 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
       #ifdef WITH_THREAD
       PyGILState_Release(__pyx_gilstate_save);
       #endif
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 438; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 469; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_peak.intensity = (__pyx_v_intensity_i / __pyx_v_total);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":439
+    /* "brainpy\_c\isotopic_distribution.pyx":470
  *         peak.mz = adjusted_mz
  *         peak.intensity = intensity_i / total
  *         peak.charge = charge             # <<<<<<<<<<<<<<
@@ -3751,7 +4006,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_v_peak.charge = __pyx_v_charge;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":441
+    /* "brainpy\_c\isotopic_distribution.pyx":472
  *         peak.charge = charge
  * 
  *         if peak.intensity < 1e-10:             # <<<<<<<<<<<<<<
@@ -3761,7 +4016,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     __pyx_t_4 = ((__pyx_v_peak.intensity < 1e-10) != 0);
     if (__pyx_t_4) {
 
-      /* "brainpy\_c\isotopic_distribution.pyx":442
+      /* "brainpy\_c\isotopic_distribution.pyx":473
  * 
  *         if peak.intensity < 1e-10:
  *             continue             # <<<<<<<<<<<<<<
@@ -3770,7 +4025,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
       goto __pyx_L5_continue;
 
-      /* "brainpy\_c\isotopic_distribution.pyx":441
+      /* "brainpy\_c\isotopic_distribution.pyx":472
  *         peak.charge = charge
  * 
  *         if peak.intensity < 1e-10:             # <<<<<<<<<<<<<<
@@ -3779,7 +4034,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     }
 
-    /* "brainpy\_c\isotopic_distribution.pyx":444
+    /* "brainpy\_c\isotopic_distribution.pyx":475
  *             continue
  * 
  *         peak_list_append(peak_set, &peak)             # <<<<<<<<<<<<<<
@@ -3788,7 +4043,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_f_7brainpy_2_c_21isotopic_distribution_peak_list_append(__pyx_v_peak_set, (&__pyx_v_peak));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":446
+    /* "brainpy\_c\isotopic_distribution.pyx":477
  *         peak_list_append(peak_set, &peak)
  * 
  *         average_mass += adjusted_mz * intensity_i             # <<<<<<<<<<<<<<
@@ -3799,7 +4054,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     __pyx_L5_continue:;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":448
+  /* "brainpy\_c\isotopic_distribution.pyx":479
  *         average_mass += adjusted_mz * intensity_i
  * 
  *     average_mass /= total             # <<<<<<<<<<<<<<
@@ -3814,11 +4069,11 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     #ifdef WITH_THREAD
     PyGILState_Release(__pyx_gilstate_save);
     #endif
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 448; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v_average_mass = (__pyx_v_average_mass / __pyx_v_total);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":450
+  /* "brainpy\_c\isotopic_distribution.pyx":481
  *     average_mass /= total
  * 
  *     free_double_vector(probability_vector)             # <<<<<<<<<<<<<<
@@ -3827,7 +4082,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_probability_vector);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":451
+  /* "brainpy\_c\isotopic_distribution.pyx":482
  * 
  *     free_double_vector(probability_vector)
  *     free_double_vector(center_mass_vector)             # <<<<<<<<<<<<<<
@@ -3836,7 +4091,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_f_7brainpy_2_c_13double_vector_free_double_vector(__pyx_v_center_mass_vector);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":453
+  /* "brainpy\_c\isotopic_distribution.pyx":484
  *     free_double_vector(center_mass_vector)
  * 
  *     distribution.average_mass = average_mass             # <<<<<<<<<<<<<<
@@ -3845,7 +4100,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_distribution->average_mass = __pyx_v_average_mass;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":455
+  /* "brainpy\_c\isotopic_distribution.pyx":486
  *     distribution.average_mass = average_mass
  * 
  *     sort_by_mz(peak_set)             # <<<<<<<<<<<<<<
@@ -3854,7 +4109,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_sort_by_mz(__pyx_v_peak_set);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":456
+  /* "brainpy\_c\isotopic_distribution.pyx":487
  * 
  *     sort_by_mz(peak_set)
  *     return peak_set             # <<<<<<<<<<<<<<
@@ -3864,7 +4119,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   __pyx_r = __pyx_v_peak_set;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":404
+  /* "brainpy\_c\isotopic_distribution.pyx":435
  * 
  * 
  * cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distribution, int charge, double charge_carrier) nogil:             # <<<<<<<<<<<<<<
@@ -3880,7 +4135,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":458
+/* "brainpy\_c\isotopic_distribution.pyx":489
  *     return peak_set
  * 
  * cdef void sort_by_mz(PeakList* peaklist) nogil:             # <<<<<<<<<<<<<<
@@ -3890,7 +4145,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
 
 static void __pyx_f_7brainpy_2_c_21isotopic_distribution_sort_by_mz(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_v_peaklist) {
 
-  /* "brainpy\_c\isotopic_distribution.pyx":459
+  /* "brainpy\_c\isotopic_distribution.pyx":490
  * 
  * cdef void sort_by_mz(PeakList* peaklist) nogil:
  *     qsort(peaklist.peaks, peaklist.used, sizeof(Peak), compare_by_mz)             # <<<<<<<<<<<<<<
@@ -3899,7 +4154,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_sort_by_mz(struct __pyx
  */
   qsort(__pyx_v_peaklist->peaks, __pyx_v_peaklist->used, (sizeof(struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak)), __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":458
+  /* "brainpy\_c\isotopic_distribution.pyx":489
  *     return peak_set
  * 
  * cdef void sort_by_mz(PeakList* peaklist) nogil:             # <<<<<<<<<<<<<<
@@ -3910,7 +4165,7 @@ static void __pyx_f_7brainpy_2_c_21isotopic_distribution_sort_by_mz(struct __pyx
   /* function exit code */
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":461
+/* "brainpy\_c\isotopic_distribution.pyx":492
  *     qsort(peaklist.peaks, peaklist.used, sizeof(Peak), compare_by_mz)
  * 
  * cdef int compare_by_mz(const void * a, const void * b) nogil:             # <<<<<<<<<<<<<<
@@ -3922,7 +4177,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
   int __pyx_r;
   int __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":462
+  /* "brainpy\_c\isotopic_distribution.pyx":493
  * 
  * cdef int compare_by_mz(const void * a, const void * b) nogil:
  *     if (<Peak*>a).mz < (<Peak*>b).mz:             # <<<<<<<<<<<<<<
@@ -3932,7 +4187,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
   __pyx_t_1 = ((((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)__pyx_v_a)->mz < ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)__pyx_v_b)->mz) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":463
+    /* "brainpy\_c\isotopic_distribution.pyx":494
  * cdef int compare_by_mz(const void * a, const void * b) nogil:
  *     if (<Peak*>a).mz < (<Peak*>b).mz:
  *         return -1             # <<<<<<<<<<<<<<
@@ -3942,7 +4197,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
     __pyx_r = -1;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":462
+    /* "brainpy\_c\isotopic_distribution.pyx":493
  * 
  * cdef int compare_by_mz(const void * a, const void * b) nogil:
  *     if (<Peak*>a).mz < (<Peak*>b).mz:             # <<<<<<<<<<<<<<
@@ -3951,7 +4206,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
  */
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":464
+  /* "brainpy\_c\isotopic_distribution.pyx":495
  *     if (<Peak*>a).mz < (<Peak*>b).mz:
  *         return -1
  *     elif (<Peak*>a).mz == (<Peak*>b).mz:             # <<<<<<<<<<<<<<
@@ -3961,7 +4216,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
   __pyx_t_1 = ((((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)__pyx_v_a)->mz == ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)__pyx_v_b)->mz) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":465
+    /* "brainpy\_c\isotopic_distribution.pyx":496
  *         return -1
  *     elif (<Peak*>a).mz == (<Peak*>b).mz:
  *         return 0             # <<<<<<<<<<<<<<
@@ -3971,7 +4226,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":464
+    /* "brainpy\_c\isotopic_distribution.pyx":495
  *     if (<Peak*>a).mz < (<Peak*>b).mz:
  *         return -1
  *     elif (<Peak*>a).mz == (<Peak*>b).mz:             # <<<<<<<<<<<<<<
@@ -3980,7 +4235,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
  */
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":466
+  /* "brainpy\_c\isotopic_distribution.pyx":497
  *     elif (<Peak*>a).mz == (<Peak*>b).mz:
  *         return 0
  *     elif (<Peak*>a).mz > (<Peak*>b).mz:             # <<<<<<<<<<<<<<
@@ -3990,7 +4245,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
   __pyx_t_1 = ((((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)__pyx_v_a)->mz > ((struct __pyx_t_7brainpy_2_c_21isotopic_distribution_Peak *)__pyx_v_b)->mz) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":467
+    /* "brainpy\_c\isotopic_distribution.pyx":498
  *         return 0
  *     elif (<Peak*>a).mz > (<Peak*>b).mz:
  *         return 1             # <<<<<<<<<<<<<<
@@ -4000,7 +4255,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
     __pyx_r = 1;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":466
+    /* "brainpy\_c\isotopic_distribution.pyx":497
  *     elif (<Peak*>a).mz == (<Peak*>b).mz:
  *         return 0
  *     elif (<Peak*>a).mz > (<Peak*>b).mz:             # <<<<<<<<<<<<<<
@@ -4009,7 +4264,7 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
  */
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":461
+  /* "brainpy\_c\isotopic_distribution.pyx":492
  *     qsort(peaklist.peaks, peaklist.used, sizeof(Peak), compare_by_mz)
  * 
  * cdef int compare_by_mz(const void * a, const void * b) nogil:             # <<<<<<<<<<<<<<
@@ -4023,7 +4278,286 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":470
+/* "brainpy\_c\isotopic_distribution.pyx":501
+ * 
+ * 
+ * cpdef bint check_composition_non_negative(dict composition):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         bint negative_element
+ */
+
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1check_composition_non_negative(PyObject *__pyx_self, PyObject *__pyx_v_composition); /*proto*/
+static int __pyx_f_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(PyObject *__pyx_v_composition, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  int __pyx_v_negative_element;
+  CYTHON_UNUSED PyObject *__pyx_v_k = 0;
+  PyObject *__pyx_v_v = 0;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  Py_ssize_t __pyx_t_3;
+  PyObject *(*__pyx_t_4)(PyObject *);
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *(*__pyx_t_8)(PyObject *);
+  int __pyx_t_9;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("check_composition_non_negative", 0);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":507
+ *         object v
+ * 
+ *     negative_element = False             # <<<<<<<<<<<<<<
+ *     for k, v in composition.items():
+ *         if v < 0:
+ */
+  __pyx_v_negative_element = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":508
+ * 
+ *     negative_element = False
+ *     for k, v in composition.items():             # <<<<<<<<<<<<<<
+ *         if v < 0:
+ *             negative_element = True
+ */
+  if (unlikely(__pyx_v_composition == Py_None)) {
+    PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "items");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_1 = __Pyx_PyDict_Items(__pyx_v_composition); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
+    __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_3 = 0;
+    __pyx_t_4 = NULL;
+  } else {
+    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  for (;;) {
+    if (likely(!__pyx_t_4)) {
+      if (likely(PyList_CheckExact(__pyx_t_2))) {
+        if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_2)) break;
+        #if CYTHON_COMPILING_IN_CPYTHON
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        #else
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_1);
+        #endif
+      } else {
+        if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
+        #if CYTHON_COMPILING_IN_CPYTHON
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        #else
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_1);
+        #endif
+      }
+    } else {
+      __pyx_t_1 = __pyx_t_4(__pyx_t_2);
+      if (unlikely(!__pyx_t_1)) {
+        PyObject* exc_type = PyErr_Occurred();
+        if (exc_type) {
+          if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        }
+        break;
+      }
+      __Pyx_GOTREF(__pyx_t_1);
+    }
+    if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
+      PyObject* sequence = __pyx_t_1;
+      #if CYTHON_COMPILING_IN_CPYTHON
+      Py_ssize_t size = Py_SIZE(sequence);
+      #else
+      Py_ssize_t size = PySequence_Size(sequence);
+      #endif
+      if (unlikely(size != 2)) {
+        if (size > 2) __Pyx_RaiseTooManyValuesError(2);
+        else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      #if CYTHON_COMPILING_IN_CPYTHON
+      if (likely(PyTuple_CheckExact(sequence))) {
+        __pyx_t_5 = PyTuple_GET_ITEM(sequence, 0); 
+        __pyx_t_6 = PyTuple_GET_ITEM(sequence, 1); 
+      } else {
+        __pyx_t_5 = PyList_GET_ITEM(sequence, 0); 
+        __pyx_t_6 = PyList_GET_ITEM(sequence, 1); 
+      }
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_6);
+      #else
+      __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_6);
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else {
+      Py_ssize_t index = -1;
+      __pyx_t_7 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_8 = Py_TYPE(__pyx_t_7)->tp_iternext;
+      index = 0; __pyx_t_5 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_5)) goto __pyx_L5_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_5);
+      index = 1; __pyx_t_6 = __pyx_t_8(__pyx_t_7); if (unlikely(!__pyx_t_6)) goto __pyx_L5_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_6);
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_8 = NULL;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      goto __pyx_L6_unpacking_done;
+      __pyx_L5_unpacking_failed:;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __pyx_t_8 = NULL;
+      if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_L6_unpacking_done:;
+    }
+    if (!(likely(PyString_CheckExact(__pyx_t_5))||((__pyx_t_5) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_5)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_XDECREF_SET(__pyx_v_k, ((PyObject*)__pyx_t_5));
+    __pyx_t_5 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_v, __pyx_t_6);
+    __pyx_t_6 = 0;
+
+    /* "brainpy\_c\isotopic_distribution.pyx":509
+ *     negative_element = False
+ *     for k, v in composition.items():
+ *         if v < 0:             # <<<<<<<<<<<<<<
+ *             negative_element = True
+ *             break
+ */
+    __pyx_t_1 = PyObject_RichCompare(__pyx_v_v, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 509; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_9 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 509; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    if (__pyx_t_9) {
+
+      /* "brainpy\_c\isotopic_distribution.pyx":510
+ *     for k, v in composition.items():
+ *         if v < 0:
+ *             negative_element = True             # <<<<<<<<<<<<<<
+ *             break
+ *     return negative_element
+ */
+      __pyx_v_negative_element = 1;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":511
+ *         if v < 0:
+ *             negative_element = True
+ *             break             # <<<<<<<<<<<<<<
+ *     return negative_element
+ * 
+ */
+      goto __pyx_L4_break;
+
+      /* "brainpy\_c\isotopic_distribution.pyx":509
+ *     negative_element = False
+ *     for k, v in composition.items():
+ *         if v < 0:             # <<<<<<<<<<<<<<
+ *             negative_element = True
+ *             break
+ */
+    }
+
+    /* "brainpy\_c\isotopic_distribution.pyx":508
+ * 
+ *     negative_element = False
+ *     for k, v in composition.items():             # <<<<<<<<<<<<<<
+ *         if v < 0:
+ *             negative_element = True
+ */
+  }
+  __pyx_L4_break:;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":512
+ *             negative_element = True
+ *             break
+ *     return negative_element             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_negative_element;
+  goto __pyx_L0;
+
+  /* "brainpy\_c\isotopic_distribution.pyx":501
+ * 
+ * 
+ * cpdef bint check_composition_non_negative(dict composition):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         bint negative_element
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_WriteUnraisable("brainpy._c.isotopic_distribution.check_composition_non_negative", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_k);
+  __Pyx_XDECREF(__pyx_v_v);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1check_composition_non_negative(PyObject *__pyx_self, PyObject *__pyx_v_composition); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative[] = "check_composition_non_negative(dict composition) -> bool";
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1check_composition_non_negative(PyObject *__pyx_self, PyObject *__pyx_v_composition) {
+  CYTHON_UNUSED int __pyx_lineno = 0;
+  CYTHON_UNUSED const char *__pyx_filename = NULL;
+  CYTHON_UNUSED int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("check_composition_non_negative (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_composition), (&PyDict_Type), 1, "composition", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 501; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(__pyx_self, ((PyObject*)__pyx_v_composition));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("check_composition_non_negative", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(__pyx_v_composition, 0)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 501; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("brainpy._c.isotopic_distribution.check_composition_non_negative", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "brainpy\_c\isotopic_distribution.pyx":515
  * 
  * 
  * def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
@@ -4032,9 +4566,10 @@ static int __pyx_f_7brainpy_2_c_21isotopic_distribution_compare_by_mz(void const
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_7brainpy_2_c_21isotopic_distribution_1pyisotopic_variants = {"pyisotopic_variants", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_variants, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3pyisotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_2pyisotopic_variants[] = "pyisotopic_variants(composition, npeaks=None, int charge=0, charge_carrier=PROTON)";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_21isotopic_distribution_3pyisotopic_variants = {"pyisotopic_variants", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_3pyisotopic_variants, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7brainpy_2_c_21isotopic_distribution_2pyisotopic_variants};
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3pyisotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_composition = 0;
   PyObject *__pyx_v_npeaks = 0;
   int __pyx_v_charge;
@@ -4083,7 +4618,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_varia
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "pyisotopic_variants") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "pyisotopic_variants") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -4098,7 +4633,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_varia
     __pyx_v_composition = values[0];
     __pyx_v_npeaks = values[1];
     if (values[2]) {
-      __pyx_v_charge = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_charge == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      __pyx_v_charge = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_charge == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
     } else {
       __pyx_v_charge = ((int)0);
     }
@@ -4106,16 +4641,16 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_varia
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("pyisotopic_variants", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("pyisotopic_variants", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("brainpy._c.isotopic_distribution.pyisotopic_variants", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(((PyObject *)__pyx_v_composition) == Py_None)) {
-    PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "composition"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "composition"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_variants(__pyx_self, __pyx_v_composition, __pyx_v_npeaks, __pyx_v_charge, __pyx_v_charge_carrier);
+  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_2pyisotopic_variants(__pyx_self, __pyx_v_composition, __pyx_v_npeaks, __pyx_v_charge, __pyx_v_charge_carrier);
 
   /* function exit code */
   goto __pyx_L0;
@@ -4126,8 +4661,9 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_1pyisotopic_varia
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier) {
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_2pyisotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier) {
   struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition_struct;
+  PyObject *__pyx_v_composition_dict = 0;
   PyObject *__pyx_v_peaklist = 0;
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_v_peak_set;
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *__pyx_v_dist;
@@ -4155,26 +4691,84 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pyisotopic_variants", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":478
+  /* "brainpy\_c\isotopic_distribution.pyx":524
  *         int _npeaks, max_n_varaints
  * 
- *     composition_struct = dict_to_composition(dict(composition))             # <<<<<<<<<<<<<<
- * 
- *     if npeaks is None:
+ *     composition_dict = dict(composition)             # <<<<<<<<<<<<<<
+ *     if check_composition_non_negative(composition_dict):
+ *         raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 524; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_composition);
   __Pyx_GIVEREF(__pyx_v_composition);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_composition);
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 524; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_composition_struct = __pyx_f_7brainpy_2_c_11composition_dict_to_composition(((PyObject*)__pyx_t_2));
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_composition_dict = ((PyObject*)__pyx_t_2);
+  __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":480
- *     composition_struct = dict_to_composition(dict(composition))
+  /* "brainpy\_c\isotopic_distribution.pyx":525
+ * 
+ *     composition_dict = dict(composition)
+ *     if check_composition_non_negative(composition_dict):             # <<<<<<<<<<<<<<
+ *         raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
+ *     composition_struct = dict_to_composition(composition_dict)
+ */
+  __pyx_t_3 = (__pyx_f_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative(__pyx_v_composition_dict, 0) != 0);
+  if (__pyx_t_3) {
+
+    /* "brainpy\_c\isotopic_distribution.pyx":526
+ *     composition_dict = dict(composition)
+ *     if check_composition_non_negative(composition_dict):
+ *         raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)             # <<<<<<<<<<<<<<
+ *     composition_struct = dict_to_composition(composition_dict)
+ *     validate_composition(composition_struct)
+ */
+    __pyx_t_2 = __Pyx_PyString_Format(__pyx_kp_s_A_composition_cannot_have_negati, __pyx_v_composition_dict); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 526; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 526; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 526; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 526; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+    /* "brainpy\_c\isotopic_distribution.pyx":525
+ * 
+ *     composition_dict = dict(composition)
+ *     if check_composition_non_negative(composition_dict):             # <<<<<<<<<<<<<<
+ *         raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
+ *     composition_struct = dict_to_composition(composition_dict)
+ */
+  }
+
+  /* "brainpy\_c\isotopic_distribution.pyx":527
+ *     if check_composition_non_negative(composition_dict):
+ *         raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
+ *     composition_struct = dict_to_composition(composition_dict)             # <<<<<<<<<<<<<<
+ *     validate_composition(composition_struct)
+ * 
+ */
+  __pyx_v_composition_struct = __pyx_f_7brainpy_2_c_11composition_dict_to_composition(__pyx_v_composition_dict);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":528
+ *         raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
+ *     composition_struct = dict_to_composition(composition_dict)
+ *     validate_composition(composition_struct)             # <<<<<<<<<<<<<<
+ * 
+ *     if npeaks is None:
+ */
+  __pyx_f_7brainpy_2_c_21isotopic_distribution_validate_composition(__pyx_v_composition_struct);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":530
+ *     validate_composition(composition_struct)
  * 
  *     if npeaks is None:             # <<<<<<<<<<<<<<
  *         max_n_variants = max_variants(composition_struct)
@@ -4184,32 +4778,32 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
   __pyx_t_4 = (__pyx_t_3 != 0);
   if (__pyx_t_4) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":481
+    /* "brainpy\_c\isotopic_distribution.pyx":531
  * 
  *     if npeaks is None:
  *         max_n_variants = max_variants(composition_struct)             # <<<<<<<<<<<<<<
  *         _npeaks = <int>sqrt(max_n_variants - 2)
  *         _npeaks = min(max(_npeaks, 3), 100)
  */
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_composition_struct)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 481; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_composition_struct)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 531; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_v_max_n_variants = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":482
+    /* "brainpy\_c\isotopic_distribution.pyx":532
  *     if npeaks is None:
  *         max_n_variants = max_variants(composition_struct)
  *         _npeaks = <int>sqrt(max_n_variants - 2)             # <<<<<<<<<<<<<<
  *         _npeaks = min(max(_npeaks, 3), 100)
  *     else:
  */
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_max_n_variants, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 482; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_max_n_variants, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 532; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 482; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 532; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v__npeaks = ((int)sqrt(__pyx_t_5));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":483
+    /* "brainpy\_c\isotopic_distribution.pyx":533
  *         max_n_variants = max_variants(composition_struct)
  *         _npeaks = <int>sqrt(max_n_variants - 2)
  *         _npeaks = min(max(_npeaks, 3), 100)             # <<<<<<<<<<<<<<
@@ -4232,17 +4826,17 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
     }
     __pyx_v__npeaks = __pyx_t_9;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":480
- *     composition_struct = dict_to_composition(dict(composition))
+    /* "brainpy\_c\isotopic_distribution.pyx":530
+ *     validate_composition(composition_struct)
  * 
  *     if npeaks is None:             # <<<<<<<<<<<<<<
  *         max_n_variants = max_variants(composition_struct)
  *         _npeaks = <int>sqrt(max_n_variants - 2)
  */
-    goto __pyx_L3;
+    goto __pyx_L4;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":485
+  /* "brainpy\_c\isotopic_distribution.pyx":535
  *         _npeaks = min(max(_npeaks, 3), 100)
  *     else:
  *         _npeaks = npeaks - 1             # <<<<<<<<<<<<<<
@@ -4250,15 +4844,15 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
  *     dist = make_isotopic_distribution(composition_struct, _npeaks)
  */
   /*else*/ {
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_npeaks, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 485; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_npeaks, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 535; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 485; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 535; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v__npeaks = __pyx_t_8;
   }
-  __pyx_L3:;
+  __pyx_L4:;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":487
+  /* "brainpy\_c\isotopic_distribution.pyx":537
  *         _npeaks = npeaks - 1
  * 
  *     dist = make_isotopic_distribution(composition_struct, _npeaks)             # <<<<<<<<<<<<<<
@@ -4267,29 +4861,29 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
  */
   __pyx_v_dist = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_isotopic_distribution(__pyx_v_composition_struct, __pyx_v__npeaks);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":488
+  /* "brainpy\_c\isotopic_distribution.pyx":538
  * 
  *     dist = make_isotopic_distribution(composition_struct, _npeaks)
  *     peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)             # <<<<<<<<<<<<<<
  * 
  *     peaklist = []
  */
-  __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_v_charge_carrier); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 488; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_v_charge_carrier); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 538; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_peak_set = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_aggregated_isotopic_variants(__pyx_v_dist, __pyx_v_charge, __pyx_t_5);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":490
+  /* "brainpy\_c\isotopic_distribution.pyx":540
  *     peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
  * 
  *     peaklist = []             # <<<<<<<<<<<<<<
  *     for i in range(peak_set.used):
  *         peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 490; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 540; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_peaklist = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":491
+  /* "brainpy\_c\isotopic_distribution.pyx":541
  * 
  *     peaklist = []
  *     for i in range(peak_set.used):             # <<<<<<<<<<<<<<
@@ -4300,20 +4894,20 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":492
+    /* "brainpy\_c\isotopic_distribution.pyx":542
  *     peaklist = []
  *     for i in range(peak_set.used):
  *         peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))             # <<<<<<<<<<<<<<
  * 
  *     free_peak_list(peak_set)
  */
-    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_12 = __Pyx_PyInt_From_int((__pyx_v_peak_set->peaks[__pyx_v_i]).charge); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyInt_From_int((__pyx_v_peak_set->peaks[__pyx_v_i]).charge); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_13);
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_2);
@@ -4324,14 +4918,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
     __pyx_t_2 = 0;
     __pyx_t_1 = 0;
     __pyx_t_12 = 0;
-    __pyx_t_12 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak), __pyx_t_13, NULL); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak), __pyx_t_13, NULL); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_12);
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_peaklist, __pyx_t_12); if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 492; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_peaklist, __pyx_t_12); if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":494
+  /* "brainpy\_c\isotopic_distribution.pyx":544
  *         peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
  * 
  *     free_peak_list(peak_set)             # <<<<<<<<<<<<<<
@@ -4340,7 +4934,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(__pyx_v_peak_set);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":495
+  /* "brainpy\_c\isotopic_distribution.pyx":545
  * 
  *     free_peak_list(peak_set)
  *     free_isotopic_distribution(dist)             # <<<<<<<<<<<<<<
@@ -4349,7 +4943,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribution(__pyx_v_dist);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":496
+  /* "brainpy\_c\isotopic_distribution.pyx":546
  *     free_peak_list(peak_set)
  *     free_isotopic_distribution(dist)
  *     free_composition(composition_struct)             # <<<<<<<<<<<<<<
@@ -4358,7 +4952,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
  */
   __pyx_f_7brainpy_2_c_11composition_free_composition(__pyx_v_composition_struct);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":497
+  /* "brainpy\_c\isotopic_distribution.pyx":547
  *     free_isotopic_distribution(dist)
  *     free_composition(composition_struct)
  *     return peaklist             # <<<<<<<<<<<<<<
@@ -4370,7 +4964,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
   __pyx_r = __pyx_v_peaklist;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":470
+  /* "brainpy\_c\isotopic_distribution.pyx":515
  * 
  * 
  * def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
@@ -4387,6 +4981,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
   __Pyx_AddTraceback("brainpy._c.isotopic_distribution.pyisotopic_variants", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_composition_dict);
   __Pyx_XDECREF(__pyx_v_peaklist);
   __Pyx_XDECREF(__pyx_v_max_n_variants);
   __Pyx_XGIVEREF(__pyx_r);
@@ -4394,7 +4989,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":500
+/* "brainpy\_c\isotopic_distribution.pyx":550
  * 
  * 
  * cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
@@ -4402,7 +4997,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_pyisotopic_varian
  *         Composition* composition_struct
  */
 
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_5_isotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants(PyObject *__pyx_v_composition, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_2_c_21isotopic_distribution__isotopic_variants *__pyx_optional_args) {
   PyObject *__pyx_v_npeaks = ((PyObject *)Py_None);
   int __pyx_v_charge = ((int)0);
@@ -4446,26 +5041,35 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
     }
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":508
+  /* "brainpy\_c\isotopic_distribution.pyx":558
  *         int _npeaks, max_n_varaints
  * 
  *     composition_struct = dict_to_composition(dict(composition))             # <<<<<<<<<<<<<<
+ *     validate_composition(composition_struct)
  * 
- *     if npeaks is None:
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 558; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_composition);
   __Pyx_GIVEREF(__pyx_v_composition);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_composition);
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 508; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyDict_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 558; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_composition_struct = __pyx_f_7brainpy_2_c_11composition_dict_to_composition(((PyObject*)__pyx_t_2));
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":510
+  /* "brainpy\_c\isotopic_distribution.pyx":559
+ * 
  *     composition_struct = dict_to_composition(dict(composition))
+ *     validate_composition(composition_struct)             # <<<<<<<<<<<<<<
+ * 
+ *     if npeaks is None:
+ */
+  __pyx_f_7brainpy_2_c_21isotopic_distribution_validate_composition(__pyx_v_composition_struct);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":561
+ *     validate_composition(composition_struct)
  * 
  *     if npeaks is None:             # <<<<<<<<<<<<<<
  *         max_n_variants = max_variants(composition_struct)
@@ -4475,32 +5079,32 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
   __pyx_t_4 = (__pyx_t_3 != 0);
   if (__pyx_t_4) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":511
+    /* "brainpy\_c\isotopic_distribution.pyx":562
  * 
  *     if npeaks is None:
  *         max_n_variants = max_variants(composition_struct)             # <<<<<<<<<<<<<<
  *         _npeaks = <int>sqrt(max_n_variants - 2)
  *         _npeaks = min(max(_npeaks, 3), 100)
  */
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_composition_struct)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 511; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_composition_struct)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 562; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_v_max_n_variants = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":512
+    /* "brainpy\_c\isotopic_distribution.pyx":563
  *     if npeaks is None:
  *         max_n_variants = max_variants(composition_struct)
  *         _npeaks = <int>sqrt(max_n_variants - 2)             # <<<<<<<<<<<<<<
  *         _npeaks = min(max(_npeaks, 3), 100)
  *     else:
  */
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_max_n_variants, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_max_n_variants, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 563; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 512; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 563; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v__npeaks = ((int)sqrt(__pyx_t_5));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":513
+    /* "brainpy\_c\isotopic_distribution.pyx":564
  *         max_n_variants = max_variants(composition_struct)
  *         _npeaks = <int>sqrt(max_n_variants - 2)
  *         _npeaks = min(max(_npeaks, 3), 100)             # <<<<<<<<<<<<<<
@@ -4523,8 +5127,8 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
     }
     __pyx_v__npeaks = __pyx_t_9;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":510
- *     composition_struct = dict_to_composition(dict(composition))
+    /* "brainpy\_c\isotopic_distribution.pyx":561
+ *     validate_composition(composition_struct)
  * 
  *     if npeaks is None:             # <<<<<<<<<<<<<<
  *         max_n_variants = max_variants(composition_struct)
@@ -4533,7 +5137,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":515
+  /* "brainpy\_c\isotopic_distribution.pyx":566
  *         _npeaks = min(max(_npeaks, 3), 100)
  *     else:
  *         _npeaks = npeaks - 1             # <<<<<<<<<<<<<<
@@ -4541,15 +5145,15 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
  *     dist = make_isotopic_distribution(composition_struct, _npeaks)
  */
   /*else*/ {
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_npeaks, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_npeaks, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 566; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 566; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v__npeaks = __pyx_t_8;
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":517
+  /* "brainpy\_c\isotopic_distribution.pyx":568
  *         _npeaks = npeaks - 1
  * 
  *     dist = make_isotopic_distribution(composition_struct, _npeaks)             # <<<<<<<<<<<<<<
@@ -4558,29 +5162,29 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
  */
   __pyx_v_dist = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_isotopic_distribution(__pyx_v_composition_struct, __pyx_v__npeaks);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":518
+  /* "brainpy\_c\isotopic_distribution.pyx":569
  * 
  *     dist = make_isotopic_distribution(composition_struct, _npeaks)
  *     peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)             # <<<<<<<<<<<<<<
  * 
  *     peaklist = []
  */
-  __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_v_charge_carrier); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 518; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_v_charge_carrier); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_peak_set = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_aggregated_isotopic_variants(__pyx_v_dist, __pyx_v_charge, __pyx_t_5);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":520
+  /* "brainpy\_c\isotopic_distribution.pyx":571
  *     peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
  * 
  *     peaklist = []             # <<<<<<<<<<<<<<
  *     for i in range(peak_set.used):
  *         peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 520; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_peaklist = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":521
+  /* "brainpy\_c\isotopic_distribution.pyx":572
  * 
  *     peaklist = []
  *     for i in range(peak_set.used):             # <<<<<<<<<<<<<<
@@ -4591,20 +5195,20 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":522
+    /* "brainpy\_c\isotopic_distribution.pyx":573
  *     peaklist = []
  *     for i in range(peak_set.used):
  *         peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))             # <<<<<<<<<<<<<<
  * 
  *     free_peak_list(peak_set)
  */
-    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_peak_set->peaks[__pyx_v_i]).intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_12 = __Pyx_PyInt_From_int((__pyx_v_peak_set->peaks[__pyx_v_i]).charge); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyInt_From_int((__pyx_v_peak_set->peaks[__pyx_v_i]).charge); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_13);
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_2);
@@ -4615,14 +5219,14 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
     __pyx_t_2 = 0;
     __pyx_t_1 = 0;
     __pyx_t_12 = 0;
-    __pyx_t_12 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak), __pyx_t_13, NULL); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak), __pyx_t_13, NULL); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_12);
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_peaklist, __pyx_t_12); if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 522; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_14 = __Pyx_PyList_Append(__pyx_v_peaklist, __pyx_t_12); if (unlikely(__pyx_t_14 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":524
+  /* "brainpy\_c\isotopic_distribution.pyx":575
  *         peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
  * 
  *     free_peak_list(peak_set)             # <<<<<<<<<<<<<<
@@ -4631,7 +5235,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_peak_list(__pyx_v_peak_set);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":525
+  /* "brainpy\_c\isotopic_distribution.pyx":576
  * 
  *     free_peak_list(peak_set)
  *     free_isotopic_distribution(dist)             # <<<<<<<<<<<<<<
@@ -4640,7 +5244,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribution(__pyx_v_dist);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":526
+  /* "brainpy\_c\isotopic_distribution.pyx":577
  *     free_peak_list(peak_set)
  *     free_isotopic_distribution(dist)
  *     free_composition(composition_struct)             # <<<<<<<<<<<<<<
@@ -4649,7 +5253,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
  */
   __pyx_f_7brainpy_2_c_11composition_free_composition(__pyx_v_composition_struct);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":527
+  /* "brainpy\_c\isotopic_distribution.pyx":578
  *     free_isotopic_distribution(dist)
  *     free_composition(composition_struct)
  *     return peaklist             # <<<<<<<<<<<<<<
@@ -4661,7 +5265,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
   __pyx_r = __pyx_v_peaklist;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":500
+  /* "brainpy\_c\isotopic_distribution.pyx":550
  * 
  * 
  * cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
@@ -4686,8 +5290,9 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_5_isotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_4_isotopic_variants[] = "_isotopic_variants(composition, npeaks=None, int charge=0, charge_carrier=PROTON) -> list";
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_5_isotopic_variants(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_composition = 0;
   PyObject *__pyx_v_npeaks = 0;
   int __pyx_v_charge;
@@ -4736,7 +5341,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_varian
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_isotopic_variants") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_isotopic_variants") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -4751,7 +5356,7 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_varian
     __pyx_v_composition = values[0];
     __pyx_v_npeaks = values[1];
     if (values[2]) {
-      __pyx_v_charge = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_charge == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      __pyx_v_charge = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_charge == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
     } else {
       __pyx_v_charge = ((int)0);
     }
@@ -4759,20 +5364,20 @@ static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_varian
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_isotopic_variants", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("_isotopic_variants", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("brainpy._c.isotopic_distribution._isotopic_variants", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_2_isotopic_variants(__pyx_self, __pyx_v_composition, __pyx_v_npeaks, __pyx_v_charge, __pyx_v_charge_carrier);
+  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_4_isotopic_variants(__pyx_self, __pyx_v_composition, __pyx_v_npeaks, __pyx_v_charge, __pyx_v_charge_carrier);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_2_isotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier) {
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4_isotopic_variants(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_composition, PyObject *__pyx_v_npeaks, int __pyx_v_charge, PyObject *__pyx_v_charge_carrier) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4786,7 +5391,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_2_isotopic_varian
   __pyx_t_2.npeaks = __pyx_v_npeaks;
   __pyx_t_2.charge = __pyx_v_charge;
   __pyx_t_2.charge_carrier = __pyx_v_charge_carrier;
-  __pyx_t_1 = __pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants(__pyx_v_composition, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants(__pyx_v_composition, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4803,7 +5408,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_2_isotopic_varian
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":530
+/* "brainpy\_c\isotopic_distribution.pyx":581
  * 
  * 
  * cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=0, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -4832,8 +5437,17 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     }
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":536
+  /* "brainpy\_c\isotopic_distribution.pyx":587
  *         int max_n_variants
+ * 
+ *     validate_composition(composition)             # <<<<<<<<<<<<<<
+ * 
+ *     if npeaks == 0:
+ */
+  __pyx_f_7brainpy_2_c_21isotopic_distribution_validate_composition(__pyx_v_composition);
+
+  /* "brainpy\_c\isotopic_distribution.pyx":589
+ *     validate_composition(composition)
  * 
  *     if npeaks == 0:             # <<<<<<<<<<<<<<
  *         max_n_variants = max_variants(composition)
@@ -4842,7 +5456,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   __pyx_t_1 = ((__pyx_v_npeaks == 0) != 0);
   if (__pyx_t_1) {
 
-    /* "brainpy\_c\isotopic_distribution.pyx":537
+    /* "brainpy\_c\isotopic_distribution.pyx":590
  * 
  *     if npeaks == 0:
  *         max_n_variants = max_variants(composition)             # <<<<<<<<<<<<<<
@@ -4851,7 +5465,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_v_max_n_variants = __pyx_f_7brainpy_2_c_21isotopic_distribution_max_variants(__pyx_v_composition);
 
-    /* "brainpy\_c\isotopic_distribution.pyx":538
+    /* "brainpy\_c\isotopic_distribution.pyx":591
  *     if npeaks == 0:
  *         max_n_variants = max_variants(composition)
  *         npeaks = <int>sqrt(max_n_variants - 2)             # <<<<<<<<<<<<<<
@@ -4860,7 +5474,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
     __pyx_v_npeaks = ((int)sqrt((__pyx_v_max_n_variants - 2)));
 
-    /* "brainpy\_c\isotopic_distribution.pyx":539
+    /* "brainpy\_c\isotopic_distribution.pyx":592
  *         max_n_variants = max_variants(composition)
  *         npeaks = <int>sqrt(max_n_variants - 2)
  *         npeaks = min(max(npeaks, 3), 100)             # <<<<<<<<<<<<<<
@@ -4883,8 +5497,8 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     }
     __pyx_v_npeaks = __pyx_t_5;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":536
- *         int max_n_variants
+    /* "brainpy\_c\isotopic_distribution.pyx":589
+ *     validate_composition(composition)
  * 
  *     if npeaks == 0:             # <<<<<<<<<<<<<<
  *         max_n_variants = max_variants(composition)
@@ -4893,7 +5507,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
     goto __pyx_L3;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":541
+  /* "brainpy\_c\isotopic_distribution.pyx":594
  *         npeaks = min(max(npeaks, 3), 100)
  *     else:
  *         npeaks = npeaks - 1             # <<<<<<<<<<<<<<
@@ -4905,7 +5519,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   }
   __pyx_L3:;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":543
+  /* "brainpy\_c\isotopic_distribution.pyx":596
  *         npeaks = npeaks - 1
  * 
  *     dist = make_isotopic_distribution(composition, npeaks)             # <<<<<<<<<<<<<<
@@ -4914,7 +5528,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_dist = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_isotopic_distribution(__pyx_v_composition, __pyx_v_npeaks);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":544
+  /* "brainpy\_c\isotopic_distribution.pyx":597
  * 
  *     dist = make_isotopic_distribution(composition, npeaks)
  *     peaklist = id_aggregated_isotopic_variants(dist, charge, charge_carrier)             # <<<<<<<<<<<<<<
@@ -4923,7 +5537,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_v_peaklist = __pyx_f_7brainpy_2_c_21isotopic_distribution_id_aggregated_isotopic_variants(__pyx_v_dist, __pyx_v_charge, __pyx_v_charge_carrier);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":545
+  /* "brainpy\_c\isotopic_distribution.pyx":598
  *     dist = make_isotopic_distribution(composition, npeaks)
  *     peaklist = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
  *     free_isotopic_distribution(dist)             # <<<<<<<<<<<<<<
@@ -4932,7 +5546,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribution(__pyx_v_dist);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":547
+  /* "brainpy\_c\isotopic_distribution.pyx":600
  *     free_isotopic_distribution(dist)
  * 
  *     return peaklist             # <<<<<<<<<<<<<<
@@ -4942,7 +5556,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   __pyx_r = __pyx_v_peaklist;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":530
+  /* "brainpy\_c\isotopic_distribution.pyx":581
  * 
  * 
  * cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=0, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -4955,7 +5569,7 @@ static struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *__pyx_f_7br
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":550
+/* "brainpy\_c\isotopic_distribution.pyx":603
  * 
  * 
  * cdef list peaklist_to_list(PeakList* peaklist):             # <<<<<<<<<<<<<<
@@ -4979,19 +5593,19 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution_peaklist_to_list(s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("peaklist_to_list", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":556
+  /* "brainpy\_c\isotopic_distribution.pyx":609
  *         TheoreticalPeak pypeak
  * 
  *     result = []             # <<<<<<<<<<<<<<
  *     i = 0
  *     for i in range(peaklist.used):
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 556; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 609; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_result = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":557
+  /* "brainpy\_c\isotopic_distribution.pyx":610
  * 
  *     result = []
  *     i = 0             # <<<<<<<<<<<<<<
@@ -5000,7 +5614,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution_peaklist_to_list(s
  */
   __pyx_v_i = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":558
+  /* "brainpy\_c\isotopic_distribution.pyx":611
  *     result = []
  *     i = 0
  *     for i in range(peaklist.used):             # <<<<<<<<<<<<<<
@@ -5011,68 +5625,68 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution_peaklist_to_list(s
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":560
+    /* "brainpy\_c\isotopic_distribution.pyx":613
  *     for i in range(peaklist.used):
  *         pypeak = TheoreticalPeak(
  *             mz=peaklist.peaks[i].mz,             # <<<<<<<<<<<<<<
  *             intensity=peaklist.peaks[i].intensity,
  *             charge=peaklist.peaks[i].charge)
  */
-    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 560; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = PyFloat_FromDouble((__pyx_v_peaklist->peaks[__pyx_v_i]).mz); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 560; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyFloat_FromDouble((__pyx_v_peaklist->peaks[__pyx_v_i]).mz); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_mz, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 560; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_mz, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":561
+    /* "brainpy\_c\isotopic_distribution.pyx":614
  *         pypeak = TheoreticalPeak(
  *             mz=peaklist.peaks[i].mz,
  *             intensity=peaklist.peaks[i].intensity,             # <<<<<<<<<<<<<<
  *             charge=peaklist.peaks[i].charge)
  *         result.append(pypeak)
  */
-    __pyx_t_4 = PyFloat_FromDouble((__pyx_v_peaklist->peaks[__pyx_v_i]).intensity); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 561; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyFloat_FromDouble((__pyx_v_peaklist->peaks[__pyx_v_i]).intensity); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_intensity, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 560; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_intensity, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":562
+    /* "brainpy\_c\isotopic_distribution.pyx":615
  *             mz=peaklist.peaks[i].mz,
  *             intensity=peaklist.peaks[i].intensity,
  *             charge=peaklist.peaks[i].charge)             # <<<<<<<<<<<<<<
  *         result.append(pypeak)
  *     return result
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int((__pyx_v_peaklist->peaks[__pyx_v_i]).charge); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 562; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_From_int((__pyx_v_peaklist->peaks[__pyx_v_i]).charge); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_charge, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 560; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_charge, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":559
+    /* "brainpy\_c\isotopic_distribution.pyx":612
  *     i = 0
  *     for i in range(peaklist.used):
  *         pypeak = TheoreticalPeak(             # <<<<<<<<<<<<<<
  *             mz=peaklist.peaks[i].mz,
  *             intensity=peaklist.peaks[i].intensity,
  */
-    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak), __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 559; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak), __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_XDECREF_SET(__pyx_v_pypeak, ((struct __pyx_obj_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak *)__pyx_t_4));
     __pyx_t_4 = 0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":563
+    /* "brainpy\_c\isotopic_distribution.pyx":616
  *             intensity=peaklist.peaks[i].intensity,
  *             charge=peaklist.peaks[i].charge)
  *         result.append(pypeak)             # <<<<<<<<<<<<<<
  *     return result
  * 
  */
-    __pyx_t_5 = __Pyx_PyList_Append(__pyx_v_result, ((PyObject *)__pyx_v_pypeak)); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 563; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyList_Append(__pyx_v_result, ((PyObject *)__pyx_v_pypeak)); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":564
+  /* "brainpy\_c\isotopic_distribution.pyx":617
  *             charge=peaklist.peaks[i].charge)
  *         result.append(pypeak)
  *     return result             # <<<<<<<<<<<<<<
@@ -5084,7 +5698,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution_peaklist_to_list(s
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":550
+  /* "brainpy\_c\isotopic_distribution.pyx":603
  * 
  * 
  * cdef list peaklist_to_list(PeakList* peaklist):             # <<<<<<<<<<<<<<
@@ -5106,7 +5720,7 @@ static PyObject *__pyx_f_7brainpy_2_c_21isotopic_distribution_peaklist_to_list(s
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":568
+/* "brainpy\_c\isotopic_distribution.pyx":621
  * 
  * cdef class TheoreticalPeak(object):
  *     def __init__(self, mz, intensity, charge):             # <<<<<<<<<<<<<<
@@ -5147,16 +5761,16 @@ static int __pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_1__in
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_intensity)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_charge)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -5171,7 +5785,7 @@ static int __pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_1__in
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("brainpy._c.isotopic_distribution.TheoreticalPeak.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5194,37 +5808,37 @@ static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak___ini
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":569
+  /* "brainpy\_c\isotopic_distribution.pyx":622
  * cdef class TheoreticalPeak(object):
  *     def __init__(self, mz, intensity, charge):
  *         self.mz = mz             # <<<<<<<<<<<<<<
  *         self.intensity = intensity
  *         self.charge = charge
  */
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_mz); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_mz); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->mz = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":570
+  /* "brainpy\_c\isotopic_distribution.pyx":623
  *     def __init__(self, mz, intensity, charge):
  *         self.mz = mz
  *         self.intensity = intensity             # <<<<<<<<<<<<<<
  *         self.charge = charge
  * 
  */
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_intensity); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_intensity); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->intensity = __pyx_t_1;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":571
+  /* "brainpy\_c\isotopic_distribution.pyx":624
  *         self.mz = mz
  *         self.intensity = intensity
  *         self.charge = charge             # <<<<<<<<<<<<<<
  * 
  *     def __repr__(self):
  */
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_charge); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_v_charge); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->charge = __pyx_t_2;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":568
+  /* "brainpy\_c\isotopic_distribution.pyx":621
  * 
  * cdef class TheoreticalPeak(object):
  *     def __init__(self, mz, intensity, charge):             # <<<<<<<<<<<<<<
@@ -5243,7 +5857,7 @@ static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak___ini
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":573
+/* "brainpy\_c\isotopic_distribution.pyx":626
  *         self.charge = charge
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -5276,7 +5890,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":574
+  /* "brainpy\_c\isotopic_distribution.pyx":627
  * 
  *     def __repr__(self):
  *         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)             # <<<<<<<<<<<<<<
@@ -5284,13 +5898,13 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  *     def _eq(self, other):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -5301,14 +5915,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_Peak_mz_f_intensity_f_charge_d, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_Peak_mz_f_intensity_f_charge_d, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":573
+  /* "brainpy\_c\isotopic_distribution.pyx":626
  *         self.charge = charge
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -5330,7 +5944,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":576
+/* "brainpy\_c\isotopic_distribution.pyx":629
  *         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
  * 
  *     def _eq(self, other):             # <<<<<<<<<<<<<<
@@ -5340,6 +5954,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_5_eq(PyObject *__pyx_v_self, PyObject *__pyx_v_other); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_4_eq[] = "TheoreticalPeak._eq(self, other)";
 static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_5_eq(PyObject *__pyx_v_self, PyObject *__pyx_v_other) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5365,71 +5980,71 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_eq", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":578
+  /* "brainpy\_c\isotopic_distribution.pyx":631
  *     def _eq(self, other):
  *         equal = (
  *             abs(self.mz - other.mz) < 1e-10,             # <<<<<<<<<<<<<<
  *             abs(self.intensity - other.intensity) < 1e-10,
  *             self.charge == other.charge
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 631; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_mz); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 631; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyNumber_Subtract(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyNumber_Subtract(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 631; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyNumber_Absolute(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 631; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_float_1eneg_10, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_float_1eneg_10, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 631; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":579
+  /* "brainpy\_c\isotopic_distribution.pyx":632
  *         equal = (
  *             abs(self.mz - other.mz) < 1e-10,
  *             abs(self.intensity - other.intensity) < 1e-10,             # <<<<<<<<<<<<<<
  *             self.charge == other.charge
  *         )
  */
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 632; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_intensity); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 632; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = PyNumber_Subtract(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyNumber_Subtract(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 632; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyNumber_Absolute(__pyx_t_4); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyNumber_Absolute(__pyx_t_4); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 632; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_float_1eneg_10, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_float_1eneg_10, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 632; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":580
+  /* "brainpy\_c\isotopic_distribution.pyx":633
  *             abs(self.mz - other.mz) < 1e-10,
  *             abs(self.intensity - other.intensity) < 1e-10,
  *             self.charge == other.charge             # <<<<<<<<<<<<<<
  *         )
  *         return all(equal)
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 580; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_charge); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 580; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_other, __pyx_n_s_charge); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 580; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":578
+  /* "brainpy\_c\isotopic_distribution.pyx":631
  *     def _eq(self, other):
  *         equal = (
  *             abs(self.mz - other.mz) < 1e-10,             # <<<<<<<<<<<<<<
  *             abs(self.intensity - other.intensity) < 1e-10,
  *             self.charge == other.charge
  */
-  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 578; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 631; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
@@ -5443,7 +6058,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_v_equal = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":582
+  /* "brainpy\_c\isotopic_distribution.pyx":635
  *             self.charge == other.charge
  *         )
  *         return all(equal)             # <<<<<<<<<<<<<<
@@ -5451,19 +6066,19 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  *     def __hash__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 582; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_equal);
   __Pyx_GIVEREF(__pyx_v_equal);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_equal);
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_all, __pyx_t_2, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 582; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_all, __pyx_t_2, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":576
+  /* "brainpy\_c\isotopic_distribution.pyx":629
  *         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
  * 
  *     def _eq(self, other):             # <<<<<<<<<<<<<<
@@ -5487,7 +6102,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":584
+/* "brainpy\_c\isotopic_distribution.pyx":637
  *         return all(equal)
  * 
  *     def __hash__(self):             # <<<<<<<<<<<<<<
@@ -5521,20 +6136,20 @@ static Py_hash_t __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__hash__", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":585
+  /* "brainpy\_c\isotopic_distribution.pyx":638
  * 
  *     def __hash__(self):
  *         return hash((self.mz, self.intensity, self.charge))             # <<<<<<<<<<<<<<
  * 
  *     def __richcmp__(self, other, int code):
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -5545,12 +6160,12 @@ static Py_hash_t __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_5 = PyObject_Hash(__pyx_t_4); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 585; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyObject_Hash(__pyx_t_4); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_5;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":584
+  /* "brainpy\_c\isotopic_distribution.pyx":637
  *         return all(equal)
  * 
  *     def __hash__(self):             # <<<<<<<<<<<<<<
@@ -5572,7 +6187,7 @@ static Py_hash_t __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":587
+/* "brainpy\_c\isotopic_distribution.pyx":640
  *         return hash((self.mz, self.intensity, self.charge))
  * 
  *     def __richcmp__(self, other, int code):             # <<<<<<<<<<<<<<
@@ -5606,7 +6221,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__richcmp__", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":588
+  /* "brainpy\_c\isotopic_distribution.pyx":641
  * 
  *     def __richcmp__(self, other, int code):
  *         if code == 2:             # <<<<<<<<<<<<<<
@@ -5616,7 +6231,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   switch (__pyx_v_code) {
     case 2:
 
-    /* "brainpy\_c\isotopic_distribution.pyx":589
+    /* "brainpy\_c\isotopic_distribution.pyx":642
  *     def __richcmp__(self, other, int code):
  *         if code == 2:
  *             return self._eq(other)             # <<<<<<<<<<<<<<
@@ -5624,7 +6239,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  *             return not self._eq(other)
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_eq); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 589; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_eq); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 642; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -5637,16 +6252,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
       }
     }
     if (!__pyx_t_3) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 589; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 642; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_1);
     } else {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 589; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 642; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
       __Pyx_INCREF(__pyx_v_other);
       __Pyx_GIVEREF(__pyx_v_other);
       PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_other);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 589; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 642; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
@@ -5655,7 +6270,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
     __pyx_t_1 = 0;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":588
+    /* "brainpy\_c\isotopic_distribution.pyx":641
  * 
  *     def __richcmp__(self, other, int code):
  *         if code == 2:             # <<<<<<<<<<<<<<
@@ -5664,7 +6279,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  */
     break;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":590
+    /* "brainpy\_c\isotopic_distribution.pyx":643
  *         if code == 2:
  *             return self._eq(other)
  *         elif code == 3:             # <<<<<<<<<<<<<<
@@ -5673,7 +6288,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  */
     case 3:
 
-    /* "brainpy\_c\isotopic_distribution.pyx":591
+    /* "brainpy\_c\isotopic_distribution.pyx":644
  *             return self._eq(other)
  *         elif code == 3:
  *             return not self._eq(other)             # <<<<<<<<<<<<<<
@@ -5681,7 +6296,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  *     def __reduce__(self):
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_eq); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 591; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_eq); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 644; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_4 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -5694,29 +6309,29 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
       }
     }
     if (!__pyx_t_4) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 591; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_other); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 644; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_1);
     } else {
-      __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 591; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 644; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
       __Pyx_INCREF(__pyx_v_other);
       __Pyx_GIVEREF(__pyx_v_other);
       PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_other);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 591; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 644; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 591; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 644; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyBool_FromLong((!__pyx_t_5)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 591; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyBool_FromLong((!__pyx_t_5)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 644; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
     goto __pyx_L0;
 
-    /* "brainpy\_c\isotopic_distribution.pyx":590
+    /* "brainpy\_c\isotopic_distribution.pyx":643
  *         if code == 2:
  *             return self._eq(other)
  *         elif code == 3:             # <<<<<<<<<<<<<<
@@ -5727,7 +6342,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
     default: break;
   }
 
-  /* "brainpy\_c\isotopic_distribution.pyx":587
+  /* "brainpy\_c\isotopic_distribution.pyx":640
  *         return hash((self.mz, self.intensity, self.charge))
  * 
  *     def __richcmp__(self, other, int code):             # <<<<<<<<<<<<<<
@@ -5751,7 +6366,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":593
+/* "brainpy\_c\isotopic_distribution.pyx":646
  *             return not self._eq(other)
  * 
  *     def __reduce__(self):             # <<<<<<<<<<<<<<
@@ -5761,6 +6376,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_11__reduce__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_10__reduce__[] = "TheoreticalPeak.__reduce__(self)";
 static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_11__reduce__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5784,7 +6400,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__reduce__", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":594
+  /* "brainpy\_c\isotopic_distribution.pyx":647
  * 
  *     def __reduce__(self):
  *         return TheoreticalPeak, (self.mz, self.intensity, self.charge)             # <<<<<<<<<<<<<<
@@ -5792,13 +6408,13 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  *     def clone(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 594; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 647; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 594; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 647; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 594; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 647; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 594; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 647; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -5809,7 +6425,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 594; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 647; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_INCREF(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak));
   __Pyx_GIVEREF(((PyObject *)__pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak));
@@ -5821,7 +6437,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":593
+  /* "brainpy\_c\isotopic_distribution.pyx":646
  *             return not self._eq(other)
  * 
  *     def __reduce__(self):             # <<<<<<<<<<<<<<
@@ -5843,7 +6459,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":596
+/* "brainpy\_c\isotopic_distribution.pyx":649
  *         return TheoreticalPeak, (self.mz, self.intensity, self.charge)
  * 
  *     def clone(self):             # <<<<<<<<<<<<<<
@@ -5853,6 +6469,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_13clone(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_12clone[] = "TheoreticalPeak.clone(self)";
 static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_13clone(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5880,7 +6497,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("clone", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":597
+  /* "brainpy\_c\isotopic_distribution.pyx":650
  * 
  *     def clone(self):
  *         return self.__class__(self.mz, self.intensity, self.charge)             # <<<<<<<<<<<<<<
@@ -5888,13 +6505,13 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->mz); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->intensity); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->charge); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_6 = NULL;
   __pyx_t_7 = 0;
@@ -5908,7 +6525,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
       __pyx_t_7 = 1;
     }
   }
-  __pyx_t_8 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
   if (__pyx_t_6) {
     __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -5922,7 +6539,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_t_3 = 0;
   __pyx_t_4 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -5930,7 +6547,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":596
+  /* "brainpy\_c\isotopic_distribution.pyx":649
  *         return TheoreticalPeak, (self.mz, self.intensity, self.charge)
  * 
  *     def clone(self):             # <<<<<<<<<<<<<<
@@ -6201,7 +6818,7 @@ static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_6char
   return __pyx_r;
 }
 
-/* "brainpy\_c\isotopic_distribution.pyx":600
+/* "brainpy\_c\isotopic_distribution.pyx":653
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
@@ -6210,20 +6827,21 @@ static int __pyx_pf_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_6char
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_5main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_7brainpy_2_c_21isotopic_distribution_5main = {"main", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_5main, METH_NOARGS, 0};
-static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_5main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_7main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_7brainpy_2_c_21isotopic_distribution_6main[] = "main()";
+static PyMethodDef __pyx_mdef_7brainpy_2_c_21isotopic_distribution_7main = {"main", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_7main, METH_NOARGS, __pyx_doc_7brainpy_2_c_21isotopic_distribution_6main};
+static PyObject *__pyx_pw_7brainpy_2_c_21isotopic_distribution_7main(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("main (wrapper)", 0);
-  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(__pyx_self);
+  __pyx_r = __pyx_pf_7brainpy_2_c_21isotopic_distribution_6main(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_6main(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_v_comp_dict = 0;
   struct __pyx_t_7brainpy_2_c_11composition_Composition *__pyx_v_composition;
   struct __pyx_t_7brainpy_2_c_21isotopic_distribution_IsotopicDistribution *__pyx_v_distribution;
@@ -6236,30 +6854,30 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("main", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":607
+  /* "brainpy\_c\isotopic_distribution.pyx":660
  *         IsotopicDistribution* distribution2
  * 
  *     comp_dict = dict(H=2, O=1)             # <<<<<<<<<<<<<<
  *     print comp_dict
  *     composition = dict_to_composition(comp_dict)
  */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 607; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 660; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_H, __pyx_int_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 607; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_O, __pyx_int_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 607; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_H, __pyx_int_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 660; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_O, __pyx_int_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 660; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_comp_dict = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":608
+  /* "brainpy\_c\isotopic_distribution.pyx":661
  * 
  *     comp_dict = dict(H=2, O=1)
  *     print comp_dict             # <<<<<<<<<<<<<<
  *     composition = dict_to_composition(comp_dict)
  *     print_composition(composition)
  */
-  if (__Pyx_PrintOne(0, __pyx_v_comp_dict) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 608; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_v_comp_dict) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 661; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":609
+  /* "brainpy\_c\isotopic_distribution.pyx":662
  *     comp_dict = dict(H=2, O=1)
  *     print comp_dict
  *     composition = dict_to_composition(comp_dict)             # <<<<<<<<<<<<<<
@@ -6268,7 +6886,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_v_composition = __pyx_f_7brainpy_2_c_11composition_dict_to_composition(__pyx_v_comp_dict);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":610
+  /* "brainpy\_c\isotopic_distribution.pyx":663
  *     print comp_dict
  *     composition = dict_to_composition(comp_dict)
  *     print_composition(composition)             # <<<<<<<<<<<<<<
@@ -6277,7 +6895,7 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_f_7brainpy_2_c_11composition_print_composition(__pyx_v_composition);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":611
+  /* "brainpy\_c\isotopic_distribution.pyx":664
  *     composition = dict_to_composition(comp_dict)
  *     print_composition(composition)
  *     distribution = make_isotopic_distribution(composition, 4)             # <<<<<<<<<<<<<<
@@ -6286,16 +6904,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_v_distribution = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_isotopic_distribution(__pyx_v_composition, 4);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":612
+  /* "brainpy\_c\isotopic_distribution.pyx":665
  *     print_composition(composition)
  *     distribution = make_isotopic_distribution(composition, 4)
  *     print "Going to print constants"             # <<<<<<<<<<<<<<
  *     print_isotopic_constants(distribution._isotopic_constants)
  *     print "Done"
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_Going_to_print_constants) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_Going_to_print_constants) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 665; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":613
+  /* "brainpy\_c\isotopic_distribution.pyx":666
  *     distribution = make_isotopic_distribution(composition, 4)
  *     print "Going to print constants"
  *     print_isotopic_constants(distribution._isotopic_constants)             # <<<<<<<<<<<<<<
@@ -6304,25 +6922,25 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(__pyx_v_distribution->_isotopic_constants);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":614
+  /* "brainpy\_c\isotopic_distribution.pyx":667
  *     print "Going to print constants"
  *     print_isotopic_constants(distribution._isotopic_constants)
  *     print "Done"             # <<<<<<<<<<<<<<
  * 
  *     print "Trying to free"
  */
-  if (__Pyx_PrintOne(0, __pyx_n_s_Done) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_n_s_Done) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 667; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":616
+  /* "brainpy\_c\isotopic_distribution.pyx":669
  *     print "Done"
  * 
  *     print "Trying to free"             # <<<<<<<<<<<<<<
  *     free_isotopic_distribution(distribution)
  *     print "Free Done"
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_Trying_to_free) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_Trying_to_free) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":617
+  /* "brainpy\_c\isotopic_distribution.pyx":670
  * 
  *     print "Trying to free"
  *     free_isotopic_distribution(distribution)             # <<<<<<<<<<<<<<
@@ -6331,16 +6949,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribution(__pyx_v_distribution);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":618
+  /* "brainpy\_c\isotopic_distribution.pyx":671
  *     print "Trying to free"
  *     free_isotopic_distribution(distribution)
  *     print "Free Done"             # <<<<<<<<<<<<<<
  * 
  *     distribution2 = make_isotopic_distribution(composition, 4)
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_Free_Done) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_Free_Done) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 671; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":620
+  /* "brainpy\_c\isotopic_distribution.pyx":673
  *     print "Free Done"
  * 
  *     distribution2 = make_isotopic_distribution(composition, 4)             # <<<<<<<<<<<<<<
@@ -6349,16 +6967,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_v_distribution2 = __pyx_f_7brainpy_2_c_21isotopic_distribution_make_isotopic_distribution(__pyx_v_composition, 4);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":621
+  /* "brainpy\_c\isotopic_distribution.pyx":674
  * 
  *     distribution2 = make_isotopic_distribution(composition, 4)
  *     print "Seconc construction"             # <<<<<<<<<<<<<<
  *     print_isotopic_constants(distribution2._isotopic_constants)
  *     print "Second Free"
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_Seconc_construction) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_Seconc_construction) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 674; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":622
+  /* "brainpy\_c\isotopic_distribution.pyx":675
  *     distribution2 = make_isotopic_distribution(composition, 4)
  *     print "Seconc construction"
  *     print_isotopic_constants(distribution2._isotopic_constants)             # <<<<<<<<<<<<<<
@@ -6367,16 +6985,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_f_7brainpy_2_c_18isotopic_constants_print_isotopic_constants(__pyx_v_distribution2->_isotopic_constants);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":623
+  /* "brainpy\_c\isotopic_distribution.pyx":676
  *     print "Seconc construction"
  *     print_isotopic_constants(distribution2._isotopic_constants)
  *     print "Second Free"             # <<<<<<<<<<<<<<
  *     free_isotopic_distribution(distribution2)
  *     print comp_dict
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_Second_Free) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_Second_Free) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 676; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":624
+  /* "brainpy\_c\isotopic_distribution.pyx":677
  *     print_isotopic_constants(distribution2._isotopic_constants)
  *     print "Second Free"
  *     free_isotopic_distribution(distribution2)             # <<<<<<<<<<<<<<
@@ -6385,16 +7003,16 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_f_7brainpy_2_c_21isotopic_distribution_free_isotopic_distribution(__pyx_v_distribution2);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":625
+  /* "brainpy\_c\isotopic_distribution.pyx":678
  *     print "Second Free"
  *     free_isotopic_distribution(distribution2)
  *     print comp_dict             # <<<<<<<<<<<<<<
  *     free_composition(composition)
  *     print "Really done"
  */
-  if (__Pyx_PrintOne(0, __pyx_v_comp_dict) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_v_comp_dict) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":626
+  /* "brainpy\_c\isotopic_distribution.pyx":679
  *     free_isotopic_distribution(distribution2)
  *     print comp_dict
  *     free_composition(composition)             # <<<<<<<<<<<<<<
@@ -6402,14 +7020,14 @@ static PyObject *__pyx_pf_7brainpy_2_c_21isotopic_distribution_4main(CYTHON_UNUS
  */
   __pyx_f_7brainpy_2_c_11composition_free_composition(__pyx_v_composition);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":627
+  /* "brainpy\_c\isotopic_distribution.pyx":680
  *     print comp_dict
  *     free_composition(composition)
  *     print "Really done"             # <<<<<<<<<<<<<<
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_Really_done) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_Really_done) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":600
+  /* "brainpy\_c\isotopic_distribution.pyx":653
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
@@ -6494,16 +7112,16 @@ static int __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_
 }
 
 static PyMethodDef __pyx_methods_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak[] = {
-  {"_eq", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_5_eq, METH_O, 0},
-  {"__reduce__", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_11__reduce__, METH_NOARGS, 0},
-  {"clone", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_13clone, METH_NOARGS, 0},
+  {"_eq", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_5_eq, METH_O, __pyx_doc_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_4_eq},
+  {"__reduce__", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_11__reduce__, METH_NOARGS, __pyx_doc_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_10__reduce__},
+  {"clone", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_13clone, METH_NOARGS, __pyx_doc_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_12clone},
   {0, 0, 0, 0}
 };
 
 static struct PyGetSetDef __pyx_getsets_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak[] = {
-  {(char *)"mz", __pyx_getprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_mz, __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_mz, 0, 0},
-  {(char *)"intensity", __pyx_getprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_intensity, __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_intensity, 0, 0},
-  {(char *)"charge", __pyx_getprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_charge, __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_charge, 0, 0},
+  {(char *)"mz", __pyx_getprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_mz, __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_mz, __pyx_k_mz_double, 0},
+  {(char *)"intensity", __pyx_getprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_intensity, __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_intensity, __pyx_k_intensity_double, 0},
+  {(char *)"charge", __pyx_getprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_charge, __pyx_setprop_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_charge, __pyx_k_charge_int, 0},
   {0, 0, 0, 0, 0}
 };
 
@@ -6533,7 +7151,7 @@ static PyTypeObject __pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalP
   0, /*tp_setattro*/
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
-  0, /*tp_doc*/
+  "TheoreticalPeak(mz, intensity, charge)", /*tp_doc*/
   0, /*tp_traverse*/
   0, /*tp_clear*/
   __pyx_pw_7brainpy_2_c_21isotopic_distribution_15TheoreticalPeak_9__richcmp__, /*tp_richcompare*/
@@ -6566,7 +7184,8 @@ static PyTypeObject __pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalP
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"_isotopic_variants", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_3_isotopic_variants, METH_VARARGS|METH_KEYWORDS, 0},
+  {"check_composition_non_negative", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_1check_composition_non_negative, METH_O, __pyx_doc_7brainpy_2_c_21isotopic_distribution_check_composition_non_negative},
+  {"_isotopic_variants", (PyCFunction)__pyx_pw_7brainpy_2_c_21isotopic_distribution_5_isotopic_variants, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7brainpy_2_c_21isotopic_distribution_4_isotopic_variants},
   {0, 0, 0, 0}
 };
 
@@ -6589,6 +7208,7 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_kp_s_A_composition_cannot_have_negati, __pyx_k_A_composition_cannot_have_negati, sizeof(__pyx_k_A_composition_cannot_have_negati), 0, 0, 1, 0},
   {&__pyx_kp_s_D_Programming_exploration_brainp, __pyx_k_D_Programming_exploration_brainp, sizeof(__pyx_k_D_Programming_exploration_brainp), 0, 0, 1, 0},
   {&__pyx_n_s_Done, __pyx_k_Done, sizeof(__pyx_k_Done), 0, 0, 1, 1},
   {&__pyx_kp_s_Free_Done, __pyx_k_Free_Done, sizeof(__pyx_k_Free_Done), 0, 0, 1, 0},
@@ -6600,6 +7220,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Seconc_construction, __pyx_k_Seconc_construction, sizeof(__pyx_k_Seconc_construction), 0, 0, 1, 0},
   {&__pyx_kp_s_Second_Free, __pyx_k_Second_Free, sizeof(__pyx_k_Second_Free), 0, 0, 1, 0},
   {&__pyx_kp_s_Trying_to_free, __pyx_k_Trying_to_free, sizeof(__pyx_k_Trying_to_free), 0, 0, 1, 0},
+  {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_all, __pyx_k_all, sizeof(__pyx_k_all), 0, 0, 1, 1},
   {&__pyx_n_s_brainpy__c_isotopic_distribution, __pyx_k_brainpy__c_isotopic_distribution, sizeof(__pyx_k_brainpy__c_isotopic_distribution), 0, 0, 1, 1},
   {&__pyx_n_s_charge, __pyx_k_charge, sizeof(__pyx_k_charge), 0, 0, 1, 1},
@@ -6607,6 +7228,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_n_s_comp_dict, __pyx_k_comp_dict, sizeof(__pyx_k_comp_dict), 0, 0, 1, 1},
   {&__pyx_n_s_composition, __pyx_k_composition, sizeof(__pyx_k_composition), 0, 0, 1, 1},
+  {&__pyx_n_s_composition_dict, __pyx_k_composition_dict, sizeof(__pyx_k_composition_dict), 0, 0, 1, 1},
   {&__pyx_n_s_composition_struct, __pyx_k_composition_struct, sizeof(__pyx_k_composition_struct), 0, 0, 1, 1},
   {&__pyx_n_s_dist, __pyx_k_dist, sizeof(__pyx_k_dist), 0, 0, 1, 1},
   {&__pyx_n_s_distribution, __pyx_k_distribution, sizeof(__pyx_k_distribution), 0, 0, 1, 1},
@@ -6616,6 +7238,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_intensity, __pyx_k_intensity, sizeof(__pyx_k_intensity), 0, 0, 1, 1},
+  {&__pyx_n_s_items, __pyx_k_items, sizeof(__pyx_k_items), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_main_2, __pyx_k_main_2, sizeof(__pyx_k_main_2), 0, 0, 1, 1},
   {&__pyx_n_s_max_n_varaints, __pyx_k_max_n_varaints, sizeof(__pyx_k_max_n_varaints), 0, 0, 1, 1},
@@ -6633,8 +7256,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_all = __Pyx_GetBuiltinName(__pyx_n_s_all); if (!__pyx_builtin_all) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 582; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 526; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_all = __Pyx_GetBuiltinName(__pyx_n_s_all); if (!__pyx_builtin_all) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -6644,29 +7268,29 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "brainpy\_c\isotopic_distribution.pyx":470
+  /* "brainpy\_c\isotopic_distribution.pyx":515
  * 
  * 
  * def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
  *     cdef:
  *         Composition* composition_struct
  */
-  __pyx_tuple__4 = PyTuple_Pack(12, __pyx_n_s_composition, __pyx_n_s_npeaks, __pyx_n_s_charge, __pyx_n_s_charge_carrier, __pyx_n_s_composition_struct, __pyx_n_s_peaklist, __pyx_n_s_peak_set, __pyx_n_s_dist, __pyx_n_s_npeaks_2, __pyx_n_s_max_n_varaints, __pyx_n_s_max_n_variants, __pyx_n_s_i); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__4 = PyTuple_Pack(13, __pyx_n_s_composition, __pyx_n_s_npeaks, __pyx_n_s_charge, __pyx_n_s_charge_carrier, __pyx_n_s_composition_struct, __pyx_n_s_composition_dict, __pyx_n_s_peaklist, __pyx_n_s_peak_set, __pyx_n_s_dist, __pyx_n_s_npeaks_2, __pyx_n_s_max_n_varaints, __pyx_n_s_max_n_variants, __pyx_n_s_i); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 12, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_pyisotopic_variants, 470, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 13, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_pyisotopic_variants, 515, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "brainpy\_c\isotopic_distribution.pyx":600
+  /* "brainpy\_c\isotopic_distribution.pyx":653
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef:
  *         dict comp_dict
  */
-  __pyx_tuple__6 = PyTuple_Pack(4, __pyx_n_s_comp_dict, __pyx_n_s_composition, __pyx_n_s_distribution, __pyx_n_s_distribution2); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__6 = PyTuple_Pack(4, __pyx_n_s_comp_dict, __pyx_n_s_composition, __pyx_n_s_distribution, __pyx_n_s_distribution2); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 653; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(0, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_main_2, 600, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(0, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Programming_exploration_brainp, __pyx_n_s_main_2, 653, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 653; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -6675,8 +7299,10 @@ static int __Pyx_InitCachedConstants(void) {
 }
 
 static int __Pyx_InitGlobals(void) {
+  __pyx_umethod_PyDict_Type_items.type = (PyObject*)&PyDict_Type;
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __pyx_float_1eneg_10 = PyFloat_FromDouble(1e-10); if (unlikely(!__pyx_float_1eneg_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
@@ -6782,18 +7408,18 @@ PyMODINIT_FUNC PyInit_isotopic_distribution(void)
   if (__Pyx_ExportFunction("_isotopic_variants", (void (*)(void))__pyx_f_7brainpy_2_c_21isotopic_distribution__isotopic_variants, "PyObject *(PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_7brainpy_2_c_21isotopic_distribution__isotopic_variants *__pyx_optional_args)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ExportFunction("isotopic_variants", (void (*)(void))__pyx_f_7brainpy_2_c_21isotopic_distribution_isotopic_variants, "struct __pyx_t_7brainpy_2_c_21isotopic_distribution_PeakList *(struct __pyx_t_7brainpy_2_c_11composition_Composition *, int, struct __pyx_opt_args_7brainpy_2_c_21isotopic_distribution_isotopic_variants *__pyx_optional_args)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "TheoreticalPeak", (PyObject *)&__pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "TheoreticalPeak", (PyObject *)&__pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak = &__pyx_type_7brainpy_2_c_21isotopic_distribution_TheoreticalPeak;
   /*--- Type import code ---*/
-  __pyx_ptype_7brainpy_2_c_11composition_PyComposition = __Pyx_ImportType("brainpy._c.composition", "PyComposition", sizeof(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition), 1); if (unlikely(!__pyx_ptype_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition = (struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition*)__Pyx_GetVtable(__pyx_ptype_7brainpy_2_c_11composition_PyComposition->tp_dict); if (unlikely(!__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_7brainpy_2_c_11composition_PyComposition = __Pyx_ImportType("brainpy._c.composition", "PyComposition", sizeof(struct __pyx_obj_7brainpy_2_c_11composition_PyComposition), 1); if (unlikely(!__pyx_ptype_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_7brainpy_2_c_11composition_PyComposition = (struct __pyx_vtabstruct_7brainpy_2_c_11composition_PyComposition*)__Pyx_GetVtable(__pyx_ptype_7brainpy_2_c_11composition_PyComposition->tp_dict); if (unlikely(!__pyx_vtabptr_7brainpy_2_c_11composition_PyComposition)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Variable import code ---*/
   __pyx_t_1 = __Pyx_ImportModule("brainpy._c.composition"); if (!__pyx_t_1) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportVoidPtr(__pyx_t_1, "nist_mass", (void **)&__pyx_vp_7brainpy_2_c_11composition_nist_mass, "PyObject *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportVoidPtr(__pyx_t_1, "PROTON", (void **)&__pyx_vp_7brainpy_2_c_11composition_PROTON, "double") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ImportVoidPtr(__pyx_t_1, "_PeriodicTable", (void **)&__pyx_vp_7brainpy_2_c_11composition__PeriodicTable, "struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportVoidPtr(__pyx_t_1, "_ElementTable", (void **)&__pyx_vp_7brainpy_2_c_11composition__ElementTable, "struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   Py_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_2 = __Pyx_ImportModule("brainpy._c.isotopic_constants"); if (!__pyx_t_2) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportVoidPtr(__pyx_t_2, "DEFAULT_ISOTOPIC_CONSTANTS_SIZE", (void **)&__pyx_vp_7brainpy_2_c_18isotopic_constants_DEFAULT_ISOTOPIC_CONSTANTS_SIZE, "size_t") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -6801,10 +7427,13 @@ PyMODINIT_FUNC PyInit_isotopic_distribution(void)
   /*--- Function import code ---*/
   __pyx_t_3 = __Pyx_ImportModule("brainpy._c.composition"); if (!__pyx_t_3) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "mass_charge_ratio", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_mass_charge_ratio, "double (double, int, struct __pyx_opt_args_7brainpy_2_c_11composition_mass_charge_ratio *__pyx_optional_args)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_3, "_parse_isotope_string", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition__parse_isotope_string, "char *(char *, int *, char *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "get_isotope_by_neutron_shift", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_get_isotope_by_neutron_shift, "struct __pyx_t_7brainpy_2_c_11composition_Isotope *(struct __pyx_t_7brainpy_2_c_11composition_IsotopeMap *, int)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "element_monoisotopic_mass", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_monoisotopic_mass, "double (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "element_max_neutron_shift", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_max_neutron_shift, "int (struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_ImportFunction(__pyx_t_3, "get_element_from_periodic_table2", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_get_element_from_periodic_table2, "int (struct __pyx_t_7brainpy_2_c_11composition_PeriodicTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_3, "make_fixed_isotope_element", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_make_fixed_isotope_element, "struct __pyx_t_7brainpy_2_c_11composition_Element *(struct __pyx_t_7brainpy_2_c_11composition_Element *, int)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_3, "element_hash_table_get", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_hash_table_get, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, char *, struct __pyx_t_7brainpy_2_c_11composition_Element **)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ImportFunction(__pyx_t_3, "element_hash_table_put", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_element_hash_table_put, "int (struct __pyx_t_7brainpy_2_c_11composition_ElementHashTable *, struct __pyx_t_7brainpy_2_c_11composition_Element *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "print_composition", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_print_composition, "void (struct __pyx_t_7brainpy_2_c_11composition_Composition *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "composition_get_element_count", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_composition_get_element_count, "int (struct __pyx_t_7brainpy_2_c_11composition_Composition *, char *, __pyx_t_7brainpy_2_c_11composition_count_type *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__Pyx_ImportFunction(__pyx_t_3, "composition_mass", (void (**)(void))&__pyx_f_7brainpy_2_c_11composition_composition_mass, "double (struct __pyx_t_7brainpy_2_c_11composition_Composition *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -6834,42 +7463,42 @@ PyMODINIT_FUNC PyInit_isotopic_distribution(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "brainpy\_c\isotopic_distribution.pyx":470
+  /* "brainpy\_c\isotopic_distribution.pyx":515
  * 
  * 
  * def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
  *     cdef:
  *         Composition* composition_struct
  */
-  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_7brainpy_2_c_11composition_PROTON); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_7brainpy_2_c_11composition_PROTON); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_k_ = __pyx_t_6;
   __Pyx_GIVEREF(__pyx_t_6);
   __pyx_t_6 = 0;
-  __pyx_t_6 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_21isotopic_distribution_1pyisotopic_variants, NULL, __pyx_n_s_brainpy__c_isotopic_distribution); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_21isotopic_distribution_3pyisotopic_variants, NULL, __pyx_n_s_brainpy__c_isotopic_distribution); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyisotopic_variants, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyisotopic_variants, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 515; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":500
+  /* "brainpy\_c\isotopic_distribution.pyx":550
  * 
  * 
  * cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, charge_carrier=PROTON):             # <<<<<<<<<<<<<<
  *     cdef:
  *         Composition* composition_struct
  */
-  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_7brainpy_2_c_11composition_PROTON); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_7brainpy_2_c_11composition_PROTON); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_k__2 = __pyx_t_6;
   __Pyx_GIVEREF(__pyx_t_6);
   __pyx_t_6 = 0;
-  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_7brainpy_2_c_11composition_PROTON); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 500; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_7brainpy_2_c_11composition_PROTON); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_k__2 = __pyx_t_6;
   __Pyx_GIVEREF(__pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":530
+  /* "brainpy\_c\isotopic_distribution.pyx":581
  * 
  * 
  * cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=0, double charge_carrier=PROTON) nogil:             # <<<<<<<<<<<<<<
@@ -6878,22 +7507,22 @@ PyMODINIT_FUNC PyInit_isotopic_distribution(void)
  */
   __pyx_k__3 = __pyx_v_7brainpy_2_c_11composition_PROTON;
 
-  /* "brainpy\_c\isotopic_distribution.pyx":600
+  /* "brainpy\_c\isotopic_distribution.pyx":653
  * 
  * 
  * def main():             # <<<<<<<<<<<<<<
  *     cdef:
  *         dict comp_dict
  */
-  __pyx_t_6 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_21isotopic_distribution_5main, NULL, __pyx_n_s_brainpy__c_isotopic_distribution); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyCFunction_NewEx(&__pyx_mdef_7brainpy_2_c_21isotopic_distribution_7main, NULL, __pyx_n_s_brainpy__c_isotopic_distribution); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 653; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_main_2, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_main_2, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 653; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
   /* "brainpy\_c\isotopic_distribution.pyx":1
- * from brainpy._c.composition cimport (             # <<<<<<<<<<<<<<
- *     _PeriodicTable, Element, Isotope, Composition,
- *     mass_charge_ratio, PROTON,
+ * # cython: embedsignature=True             # <<<<<<<<<<<<<<
+ * 
+ * from brainpy._c.composition cimport (
  */
   __pyx_t_6 = PyDict_New(); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
@@ -7022,6 +7651,151 @@ static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
     if (nogil)
         PyGILState_Release(state);
 #endif
+}
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+static int __Pyx_TryUnpackUnboundCMethod(__Pyx_CachedCFunction* target) {
+    PyObject *method;
+    method = __Pyx_PyObject_GetAttrStr(target->type, *target->method_name);
+    if (unlikely(!method))
+        return -1;
+    target->method = method;
+#if CYTHON_COMPILING_IN_CPYTHON
+    #if PY_MAJOR_VERSION >= 3
+    if (likely(PyObject_TypeCheck(method, &PyMethodDescr_Type)))
+    #endif
+    {
+        PyMethodDescrObject *descr = (PyMethodDescrObject*) method;
+        target->func = descr->d_method->ml_meth;
+        target->flag = descr->d_method->ml_flags & (METH_VARARGS | METH_KEYWORDS | METH_O | METH_NOARGS);
+    }
+#endif
+    return 0;
+}
+
+static PyObject* __Pyx__CallUnboundCMethod0(__Pyx_CachedCFunction* cfunc, PyObject* self) {
+    PyObject *args, *result = NULL;
+    if (unlikely(!cfunc->method) && unlikely(__Pyx_TryUnpackUnboundCMethod(cfunc) < 0)) return NULL;
+#if CYTHON_COMPILING_IN_CPYTHON
+    args = PyTuple_New(1);
+    if (unlikely(!args)) goto bad;
+    Py_INCREF(self);
+    PyTuple_SET_ITEM(args, 0, self);
+#else
+    args = PyTuple_Pack(1, self);
+    if (unlikely(!args)) goto bad;
+#endif
+    result = __Pyx_PyObject_Call(cfunc->method, args, NULL);
+    Py_DECREF(args);
+bad:
+    return result;
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyDict_Items(PyObject* d) {
+    if (PY_MAJOR_VERSION >= 3)
+        return __Pyx_CallUnboundCMethod0(&__pyx_umethod_PyDict_Type_items, d);
+    else
+        return PyDict_Items(d);
+}
+
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
+    PyErr_Format(PyExc_ValueError,
+                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
+}
+
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
+    PyErr_Format(PyExc_ValueError,
+                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
+                 index, (index == 1) ? "" : "s");
+}
+
+static CYTHON_INLINE int __Pyx_IterFinish(void) {
+#if CYTHON_COMPILING_IN_CPYTHON
+    PyThreadState *tstate = PyThreadState_GET();
+    PyObject* exc_type = tstate->curexc_type;
+    if (unlikely(exc_type)) {
+        if (likely(exc_type == PyExc_StopIteration) || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration)) {
+            PyObject *exc_value, *exc_tb;
+            exc_value = tstate->curexc_value;
+            exc_tb = tstate->curexc_traceback;
+            tstate->curexc_type = 0;
+            tstate->curexc_value = 0;
+            tstate->curexc_traceback = 0;
+            Py_DECREF(exc_type);
+            Py_XDECREF(exc_value);
+            Py_XDECREF(exc_tb);
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+    return 0;
+#else
+    if (unlikely(PyErr_Occurred())) {
+        if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) {
+            PyErr_Clear();
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+    return 0;
+#endif
+}
+
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
+    if (unlikely(retval)) {
+        Py_DECREF(retval);
+        __Pyx_RaiseTooManyValuesError(expected);
+        return -1;
+    } else {
+        return __Pyx_IterFinish();
+    }
+    return 0;
+}
+
+static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
+    PyErr_Format(PyExc_TypeError,
+        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
+        name, type->tp_name, Py_TYPE(obj)->tp_name);
+}
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact)
+{
+    if (unlikely(!type)) {
+        PyErr_SetString(PyExc_SystemError, "Missing type object");
+        return 0;
+    }
+    if (none_allowed && obj == Py_None) return 1;
+    else if (exact) {
+        if (likely(Py_TYPE(obj) == type)) return 1;
+        #if PY_MAJOR_VERSION == 2
+        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
+        #endif
+    }
+    else {
+        if (likely(PyObject_TypeCheck(obj, type))) return 1;
+    }
+    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
+    return 0;
 }
 
 static void __Pyx_RaiseDoubleKeywordsError(
@@ -7163,22 +7937,163 @@ static void __Pyx_RaiseArgtupleInvalid(
                  (num_expected == 1) ? "" : "s", num_found);
 }
 
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
+#if PY_MAJOR_VERSION < 3
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
+                        CYTHON_UNUSED PyObject *cause) {
+    Py_XINCREF(type);
+    if (!value || value == Py_None)
+        value = NULL;
+    else
+        Py_INCREF(value);
+    if (!tb || tb == Py_None)
+        tb = NULL;
+    else {
+        Py_INCREF(tb);
+        if (!PyTraceBack_Check(tb)) {
+            PyErr_SetString(PyExc_TypeError,
+                "raise: arg 3 must be a traceback or None");
+            goto raise_error;
+        }
     }
-    return result;
+    if (PyType_Check(type)) {
+#if CYTHON_COMPILING_IN_PYPY
+        if (!value) {
+            Py_INCREF(Py_None);
+            value = Py_None;
+        }
+#endif
+        PyErr_NormalizeException(&type, &value, &tb);
+    } else {
+        if (value) {
+            PyErr_SetString(PyExc_TypeError,
+                "instance exception may not have a separate value");
+            goto raise_error;
+        }
+        value = type;
+        type = (PyObject*) Py_TYPE(type);
+        Py_INCREF(type);
+        if (!PyType_IsSubtype((PyTypeObject *)type, (PyTypeObject *)PyExc_BaseException)) {
+            PyErr_SetString(PyExc_TypeError,
+                "raise: exception class must be a subclass of BaseException");
+            goto raise_error;
+        }
+    }
+    __Pyx_ErrRestore(type, value, tb);
+    return;
+raise_error:
+    Py_XDECREF(value);
+    Py_XDECREF(type);
+    Py_XDECREF(tb);
+    return;
+}
+#else
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause) {
+    PyObject* owned_instance = NULL;
+    if (tb == Py_None) {
+        tb = 0;
+    } else if (tb && !PyTraceBack_Check(tb)) {
+        PyErr_SetString(PyExc_TypeError,
+            "raise: arg 3 must be a traceback or None");
+        goto bad;
+    }
+    if (value == Py_None)
+        value = 0;
+    if (PyExceptionInstance_Check(type)) {
+        if (value) {
+            PyErr_SetString(PyExc_TypeError,
+                "instance exception may not have a separate value");
+            goto bad;
+        }
+        value = type;
+        type = (PyObject*) Py_TYPE(value);
+    } else if (PyExceptionClass_Check(type)) {
+        PyObject *instance_class = NULL;
+        if (value && PyExceptionInstance_Check(value)) {
+            instance_class = (PyObject*) Py_TYPE(value);
+            if (instance_class != type) {
+                int is_subclass = PyObject_IsSubclass(instance_class, type);
+                if (!is_subclass) {
+                    instance_class = NULL;
+                } else if (unlikely(is_subclass == -1)) {
+                    goto bad;
+                } else {
+                    type = instance_class;
+                }
+            }
+        }
+        if (!instance_class) {
+            PyObject *args;
+            if (!value)
+                args = PyTuple_New(0);
+            else if (PyTuple_Check(value)) {
+                Py_INCREF(value);
+                args = value;
+            } else
+                args = PyTuple_Pack(1, value);
+            if (!args)
+                goto bad;
+            owned_instance = PyObject_Call(type, args, NULL);
+            Py_DECREF(args);
+            if (!owned_instance)
+                goto bad;
+            value = owned_instance;
+            if (!PyExceptionInstance_Check(value)) {
+                PyErr_Format(PyExc_TypeError,
+                             "calling %R should have returned an instance of "
+                             "BaseException, not %R",
+                             type, Py_TYPE(value));
+                goto bad;
+            }
+        }
+    } else {
+        PyErr_SetString(PyExc_TypeError,
+            "raise: exception class must be a subclass of BaseException");
+        goto bad;
+    }
+#if PY_VERSION_HEX >= 0x03030000
+    if (cause) {
+#else
+    if (cause && cause != Py_None) {
+#endif
+        PyObject *fixed_cause;
+        if (cause == Py_None) {
+            fixed_cause = NULL;
+        } else if (PyExceptionClass_Check(cause)) {
+            fixed_cause = PyObject_CallObject(cause, NULL);
+            if (fixed_cause == NULL)
+                goto bad;
+        } else if (PyExceptionInstance_Check(cause)) {
+            fixed_cause = cause;
+            Py_INCREF(fixed_cause);
+        } else {
+            PyErr_SetString(PyExc_TypeError,
+                            "exception causes must derive from "
+                            "BaseException");
+            goto bad;
+        }
+        PyException_SetCause(value, fixed_cause);
+    }
+    PyErr_SetObject(type, value);
+    if (tb) {
+#if CYTHON_COMPILING_IN_PYPY
+        PyObject *tmp_type, *tmp_value, *tmp_tb;
+        PyErr_Fetch(&tmp_type, &tmp_value, &tmp_tb);
+        Py_INCREF(tb);
+        PyErr_Restore(tmp_type, tmp_value, tb);
+        Py_XDECREF(tmp_tb);
+#else
+        PyThreadState *tstate = PyThreadState_GET();
+        PyObject* tmp_tb = tstate->curexc_traceback;
+        if (tb != tmp_tb) {
+            Py_INCREF(tb);
+            tstate->curexc_traceback = tb;
+            Py_XDECREF(tmp_tb);
+        }
+#endif
+    }
+bad:
+    Py_XDECREF(owned_instance);
+    return;
 }
 #endif
 

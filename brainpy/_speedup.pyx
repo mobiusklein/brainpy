@@ -1,3 +1,4 @@
+# cython: embedsignature=True
 # cython: profile=True
 
 from cpython.list cimport PyList_GET_ITEM, PyList_GET_SIZE, PyList_Append
@@ -138,24 +139,42 @@ cdef class Isotope(object):
         public double mass
         public double abundance
         public int neutron_shift
+        public int neutrons
 
-    def __init__(self, mass, abundance, neutron_shift):
+    def __init__(self, mass, abundance, neutron_shift, neutrons):
         self.mass = mass
         self.abundance = abundance
         self.neutron_shift = neutron_shift
+        self.neutrons = neutrons
 
     def __repr__(self):
-        return "Isotope(mass=%0.3f, abundance=%0.3f, neutron_shift=%d)" % (self.mass, self.abundance, self.neutron_shift)
+        return "Isotope(mass=%0.3f, abundance=%0.3f, neutron_shift=%d, neutrons=%d)" % (
+            self.mass, self.abundance, self.neutron_shift, self.neutrons)
 
 
 
 cdef int max_variants(dict composition):
+    """Calculates the maximum number of isotopic variants that could be produced by a
+    composition.
+
+    Parameters
+    ----------
+    composition : Mapping
+        Any Mapping type where keys are element symbols and values are integers
+
+    Returns
+    -------
+        max_n_variants : int
+    """
     max_n_variants = 0
 
     for element, count in composition.items():
         if element == "H+":
             continue
-        max_n_variants += count * periodic_table[element].max_neutron_shift()
+        try:
+            max_n_variants += count * periodic_table[element].max_neutron_shift()
+        except KeyError:
+            pass
 
     return max_n_variants
 
@@ -182,6 +201,39 @@ cdef double calculate_mass(dict composition, dict mass_data=None):
     return mass
 
 
+cdef str _make_isotope_string(str element, int isotope=0):
+    if isotope == 0:
+        return element
+    else:
+        return "%s[%d]" % (element, isotope)
+
+
+cdef tuple _get_isotope(str element_string):
+    cdef:
+        object match
+        str element_
+        int isotope
+    if "[" in element_string:
+        match = re.search(r"(\S+)\[(\d+)\]", element_string)
+        if match:
+            element_ = match.group(1)
+            isotope = int(match.group(2))
+            return element_, isotope
+    else:
+        return element_string, 0
+
+
+cpdef Element make_fixed_isotope_element(Element element, int neutrons):
+    cdef:
+        Isotope isotope
+        Element el
+    isotope = element.isotopes[neutrons - element.isotopes[0].neutrons]
+    el = Element(element.symbol + ("[%d]" % neutrons), dict([
+            (0, Isotope(isotope.mass, abundance=1.0, neutron_shift=0, neutrons=neutrons)),
+        ]))
+    return el
+
+
 def _isotopes_of(element):
     freqs = dict()
     for i, mass_freqs in nist_mass[element].items():
@@ -193,26 +245,18 @@ def _isotopes_of(element):
         return dict()
     mono_neutrons = max(freqs.items(), key=lambda x: x[1][1])[0]
     freqs = list(sorted(
-        [(k - mono_neutrons, Isotope(*v, neutron_shift=k - mono_neutrons))
+        [(k - mono_neutrons, Isotope(*v, neutron_shift=k - mono_neutrons, neutrons=k))
                                 for k, v in freqs.items()], key=lambda x: x[0]))
     return dict(freqs)
 
 
 cdef class Element(object):
-    cdef:
-        public str symbol
-        public dict isotopes
-        double _monoisotopic_mass
-        int _max_neutron_shift
-        int _min_neutron_shift
-        list _no_mass_elementary_symmetric_polynomial_cache
-        list _no_mass_power_sum_cache
-        list _mass_elementary_symmetric_polynomial_cache
-        list _mass_power_sum_cache
 
-    def __init__(self, str symbol):
+    def __init__(self, str symbol, dict isotopes=None):
+        if isotopes is None:
+            isotopes = _isotopes_of(symbol)
         self.symbol = symbol
-        self.isotopes = _isotopes_of(symbol)
+        self.isotopes = isotopes
         min_shift = 1000
         max_shift = 0
         for shift in self.isotopes:
@@ -320,11 +364,19 @@ cdef class IsotopicConstants(dict):
         cdef:
             Element element
             int order
+            int isotope
+            str symbol_parsed
             PolynomialParameters element_parameters, mass_parameters
 
         if symbol in self:
             return
-        element = periodic_table[symbol]
+        try:
+            element = periodic_table[symbol]
+        except KeyError:
+            symbol_parsed, isotope = _get_isotope(symbol)
+            if isotope == 0:
+                raise KeyError(symbol)
+            element = make_fixed_isotope_element(periodic_table[symbol_parsed], isotope)
         order = element.max_neutron_shift()
         element_parameters = self.coefficients(element)
         mass_parameters = self.coefficients(element, True)
@@ -364,42 +416,6 @@ cdef class IsotopicConstants(dict):
         constants = <PhiConstants>self[symbol]
         return constants.mass_coefficients.power_sum[order]
 
-
-# cdef class Peak(object):
-#     cdef:
-#         public double mz
-#         public double intensity
-#         public int charge
-
-#     def __init__(self, mz, intensity, charge):
-#         self.mz = mz
-#         self.intensity = intensity
-#         self.charge = charge
-
-#     def __repr__(self):
-#         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
-
-#     def _eq(self, other):
-#         equal = all(
-#             abs(self.mz - other.mz) < 1e-10,
-#             abs(self.intensity - other.intensity) < 1e-10,
-#             self.charge == other.charge)
-#         return equal
-
-#     def __richcmp__(self, other, int code):
-#         if code == 2:
-#             return self._eq(other)
-#         elif code == 3:
-#             return not self._eq(other)
-
-#     def __hash__(self):
-#         return hash(self.mz)
-
-#     def clone(self):
-#         return self.__class__(self.mz, self.intensity, self.charge)
-
-#     def __reduce__(self):
-#         return Peak, (self.mz, self.intensity, self.charge)
 
 cdef class IsotopicDistribution(object):
     cdef:
@@ -442,7 +458,8 @@ cdef class IsotopicDistribution(object):
         for element in self.composition:
             if element == "H+":
                 continue
-            intensity += log(periodic_table[element].isotopes[0].abundance)
+            # intensity += log(periodic_table[element].isotopes[0].abundance)
+            intensity += log(self._isotopic_constants[element].element.isotopes[0].abundance)
         intensity = exp(intensity)
         return Peak(mass, intensity, 0)
 
@@ -540,6 +557,7 @@ cdef class IsotopicDistribution(object):
             size_t i, j
             Py_ssize_t k
             Element element_obj
+            PhiConstants phi_obj
             double center, temp
             double _element_count, polynomial_term, _monoisotopic_mass
             double base_intensity
@@ -574,7 +592,10 @@ cdef class IsotopicDistribution(object):
                 _element_count = PyFloat_AsDouble(<object>PyDict_GetItem(self.composition, element))
 
                 polynomial_term = PyFloat_AsDouble(<object>PyList_GET_ITEM(ele_sym_poly, i))
-                element_obj = (<Element>PyDict_GetItem(periodic_table, element))
+
+                phi_obj = <PhiConstants>PyDict_GetItem(self._isotopic_constants, element)
+                element_obj = phi_obj.element
+                # element_obj = (<Element>PyDict_GetItem(periodic_table, element))
                 _monoisotopic_mass = element_obj._monoisotopic_mass
 
                 temp = _element_count
