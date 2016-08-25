@@ -1,9 +1,15 @@
 # cython: embedsignature=True
 
 cimport cython
+
+# from cpython.string cimport PyString_FromString, PyString_AsString
+# from cpython.int cimport PyInt_AsLong, PyInt_FromLong
+
+from brainpy._c.compat cimport (
+    PyStr_FromString as PyString_FromString, PyStr_AsString as PyString_AsString,
+    PyInt_AsLong, PyInt_FromLong)
+
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
-from cpython.string cimport PyString_FromString, PyString_AsString
-from cpython.int cimport PyInt_AsLong, PyInt_FromLong
 from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
 from cpython.object cimport PyObject
 from libc.string cimport strcmp, memcpy, strlen

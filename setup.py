@@ -5,20 +5,40 @@ import traceback
 try:
     from Cython.Build import cythonize
     extensions = cythonize([
-        Extension(name="brainpy._speedup", sources=["brainpy/_speedup.pyx"]),
-        Extension(name="brainpy._c.composition", sources=["brainpy/_c/composition.pyx"]),
-        Extension(name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.pyx"]),
-        Extension(name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.pyx"]),
-        Extension(name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.pyx"])
-        ])
+        Extension(
+            name="brainpy._speedup", sources=["brainpy/_speedup.pyx"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.composition", sources=["brainpy/_c/composition.pyx"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.pyx"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.pyx"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.pyx"],
+            include_dirs=["brainpy/_c/"])
+    ])
 except ImportError:
     extensions = ([
-        Extension(name="brainpy._speedup", sources=["brainpy/_speedup.c"]),
-        Extension(name="brainpy._c.composition", sources=["brainpy/_c/composition.c"]),
-        Extension(name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.c"]),
-        Extension(name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.c"]),
-        Extension(name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.c"])
-        ])
+        Extension(
+            name="brainpy._speedup", sources=["brainpy/_speedup.c"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.composition", sources=["brainpy/_c/composition.c"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.c"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.c"],
+            include_dirs=["brainpy/_c/"]),
+        Extension(
+            name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.c"],
+            include_dirs=["brainpy/_c/"])
+    ])
 
 
 from distutils.command.build_ext import build_ext
