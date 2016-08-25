@@ -168,7 +168,7 @@ def __select_1_1(object x):
 
 cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
     cdef:
-        dict freqs
+        dict freqs, element_data
         list freq_list
         int i, key
         tuple mass, value
@@ -177,9 +177,17 @@ cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
         tuple mass_freqs
         int mono_neutrons
         object k, v
+        str py_element_symbol
 
     freqs = dict()
-    for i, mass_freqs in nist_mass[element_symbol].items():
+    py_element_symbol = PyString_FromString(element_symbol)
+
+    try:
+        element_data = nist_mass[py_element_symbol]
+    except KeyError:
+        element_data = nist_mass[py_element_symbol.encode('utf-8')]
+
+    for i, mass_freqs in element_data.items():
         if i == 0:
             continue
         if mass_freqs[1] > 0:
@@ -188,7 +196,7 @@ cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
     if len(freqs) == 0:
         return
 
-    freq_list = freqs.items() 
+    freq_list = list(freqs.items())
     freq_list.sort(key=__select_1_1)
     mono_neutrons = freq_list[-1][0]
 
@@ -354,7 +362,7 @@ cdef ElementHashTable* make_element_hash_table_populated(size_t size):
         Element* element
         Element* out_test
         ElementHashTable* table
-        str pk
+        str pk  #!
         char* k
         size_t i
         int status

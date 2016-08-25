@@ -205,7 +205,7 @@ class Element(object):
     def max_neutron_shift(self):
         if len(self.isotopes) == 0:
             return 0
-        return self.isotopes.values()[-1].neutron_shift
+        return list(self.isotopes.values())[-1].neutron_shift
 
     def min_neutron_shift(self):
         if len(self.isotopes) == 0:
