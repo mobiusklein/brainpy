@@ -1,3 +1,4 @@
+from cython cimport freelist
 from brainpy._c.composition cimport Composition
 from brainpy._c.isotopic_constants cimport IsotopicConstants
 from brainpy._c.double_vector cimport DoubleVector
@@ -31,6 +32,7 @@ cdef struct IsotopicDistribution:
     Peak* monoisotopic_peak
 
 
+@freelist(100000)
 cdef class TheoreticalPeak(object):
     cdef:
         public double mz
