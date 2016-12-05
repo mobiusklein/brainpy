@@ -210,7 +210,7 @@ class Element(object):
     def min_neutron_shift(self):
         if len(self.isotopes) == 0:
             return -1
-        return self.isotopes.values()[0].neutron_shift
+        return list(self.isotopes.values())[0].neutron_shift
 
     def __eq__(self, other):
         if other is None:
