@@ -780,7 +780,8 @@ cdef str _store_string(str symbol):
 cdef class PyComposition(object):
     def __cinit__(self, base=None, **kwargs):
         cdef:
-            char* element
+            char* c_element
+            str py_element
             count_type count
         self.impl = make_composition()
         self._clean = False
@@ -789,8 +790,9 @@ cdef class PyComposition(object):
         if base is not None and isinstance(base, dict):
             self.update(base)
 
-        for element, count in kwargs.items():
-            self[element] = count
+        for py_element, count in kwargs.items():
+            c_element = PyString_AsString(py_element)
+            self[c_element] = count
 
     def __dealloc__(self):
         free_composition(self.impl)
