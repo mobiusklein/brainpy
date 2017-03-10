@@ -539,7 +539,7 @@ def pyisotopic_variants(object composition not None, object npeaks=None, int cha
 
     peaklist = []
     for i in range(peak_set.used):
-        peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
+        peaklist.append(TheoreticalPeak._create(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
 
     free_peak_list(peak_set)
     free_isotopic_distribution(dist)
@@ -570,7 +570,7 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
 
     peaklist = []
     for i in range(peak_set.used):
-        peaklist.append(TheoreticalPeak(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
+        peaklist.append(TheoreticalPeak._create(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
 
     free_peak_list(peak_set)
     free_isotopic_distribution(dist)
@@ -646,8 +646,18 @@ cdef class TheoreticalPeak(object):
     def __reduce__(self):
         return TheoreticalPeak, (self.mz, self.intensity, self.charge)
 
-    def clone(self):
-        return self.__class__(self.mz, self.intensity, self.charge)
+    cpdef TheoreticalPeak clone(self):
+        return TheoreticalPeak._create(self.mz, self.intensity, self.charge)
+
+    @staticmethod
+    cdef TheoreticalPeak _create(double mz, double intensity, int charge):
+        cdef:
+            TheoreticalPeak inst
+        inst = TheoreticalPeak.__new__(TheoreticalPeak)
+        inst.mz = mz
+        inst.intensity = intensity
+        inst.charge = charge
+        return inst
 
 
 def main():

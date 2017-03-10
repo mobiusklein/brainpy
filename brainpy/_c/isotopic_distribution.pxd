@@ -39,6 +39,11 @@ cdef class TheoreticalPeak(object):
         public double intensity
         public int charge
 
+    @staticmethod
+    cdef TheoreticalPeak _create(double mz, double intensity, int charge)
+
+    cpdef TheoreticalPeak clone(self)
+
 
 cpdef list _isotopic_variants(object composition, object npeaks=*, int charge=*, charge_carrier=*)
 

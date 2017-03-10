@@ -99,7 +99,7 @@ def status_msgs(*msgs):
 def run_setup(include_cext=True):
     setup(
         name='brainpy',
-        version='1.0.10',
+        version='1.0.11',
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''
