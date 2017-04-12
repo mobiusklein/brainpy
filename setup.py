@@ -84,6 +84,7 @@ class ve_build_ext(build_ext):
                 raise BuildFailed()
             raise
 
+
 cmdclass = {}
 
 cmdclass['build_ext'] = ve_build_ext
@@ -99,7 +100,7 @@ def status_msgs(*msgs):
 def run_setup(include_cext=True):
     setup(
         name='brainpy',
-        version='1.0.11',
+        version='1.0.12',
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''
@@ -116,6 +117,7 @@ def run_setup(include_cext=True):
                 'License :: OSI Approved :: BSD License',
                 'Topic :: Scientific/Engineering :: Bio-Informatics']
     )
+
 
 if __name__ == '__main__':
     try:
