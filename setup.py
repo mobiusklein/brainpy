@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from setuptools import setup, find_packages, Extension
 import sys
 import traceback
@@ -124,10 +125,10 @@ This package is an implementation of the algorithm originally described in
         include_package_data=True,
         cmdclass=cmdclass,
         classifiers=[
-                'Development Status :: 4 - Beta',
-                'Intended Audience :: Science/Research',
-                'License :: OSI Approved :: BSD License',
-                'Topic :: Scientific/Engineering :: Bio-Informatics']
+            'Development Status :: 4 - Beta',
+            'Intended Audience :: Science/Research',
+            'License :: OSI Approved :: Apache Software License',
+            'Topic :: Scientific/Engineering :: Bio-Informatics']
     )
 
 
