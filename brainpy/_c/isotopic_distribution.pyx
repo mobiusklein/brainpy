@@ -512,42 +512,44 @@ cpdef bint check_composition_non_negative(dict composition):
     return negative_element
 
 
-def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0, charge_carrier=PROTON):
-    cdef:
-        Composition* composition_struct
-        dict composition_dict
-        list peaklist
-        PeakList* peak_set
-        IsotopicDistribution* dist
-        int _npeaks, max_n_varaints
+def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0,
+                        double charge_carrier=PROTON):
+    return _isotopic_variants(composition, npeaks, charge, charge_carrier)
+    # cdef:
+    #     Composition* composition_struct
+    #     dict composition_dict
+    #     list peaklist
+    #     PeakList* peak_set
+    #     IsotopicDistribution* dist
+    #     int _npeaks, max_n_varaints
 
-    composition_dict = dict(composition)
-    if check_composition_non_negative(composition_dict):
-        raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
-    composition_struct = dict_to_composition(composition_dict)
-    validate_composition(composition_struct)
+    # composition_dict = dict(composition)
+    # if check_composition_non_negative(composition_dict):
+    #     raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
+    # composition_struct = dict_to_composition(composition_dict)
+    # validate_composition(composition_struct)
 
-    if npeaks is None:
-        max_n_variants = max_variants(composition_struct)
-        _npeaks = <int>sqrt(max_n_variants - 2)
-        _npeaks = min(max(_npeaks, 3), 100)
-    else:
-        _npeaks = npeaks - 1
+    # if npeaks is None:
+    #     max_n_variants = max_variants(composition_struct)
+    #     _npeaks = <int>sqrt(max_n_variants - 2)
+    #     _npeaks = min(max(_npeaks, 3), 100)
+    # else:
+    #     _npeaks = npeaks - 1
 
-    dist = make_isotopic_distribution(composition_struct, _npeaks)
-    peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
+    # dist = make_isotopic_distribution(composition_struct, _npeaks)
+    # peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
 
-    peaklist = []
-    for i in range(peak_set.used):
-        peaklist.append(TheoreticalPeak._create(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
+    # peaklist = []
+    # for i in range(peak_set.used):
+    #     peaklist.append(TheoreticalPeak._create(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
 
-    free_peak_list(peak_set)
-    free_isotopic_distribution(dist)
-    free_composition(composition_struct)
-    return peaklist
+    # free_peak_list(peak_set)
+    # free_isotopic_distribution(dist)
+    # free_composition(composition_struct)
+    # return peaklist
 
 
-cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, charge_carrier=PROTON):
+cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, double charge_carrier=PROTON):
     cdef:
         Composition* composition_struct
         list peaklist

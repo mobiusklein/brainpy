@@ -45,7 +45,7 @@ cdef class TheoreticalPeak(object):
     cpdef TheoreticalPeak clone(self)
 
 
-cpdef list _isotopic_variants(object composition, object npeaks=*, int charge=*, charge_carrier=*)
+cpdef list _isotopic_variants(object composition, object npeaks=*, int charge=*, double charge_carrier=*)
 
 
 cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=*, double charge_carrier=*) nogil
