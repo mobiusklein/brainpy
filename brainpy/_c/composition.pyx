@@ -30,11 +30,15 @@ nist_mass = __nist_mass
 
 cdef double PROTON = nist_mass["H+"][0][0]
 
+
 cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) nogil:
     return (mz * fabs(z)) - (z * charge_carrier)
 
+
+@cython.cdivision
 cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) nogil:
     return (neutral_mass + (z * charge_carrier)) / fabs(z)
+
 
 cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:
     cdef:

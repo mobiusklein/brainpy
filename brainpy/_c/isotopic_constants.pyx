@@ -1,5 +1,7 @@
 # cython: embedsignature=True
 
+cimport cython
+
 from brainpy._c.composition cimport (
     Element, Isotope, Composition,
     element_max_neutron_shift, _parse_isotope_string,
@@ -20,6 +22,7 @@ cdef extern from * nogil:
 # -----------------------------------------------------------------------------
 # PolynomialParameters Methods
 
+@cython.cdivision
 cdef dvec* vietes(dvec* coefficients) nogil:
     cdef:
         DoubleVector* elementary_symmetric_polynomial
@@ -63,6 +66,7 @@ cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) nogil:
         double_vector_append(ps_vec, temp_ps)
 
 
+@cython.cdivision
 cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, int order) nogil:
     cdef:
         size_t begin, end, k, j

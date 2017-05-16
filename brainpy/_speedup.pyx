@@ -606,7 +606,7 @@ cdef class IsotopicDistribution(object):
             mass_vector.append((center / probability_vector[i]) if probability_vector[i] > 0 else 0)
         return mass_vector
 
-    def aggregated_isotopic_variants(self, int charge=0, charge_carrier=PROTON):
+    def aggregated_isotopic_variants(self, int charge=0, double charge_carrier=PROTON):
         '''
         Compute the m/z (or neutral mass when `charge` == 0) for each
         aggregated isotopic peak and their intensity relative to

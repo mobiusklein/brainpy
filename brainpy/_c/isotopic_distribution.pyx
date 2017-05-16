@@ -1,5 +1,7 @@
 # cython: embedsignature=True
 
+cimport cython
+
 from brainpy._c.composition cimport (
     Element, Isotope, Composition,
     mass_charge_ratio, PROTON, element_max_neutron_shift,
@@ -374,6 +376,7 @@ cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
     return probability_vector
 
 
+@cython.cdivision
 cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* probability_vector) nogil:
     cdef:
         dvec* mass_vector
@@ -432,6 +435,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
     return mass_vector
 
 
+@cython.cdivision
 cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distribution, int charge, double charge_carrier) nogil:
     cdef:
         dvec* probability_vector
@@ -514,48 +518,56 @@ cpdef bint check_composition_non_negative(dict composition):
 
 def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0,
                         double charge_carrier=PROTON):
+    '''
+    Compute a peak list representing the theoretical isotopic cluster for `composition`.
+
+    Parameters
+    ----------
+    composition : Mapping
+        Any Mapping type where keys are element symbols and values are integers
+    n_peaks: int
+        The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
+        If given a number below 1 or above the maximum number of isotopic variants, the maximum will
+        be used. If `None`, a "reasonable" value is chosen by `int(sqrt(max_variants(composition)))`.
+    charge: int
+        The charge state of the isotopic cluster to produce. Defaults to 0, theoretical neutral mass.
+    charge_carrier: double
+        The mass of the molecule contributing the ion's charge
+
+    Returns
+    -------
+    list of TheoreticalPeak
+    '''
     return _isotopic_variants(composition, npeaks, charge, charge_carrier)
-    # cdef:
-    #     Composition* composition_struct
-    #     dict composition_dict
-    #     list peaklist
-    #     PeakList* peak_set
-    #     IsotopicDistribution* dist
-    #     int _npeaks, max_n_varaints
-
-    # composition_dict = dict(composition)
-    # if check_composition_non_negative(composition_dict):
-    #     raise ValueError("A composition cannot have negative element counts. %r" % composition_dict)
-    # composition_struct = dict_to_composition(composition_dict)
-    # validate_composition(composition_struct)
-
-    # if npeaks is None:
-    #     max_n_variants = max_variants(composition_struct)
-    #     _npeaks = <int>sqrt(max_n_variants - 2)
-    #     _npeaks = min(max(_npeaks, 3), 100)
-    # else:
-    #     _npeaks = npeaks - 1
-
-    # dist = make_isotopic_distribution(composition_struct, _npeaks)
-    # peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
-
-    # peaklist = []
-    # for i in range(peak_set.used):
-    #     peaklist.append(TheoreticalPeak._create(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
-
-    # free_peak_list(peak_set)
-    # free_isotopic_distribution(dist)
-    # free_composition(composition_struct)
-    # return peaklist
 
 
 cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, double charge_carrier=PROTON):
+    '''
+    Compute a peak list representing the theoretical isotopic cluster for `composition`.
+
+    Parameters
+    ----------
+    composition : Mapping
+        Any Mapping type where keys are element symbols and values are integers
+    n_peaks: int
+        The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
+        If given a number below 1 or above the maximum number of isotopic variants, the maximum will
+        be used. If `None`, a "reasonable" value is chosen by `int(sqrt(max_variants(composition)))`.
+    charge: int
+        The charge state of the isotopic cluster to produce. Defaults to 0, theoretical neutral mass.
+    charge_carrier: double
+        The mass of the molecule contributing the ion's charge
+
+    Returns
+    -------
+    list of TheoreticalPeak
+    '''
     cdef:
         Composition* composition_struct
         list peaklist
         PeakList* peak_set
         IsotopicDistribution* dist
-        int _npeaks, max_n_varaints
+        int _npeaks, max_n_variants
 
     composition_struct = dict_to_composition(dict(composition))
     validate_composition(composition_struct)
@@ -565,14 +577,14 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
         _npeaks = <int>sqrt(max_n_variants - 2)
         _npeaks = min(max(_npeaks, 3), 100)
     else:
+        # The npeaks variable is left as a Python-level variable to
+        # allow it to be any Python numeric type
         _npeaks = npeaks - 1
 
     dist = make_isotopic_distribution(composition_struct, _npeaks)
     peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
 
-    peaklist = []
-    for i in range(peak_set.used):
-        peaklist.append(TheoreticalPeak._create(peak_set.peaks[i].mz, peak_set.peaks[i].intensity, peak_set.peaks[i].charge))
+    peaklist = peaklist_to_list(peak_set)
 
     free_peak_list(peak_set)
     free_isotopic_distribution(dist)
@@ -604,19 +616,14 @@ cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charg
 
 cdef list peaklist_to_list(PeakList* peaklist):
     cdef:
+        list pypeaklist
         size_t i
-        list result
-        TheoreticalPeak pypeak
-
-    result = []
-    i = 0
+    pypeaklist = []
     for i in range(peaklist.used):
-        pypeak = TheoreticalPeak(
-            mz=peaklist.peaks[i].mz,
-            intensity=peaklist.peaks[i].intensity,
-            charge=peaklist.peaks[i].charge)
-        result.append(pypeak)
-    return result
+        pypeaklist.append(TheoreticalPeak._create(
+            peaklist.peaks[i].mz, peaklist.peaks[i].intensity, peaklist.peaks[i].charge))
+    return pypeaklist
+
 
 
 cdef class TheoreticalPeak(object):

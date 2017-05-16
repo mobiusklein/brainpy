@@ -620,7 +620,7 @@ class IsotopicDistribution(object):
         return tuple(peak_set)
 
 
-def isotopic_variants(composition, n_peaks=None, charge=0, charge_carrier=PROTON):
+def isotopic_variants(composition, npeaks=None, charge=0, charge_carrier=PROTON):
     '''
     Compute a peak list representing the theoretical isotopic cluster for `composition`.
 
@@ -628,7 +628,7 @@ def isotopic_variants(composition, n_peaks=None, charge=0, charge_carrier=PROTON
     ----------
     composition : Mapping
         Any Mapping type where keys are element symbols and values are integers
-    n_peaks: int
+    npeaks: int
         The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
         If given a number below 1 or above the maximum number of isotopic variants, the maximum will
         be used. If `None`, a "reasonable" value is chosen by `int(sqrt(max_variants(composition)))`.
@@ -644,14 +644,14 @@ def isotopic_variants(composition, n_peaks=None, charge=0, charge_carrier=PROTON
     :class:`IsotopicDistribution`
 
     '''
-    if n_peaks is None:
+    if npeaks is None:
         max_n_variants = max_variants(composition)
-        n_peaks = int(sqrt(max_n_variants) - 2)
-        n_peaks = max(n_peaks, 3)
+        npeaks = int(sqrt(max_n_variants) - 2)
+        npeaks = max(npeaks, 3)
     else:
         # Monoisotopic Peak is not included
-        n_peaks -= 1
-    return IsotopicDistribution(composition, n_peaks).aggregated_isotopic_variants(
+        npeaks -= 1
+    return IsotopicDistribution(composition, npeaks).aggregated_isotopic_variants(
         charge, charge_carrier=charge_carrier)
 
 
