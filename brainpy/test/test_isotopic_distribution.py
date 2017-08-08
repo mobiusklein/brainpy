@@ -1,6 +1,5 @@
 import unittest
 
-
 from brainpy import IsotopicDistribution, isotopic_variants, calculate_mass, neutral_mass, _has_c, Peak
 
 if _has_c:

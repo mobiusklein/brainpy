@@ -3,11 +3,17 @@ from __future__ import absolute_import
 import operator
 import re
 
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from math import exp, log, sqrt
 from sys import float_info
 
 from .mass_dict import nist_mass
+from .composition import (
+    SimpleComposition,
+    parse_formula,
+    calculate_mass,
+    _make_isotope_string,
+    _get_isotope)
 
 mz_getter = operator.attrgetter("mz")
 PROTON = nist_mass["H+"][0][0]
@@ -328,56 +334,6 @@ class IsotopicConstants(dict):
     def nth_modified_element_power_sum(self, symbol, order):
         constants = self[symbol]
         return constants.mass_coefficients.power_sum[order]
-
-
-def calculate_mass(composition, mass_data=None):
-    """Calculates the monoisotopic mass of a composition
-
-    Parameters
-    ----------
-    composition : Mapping
-        Any Mapping type where keys are element symbols and values are integers
-    mass_data : dict, optional
-        A dict with the masses of the chemical elements (the default
-        value is :py:data:`nist_mass`).
-
-    Returns
-    -------
-        mass : float
-    """
-    mass = 0.0
-    if mass_data is None:
-        mass_data = nist_mass
-    for element in composition:
-        try:
-            mass += (composition[element] * mass_data[element][0][0])
-        except KeyError:
-            match = re.search(r"(\S+)\[(\d+)\]", element)
-            if match:
-                element_ = match.group(1)
-                isotope = int(match.group(2))
-                mass += composition[element] * mass_data[element_][isotope][0]
-            else:
-                raise
-    return mass
-
-
-def _make_isotope_string(element, isotope=0):
-    if isotope == 0:
-        return element
-    else:
-        return "%s[%d]" % (element, isotope)
-
-
-def _get_isotope(element_string):
-    if "[" in element_string:
-        match = re.search(r"(\S+)\[(\d+)\]", element_string)
-        if match:
-            element_ = match.group(1)
-            isotope = int(match.group(2))
-            return element_, isotope
-    else:
-        return element_string, 0
 
 
 def max_variants(composition):
