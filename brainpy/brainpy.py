@@ -7,8 +7,8 @@ from collections import OrderedDict, Counter
 from math import exp, log, sqrt
 from sys import float_info
 
-from .mass_dict import nist_mass
-from .composition import (
+from brainpy.mass_dict import nist_mass
+from brainpy.composition import (
     SimpleComposition,
     parse_formula,
     calculate_mass,

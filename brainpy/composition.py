@@ -87,10 +87,10 @@ class SimpleComposition(Counter):
         return calculate_mass(self, mass_data)
 
 
-def parse_formula(formula):
+def parse_formula(formula, composition_cls=SimpleComposition):
     if not formula_pattern.match(formula):
         raise ValueError("%r does not look like a formula" % (formula,))
-    composition = SimpleComposition()
+    composition = composition_cls()
     for elem, isotope, number in atom_pattern.findall(formula):
         composition[_make_isotope_string(elem, int(isotope) if isotope else 0)] += int(number)
     return composition

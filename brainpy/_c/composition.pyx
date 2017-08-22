@@ -529,7 +529,7 @@ cdef int composition_inc_element_count(Composition* composition, char* element, 
     Return Values:
     0: Success
     1: General Failure
-    -1: Failire due to Out-of-Memory
+    -1: Failure due to Out-of-Memory
     '''
     cdef:
         size_t i
@@ -782,7 +782,7 @@ cdef str _store_string(str symbol):
 
 
 cdef class PyComposition(object):
-    def __cinit__(self, base=None, **kwargs):
+    def __init__(self, base=None, **kwargs):
         cdef:
             char* c_element
             str py_element
@@ -812,7 +812,7 @@ cdef class PyComposition(object):
         if status == 0:
             return count
         else:
-            composition_set_element_count(self.impl, ckey, 0)
+            # composition_set_element_count(self.impl, ckey, 0)
             return 0.
 
     def __setitem__(self, str key, count_type count):
@@ -833,6 +833,7 @@ cdef class PyComposition(object):
     def keys(self):
         cdef:
             size_t i
+            int count
             char* elem
             list keys
             str key_str
@@ -840,9 +841,12 @@ cdef class PyComposition(object):
         keys = []
         while i < self.impl.used:
             elem = self.impl.elements[i]
+            count = self.impl.counts[i]
+            i += 1
+            if count == 0:
+                continue
             key_str = PyString_FromString(elem)
             PyList_Append(keys, key_str)
-            i += 1
         return keys
 
     def values(self):
@@ -854,9 +858,22 @@ cdef class PyComposition(object):
         i = 0
         while i < self.impl.used:
             value = self.impl.counts[i]
-            counts.append(value)
             i += 1
+            if value == 0:
+                continue
+            counts.append(value)
         return counts
+
+    def pop(self, str key, object default=None):
+        value = self[key]
+        self[key] = 0
+        if value == 0:
+            return default
+        else:
+            return value
+
+    def __contains__(self, str key):
+        return self[key] != 0
 
     def items(self):
         cdef:
@@ -870,8 +887,10 @@ cdef class PyComposition(object):
         while i < self.impl.used:
             elem = self.impl.elements[i]
             value = self.impl.counts[i]
-            items.append((PyString_FromString(elem), value))
             i += 1
+            if value == 0:
+                continue
+            items.append((PyString_FromString(elem), value))
         return items
 
     def copy(self):
@@ -1019,3 +1038,21 @@ cdef class PyComposition(object):
                 return self.__equality_dict(other)
             elif code == 3:
                 return not self.__equality_dict(other)
+
+
+cdef extern from "<stdlib.h>" nogil:
+    int isdigit( int ch );
+
+
+def parse_formula(str formula):
+    cdef:
+        ssize_t i, n, elstart, elend, numstart, numend
+        char* cstr
+        char a
+        PyComposition composition
+        
+    cstr = PyString_AsString(formula)
+    n = len(formula)
+    for i in range(n):
+        a = cstr[i]
+        
