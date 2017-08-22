@@ -10,6 +10,7 @@ _formula = r'^({})*$'.format(_atom)
 atom_pattern = re.compile(_atom)
 formula_pattern = re.compile(_formula)
 
+
 def calculate_mass(composition, mass_data=None):
     """Calculates the monoisotopic mass of a composition
 
@@ -61,6 +62,15 @@ def _get_isotope(element_string):
 
 
 class SimpleComposition(Counter):
+    def __init__(self, base=None, **kwargs):
+        if base is not None:
+            self.update(base)
+        else:
+            if kwargs:
+                self.update(kwargs)
+
+    def __missing__(self, key):
+        return 0
 
     def __mul__(self, i):
         inst = self.copy()
@@ -84,4 +94,3 @@ def parse_formula(formula):
     for elem, isotope, number in atom_pattern.findall(formula):
         composition[_make_isotope_string(elem, int(isotope) if isotope else 0)] += int(number)
     return composition
-
