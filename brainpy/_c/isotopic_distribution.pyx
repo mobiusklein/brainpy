@@ -516,6 +516,15 @@ cpdef bint check_composition_non_negative(dict composition):
     return negative_element
 
 
+cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks) nogil:
+    cdef:
+        int max_n_variants, npeaks
+    max_n_variants = max_variants(composition_struct)
+    npeaks = <int>sqrt(max_n_variants) - 2
+    npeaks = min(max(npeaks, 3), max_npeaks)
+    return npeaks
+
+
 def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0,
                         double charge_carrier=PROTON):
     '''
@@ -573,9 +582,7 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
     validate_composition(composition_struct)
 
     if npeaks is None:
-        max_n_variants = max_variants(composition_struct)
-        _npeaks = <int>sqrt(max_n_variants - 2)
-        _npeaks = min(max(_npeaks, 3), 100)
+        _npeaks = guess_npeaks(composition_struct, 300)
     else:
         # The npeaks variable is left as a Python-level variable to
         # allow it to be any Python numeric type
@@ -601,9 +608,7 @@ cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charg
     validate_composition(composition)
 
     if npeaks == 0:
-        max_n_variants = max_variants(composition)
-        npeaks = <int>sqrt(max_n_variants - 2)
-        npeaks = min(max(npeaks, 3), 100)
+        npeaks = guess_npeaks(composition, 300)
     else:
         npeaks = npeaks - 1
 
@@ -697,3 +702,28 @@ def main():
     print comp_dict
     free_composition(composition)
     print "Really done"
+
+
+def test(object composition, int max_npeaks=300):
+    cdef:
+        Composition* composition_struct
+        IsotopicDistribution* distribution
+        int npeaks, max_n_variants
+
+    composition_struct = dict_to_composition(dict(composition))
+    validate_composition(composition_struct)
+
+    npeaks = guess_npeaks(composition_struct, max_npeaks)
+    print("Guessed # of Peaks: ", npeaks)
+
+    dist = make_isotopic_distribution(composition_struct, npeaks)
+    peak_set = id_aggregated_isotopic_variants(dist, 1, PROTON)
+
+    peaklist = peaklist_to_list(peak_set)
+
+    print("Actual # of Peaks Returned:", len(peaklist))
+
+    free_peak_list(peak_set)
+    free_isotopic_distribution(dist)
+    free_composition(composition_struct)
+    return peaklist
