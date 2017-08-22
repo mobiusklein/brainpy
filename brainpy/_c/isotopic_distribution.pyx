@@ -717,6 +717,9 @@ def test(object composition, int max_npeaks=300):
     print("Guessed # of Peaks: ", npeaks)
 
     dist = make_isotopic_distribution(composition_struct, npeaks)
+
+    print("Size of probability vector:", id_probability_vector(dist).used)
+
     peak_set = id_aggregated_isotopic_variants(dist, 1, PROTON)
 
     peaklist = peaklist_to_list(peak_set)
