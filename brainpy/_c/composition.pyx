@@ -90,6 +90,9 @@ cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) n
         sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)
         return out
 
+cdef char* _make_fixed_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+    sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)
+    return out
 
 # -----------------------------------------------------------------------------
 # Isotope and IsotopeMap Methods
@@ -229,6 +232,7 @@ cdef void free_element(Element* element) nogil:
 cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil:
     cdef:
         int i
+        size_t j
         Element* out
         IsotopeMap* isotope_map
         Isotope* reference
@@ -239,15 +243,16 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
     isotope_map.size = 1
     out.isotopes = isotope_map
-
     reference = get_isotope_by_neutron_count(element.isotopes, neutron_count)
+    if reference == NULL:
+        printf("reference was NULL!\n")
+        return NULL
     isotope_map.bins[0].mass = reference.mass
     isotope_map.bins[0].abundance = 1.0
     isotope_map.bins[0].neutron_shift = 0
     isotope_map.bins[0].neutrons = neutron_count
     out.symbol = <char*>malloc(sizeof(char) * 10)
-    _make_isotope_string(element, reference, out.symbol)
-
+    _make_fixed_isotope_string(element, reference, out.symbol)
     return out
 
 

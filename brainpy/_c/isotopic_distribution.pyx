@@ -200,7 +200,8 @@ cdef void validate_composition(Composition* composition) nogil:
             _parse_isotope_string(element_symbol, &isotope_number, element_buffer)
             # printf("Element: %s, Isotope: %d\n", element_buffer, isotope_number)
             if isotope_number != 0:
-                element_hash_table_get(_ElementTable, element_buffer, &element)
+                status = element_hash_table_get(_ElementTable, element_buffer, &element)
+                # printf("Retreived Base Element: %s. Status: %d\n", element_buffer, status)
                 element = make_fixed_isotope_element(element, isotope_number)
                 element_hash_table_put(_ElementTable, element)
                 free(element_buffer)
