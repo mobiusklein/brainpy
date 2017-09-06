@@ -13,7 +13,7 @@ from cpython.list cimport PyList_New, PyList_Append, PyList_Append
 from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
 from cpython.object cimport PyObject
 from libc.string cimport strcmp, memcpy, strlen
-from libc.stdlib cimport malloc, free, realloc, atoi
+from libc.stdlib cimport malloc, free, realloc, atoi, calloc
 from libc.math cimport abs, fabs
 from libc cimport *
 
@@ -403,8 +403,8 @@ cdef Composition* make_composition() nogil:
     cdef:
         Composition* composition
     composition = <Composition*>malloc(sizeof(Composition))
-    composition.elements = <char**>malloc(sizeof(char*) * 7)
-    composition.counts = <count_type*>malloc(sizeof(count_type) * 7)
+    composition.elements = <char**>calloc(7, sizeof(char*))
+    composition.counts = <count_type*>calloc(7, sizeof(count_type))
     composition.size = 7
     composition.used = 0
     return composition
