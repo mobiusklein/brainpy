@@ -787,6 +787,24 @@ cdef str _store_string(str symbol):
 
 
 cdef class PyComposition(object):
+
+    @staticmethod
+    cdef PyComposition _create(Composition* base):
+        cdef:
+            PyComposition inst
+
+        inst = PyComposition.__new__(PyComposition)
+        if base != NULL:
+            composition_iadd(inst.impl, base, 1)
+        inst._clean = False
+        return inst
+
+    cdef void _set_impl(self, Composition* composition, bint free_existing=1):
+        if free_existing:
+            free_composition(self.impl)
+        self.impl = composition
+        self._clean = False
+
     def __init__(self, base=None, **kwargs):
         cdef:
             char* c_element
@@ -898,7 +916,7 @@ cdef class PyComposition(object):
             items.append((PyString_FromString(elem), value))
         return items
 
-    def copy(self):
+    cpdef PyComposition copy(self):
         inst = PyComposition()
         composition_iadd(inst.impl, self.impl, 1)
         return inst
