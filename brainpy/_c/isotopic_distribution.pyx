@@ -139,7 +139,6 @@ cdef PeakList* make_peak_list() nogil:
 
     return result
 
-
 cdef void free_peak_list(PeakList* peaklist) nogil:
     free(peaklist.peaks)
     free(peaklist)
@@ -155,12 +154,77 @@ cdef int resize_peak_list(PeakList* peaklist) nogil:
     peaklist.size *= 2
     return 0
 
-
 cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:
     if peaklist.used == peaklist.size:
         resize_peak_list(peaklist)
     peaklist.peaks[peaklist.used] = peak[0]
     peaklist.used += 1
+
+cdef void peak_list_reset(PeakList* peaklist) nogil:
+    peaklist.used = 0
+
+@cython.cdivision
+cdef PeakList* peak_list_ignore_below(PeakList* peaklist, double ignore_below, PeakList* result) nogil:
+    cdef:
+        double total
+        PeakList* kept_tid
+        size_t i, n
+        Peak p
+
+    total = 0
+    n = peaklist.used
+
+    if result == NULL:
+        result = make_peak_list()
+
+    for i in range(n):
+        p = result.peaks[i]
+        if (p.intensity < ignore_below) and (i > 1):
+            continue
+        else:
+            total += p.intensity
+        peak_list_append(result, &p)
+    n = result.used
+    for i in range(n):
+        result.peaks[i].intensity /= total
+    return result
+
+@cython.cdivision
+cdef PeakList* peak_list_truncate_after(PeakList* peaklist, double truncate_after, PeakList* result) nogil:
+    cdef:
+        double cumsum
+        Peak peak
+        size_t i, n
+
+    cumsum = 0
+    n = peaklist.used
+    if result == NULL:
+        result = make_peak_list()
+
+    for i in range(n):
+        peak = peaklist.peaks[i]
+        cumsum += peak.intensity
+        peak_list_append(result, &peak)
+        if cumsum >= truncate_after:
+            break
+
+    n = result.used
+    for i in range(n):
+        result.peaks[i].intensity /= cumsum
+    return result
+
+cdef void peak_list_shift(PeakList* peaklist, double shift) nogil:
+    cdef:
+        size_t i, n
+        double delta
+
+    n = peaklist.used
+    if n == 0:
+        return
+    delta = shift - peaklist.peaks[0].mz
+    for i in range(n):
+        peaklist.peaks[i].mz += delta
+
 
 # -----------------------------------------------------------------------------
 # Support Functions
