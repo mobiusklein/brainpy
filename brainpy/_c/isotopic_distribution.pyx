@@ -695,7 +695,7 @@ cdef list peaklist_to_list(PeakList* peaklist):
     return pypeaklist
 
 
-
+@cython.freelist(1000000)
 cdef class TheoreticalPeak(object):
     def __init__(self, mz, intensity, charge):
         self.mz = mz
