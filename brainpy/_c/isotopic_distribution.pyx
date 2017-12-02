@@ -705,13 +705,12 @@ cdef class TheoreticalPeak(object):
     def __repr__(self):
         return "Peak(mz=%f, intensity=%f, charge=%d)" % (self.mz, self.intensity, self.charge)
 
-    def _eq(self, other):
-        equal = (
-            abs(self.mz - other.mz) < 1e-10,
-            abs(self.intensity - other.intensity) < 1e-10,
-            self.charge == other.charge
-        )
-        return all(equal)
+    cpdef bint _eq(self, TheoreticalPeak other):
+        cdef bint val
+        val = (abs(self.mz - other.mz) < 1e-10 and\
+               abs(self.intensity - other.intensity) < 1e-10 and\
+               self.charge == other.charge)
+        return val
 
     def __hash__(self):
         return hash((self.mz, self.intensity, self.charge))

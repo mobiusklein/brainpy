@@ -50,6 +50,7 @@ cdef class TheoreticalPeak(object):
     @staticmethod
     cdef TheoreticalPeak _create(double mz, double intensity, int charge)
 
+    cpdef bint _eq(self, TheoreticalPeak other)
     cpdef TheoreticalPeak clone(self)
 
 
