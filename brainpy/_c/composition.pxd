@@ -115,3 +115,5 @@ cdef class PyComposition(object):
     cpdef bint __equality_pycomposition(self, PyComposition other)
     cpdef bint __equality_dict(self, dict other)
     cpdef PyComposition copy(self)
+
+cpdef PyComposition parse_formula(str formula)

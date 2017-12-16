@@ -12,7 +12,7 @@ from brainpy._c.compat cimport (
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
 from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
 from cpython.object cimport PyObject
-from libc.string cimport strcmp, memcpy, strlen
+from libc.string cimport strcmp, memcpy, strlen, strncpy
 from libc.stdlib cimport malloc, free, realloc, atoi, calloc
 from libc.math cimport abs, fabs
 from libc cimport *
@@ -139,7 +139,7 @@ cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) n
         isotope_item = &(isotopes.bins[i])
         if isotope_item.neutrons == neutrons:
             return isotope_item
-    return NULL    
+    return NULL
 
 
 cdef void print_isotope_map(IsotopeMap* isotope_map):
@@ -221,7 +221,7 @@ cdef Element* make_element(char* symbol):
     cdef:
         Element* element
     element = <Element*>malloc(sizeof(Element))
-    element.symbol = symbol    
+    element.symbol = symbol
     _isotopes_of(symbol, &element.isotopes)
     return element
 
@@ -260,7 +260,7 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
 # ElementHashTable and ElementHashBucket Methods
 
 cdef size_t hash_string(char *string_) nogil:
-    cdef:    
+    cdef:
         size_t hash_value
         size_t i
         int c
@@ -1067,15 +1067,80 @@ cdef extern from "<stdlib.h>" nogil:
     int isdigit( int ch );
 
 
-def parse_formula(str formula):
+cdef enum:
+      START
+      ISOTOPE
+      ELEMENT
+      COUNT
+
+
+cpdef PyComposition parse_formula(str formula):
     cdef:
         ssize_t i, n, elstart, elend, numstart, numend
         char* cstr
+        char* temp
         char a
+        Element* elem
         PyComposition composition
-        
+        int state, count, prev_count
+    prev_count = 0
+    state = ELEMENT
     cstr = PyString_AsString(formula)
+    temp = <char*>malloc(sizeof(char) * 10)
+    for i in range(10):
+        temp[i] = "\0"
     n = len(formula)
+    elstart = 0
+    composition = PyComposition()
     for i in range(n):
         a = cstr[i]
-        
+        if a == ']':
+            if state == ISOTOPE:
+                elend = i
+            else:
+                raise ValueError((formula, i, state))
+        elif a == '[':
+            if state == ELEMENT:
+                state = ISOTOPE
+            else:
+                raise ValueError((formula, i, state))
+        elif isdigit(a):
+            if state == ISOTOPE or state == COUNT:
+                pass
+            elif state == ELEMENT:
+                elend = i
+                numstart = i
+                state = COUNT
+            else:
+                raise ValueError((formula, i, state))
+        else:
+            if state == ELEMENT:
+                continue
+            elif state == COUNT:
+                numend = i
+
+                strncpy(temp, cstr+numstart, numend - numstart)
+                temp[numend - numstart] = 0
+                count = atoi(temp)
+
+                strncpy(temp, cstr + elstart, elend - elstart)
+                temp[elend - elstart] = 0
+                element_hash_table_get(_ElementTable, temp, &elem)
+                composition_get_element_count(composition.impl, elem.symbol, &prev_count)
+                composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
+
+                state = ELEMENT
+                elstart = i
+    if state == COUNT:
+        numend = i + 1
+        strncpy(temp, cstr+numstart, numend - numstart)
+        temp[numend - numstart] = 0
+        count = atoi(temp)
+        strncpy(temp, cstr + elstart, elend - elstart)
+        temp[elend - elstart] = 0
+        element_hash_table_get(_ElementTable, temp, &elem)
+        composition_get_element_count(composition.impl, elem.symbol, &prev_count)
+        composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
+
+    free(temp)
+    return composition

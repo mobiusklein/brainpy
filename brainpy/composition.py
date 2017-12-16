@@ -94,3 +94,11 @@ def parse_formula(formula, composition_cls=SimpleComposition):
     for elem, isotope, number in atom_pattern.findall(formula):
         composition[_make_isotope_string(elem, int(isotope) if isotope else 0)] += int(number)
     return composition
+
+
+try:
+    _has_c = True
+    from ._c.composition import parse_formula
+except ImportError as e:
+    print e
+    _has_c = False
