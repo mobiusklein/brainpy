@@ -111,8 +111,8 @@ cdef Composition* dict_to_composition(dict comp_dict)
 cdef class PyComposition(object):
     cdef:
         Composition* impl
-        double cached_mass
-        bint _clean
+        public double cached_mass
+        public bint _clean
     @staticmethod
     cdef PyComposition _create(Composition* base)
     cdef void _set_impl(self, Composition* composition, bint free_existing=*)
