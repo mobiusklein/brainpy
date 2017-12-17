@@ -14,7 +14,7 @@ from brainpy._c.composition cimport (
 
 from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
-    free_double_vector, print_double_vector)
+    free_double_vector, print_double_vector, reset_double_vector)
 
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport strcmp
@@ -30,9 +30,9 @@ from brainpy._c.isotopic_constants cimport (
     newton)
 
 
-from double_vector cimport (
-    DoubleVector, free_double_vector, make_double_vector,
-    double_vector_append, print_double_vector)
+# from double_vector cimport (
+#     DoubleVector, free_double_vector, make_double_vector,
+#     double_vector_append, print_double_vector)
 
 ctypedef DoubleVector dvec
 
@@ -274,6 +274,9 @@ cdef int element_cache_get(ElementCache* cache, char* symbol, Element** out) nog
         size_t i
         Element* element
 
+    if cache == NULL:
+        return element_hash_table_get(_ElementTable, symbol, out)
+
     for i in range(cache.used):
         element = cache.elements[i]
         if strcmp(element.symbol, symbol) == 0:
@@ -400,7 +403,7 @@ cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, 
         cache = make_element_cache(_ElementTable)
     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))
     result.composition = composition
-    validate_composition(composition)
+    # validate_composition(composition)
     result.cache = cache
     result.order = 0
     result._isotopic_constants = make_isotopic_constants()
@@ -448,12 +451,12 @@ cdef double _id_phi_value(IsotopicDistribution* distribution, int order) nogil:
     return phi
 
 
-cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element) nogil:
+cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element, dvec* power_sum) nogil:
     cdef:
-        dvec* power_sum
+        # dvec* power_sum
         size_t i
 
-    power_sum = make_double_vector()
+    # power_sum = make_double_vector()
     double_vector_append(power_sum, 0.)
     for i in range(1, distribution.order + 1):
         double_vector_append(power_sum,
@@ -528,6 +531,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
         ElementPolynomialMap* ep_map
 
     mass_vector = make_double_vector()
+    power_sum = make_double_vector()
     max_variant_count = max_variants(distribution.composition, distribution.cache)
     base_intensity = distribution.monoisotopic_peak.intensity
     ep_map = make_element_polynomial_map(distribution.composition.size)
@@ -535,12 +539,13 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
     j = 0
     while j < distribution.composition.used:
         element = distribution.composition.elements[j]
-        power_sum = id_modified_phi_values(distribution, element)
+        reset_double_vector(power_sum)
+        power_sum = id_modified_phi_values(distribution, element, power_sum)
         ele_sym_poly = make_double_vector()
         newton(power_sum, ele_sym_poly, max_variant_count)
         element_polynomial_map_set(ep_map, element, ele_sym_poly)
-        free_double_vector(power_sum)
         j += 1
+    free_double_vector(power_sum)
     i = 0
     for i in range(distribution.order + 1):
         sign = 1 if i % 2 == 0 else -1
@@ -652,10 +657,10 @@ cpdef bint check_composition_non_negative(dict composition):
     return negative_element
 
 
-cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks) nogil:
+cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks, ElementCache* cache=NULL) nogil:
     cdef:
         int max_n_variants, npeaks
-    max_n_variants = max_variants(composition_struct, NULL)
+    max_n_variants = max_variants(composition_struct, cache)
     npeaks = <int>sqrt(max_n_variants) - 2
     npeaks = min(max(npeaks, 3), max_npeaks)
     return npeaks

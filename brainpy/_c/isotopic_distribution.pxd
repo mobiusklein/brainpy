@@ -74,7 +74,7 @@ cdef class TheoreticalPeak(object):
 
 
 cdef int max_variants(Composition* composition, ElementCache* cache) nogil
-cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks) nogil
+cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks, ElementCache* cache=*) nogil
 
 cpdef list _isotopic_variants(object composition, object npeaks=*, int charge=*, double charge_carrier=*)
 

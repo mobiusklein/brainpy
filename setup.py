@@ -1,17 +1,37 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages, Extension
 import sys
+import os
 import traceback
 import functools
+
+
+def has_option(name):
+    try:
+        sys.argv.remove('--%s' % name)
+        return True
+    except ValueError:
+        pass
+    # allow passing all cmd line options also as environment variables
+    env_val = os.getenv(name.upper().replace('-', '_'), 'false').lower()
+    if env_val == "true":
+        return True
+    return False
+
+
+include_diagnostics = has_option("include-diagnostics")
+
+
 try:
     from Cython.Build import cythonize
     cython_directives = {
         'embedsignature': True,
-        "profile": True
+        "profile": include_diagnostics
     }
-    Extension = functools.partial(Extension, define_macros=[
-        ("CYTHON_TRACE_NOGIL", "1"),
-    ])
+    if include_diagnostics:
+        Extension = functools.partial(Extension, define_macros=[
+            ("CYTHON_TRACE_NOGIL", "1"),
+        ])
     extensions = cythonize([
         Extension(
             name="brainpy._speedup", sources=["brainpy/_speedup.pyx"],

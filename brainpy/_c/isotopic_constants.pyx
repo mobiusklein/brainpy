@@ -10,7 +10,8 @@ from brainpy._c.composition cimport (
 
 from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
-    free_double_vector, print_double_vector, double_vector_to_list)
+    free_double_vector, print_double_vector, double_vector_to_list,
+    reset_double_vector, make_double_vector_with_size)
 
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport strcmp
@@ -31,7 +32,8 @@ cdef dvec* vietes(dvec* coefficients) nogil:
         int sign
         double el
 
-    elementary_symmetric_polynomial = make_double_vector()
+    elementary_symmetric_polynomial = make_double_vector_with_size(
+        coefficients.used)
     tail = coefficients.v[coefficients.used - 1]
 
     for i in range(coefficients.used):
@@ -97,16 +99,16 @@ cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:
         _update_power_sum(ps_vec, esp_vec, order)
 
 
-cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass) nogil:
+cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec* accumulator) nogil:
     cdef:
-        dvec* accumulator
+        # dvec* accumulator
         int max_isotope_number, current_order
         Isotope* isotope
         double coef
         size_t i, j, k
 
     max_isotope_number = element_max_neutron_shift(element)
-    accumulator = make_double_vector()
+    # accumulator = make_double_vector()
     for i in range(element.isotopes.size):
         k = element.isotopes.size - i - 1
         isotope = &(element.isotopes.bins[k])
@@ -125,22 +127,23 @@ cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass) nogil
             printf("Error, unordered isotopes for %s\n", element.symbol)
     return accumulator
 
-cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass) nogil:
+cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass, dvec* accumulator) nogil:
     cdef:
-        dvec* accumulator
+        # dvec* accumulator
         dvec* elementary_symmetric_polynomial
         dvec* power_sum
         PolynomialParameters* result
 
-    accumulator = compute_isotopic_coefficients(element, with_mass)
+    # accumulator = compute_isotopic_coefficients(element, with_mass)
+    compute_isotopic_coefficients(element, with_mass, accumulator)
 
     elementary_symmetric_polynomial = vietes(accumulator)
-    power_sum = make_double_vector()
+    power_sum = make_double_vector_with_size(elementary_symmetric_polynomial.used + 4)
     newton(power_sum, elementary_symmetric_polynomial, accumulator.used - 1)
     result = <PolynomialParameters*>malloc(sizeof(PolynomialParameters))
     result.elementary_symmetric_polynomial = elementary_symmetric_polynomial
     result.power_sum = power_sum
-    free_double_vector(accumulator)
+    # free_double_vector(accumulator)
     return result
 
 
@@ -217,6 +220,7 @@ cdef void free_isotopic_constants(IsotopicConstants* isotopes) nogil:
 cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* element_symbol) nogil:
     cdef:
         Element* element
+        dvec* accumulator
         int order, status, isotope_number
         PolynomialParameters* element_parameters
         PolynomialParameters* mass_parameters
@@ -233,10 +237,12 @@ cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* elem
     if status == -1:
         printf("Could not resolve element_symbol %s\n", element_symbol)
         return
-
+    accumulator = make_double_vector()
     order = element_max_neutron_shift(element)
-    element_parameters = make_polynomial_parameters(element, False)
-    mass_parameters = make_polynomial_parameters(element, True)
+    element_parameters = make_polynomial_parameters(element, False, accumulator)
+    reset_double_vector(accumulator)
+    mass_parameters = make_polynomial_parameters(element, True, accumulator)
+    free_double_vector(accumulator)
     phi_constants = <PhiConstants*>malloc(sizeof(PhiConstants))
     phi_constants.order = order
     phi_constants.element = element

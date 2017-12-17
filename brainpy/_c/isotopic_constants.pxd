@@ -31,8 +31,8 @@ cdef dvec* vietes(dvec* coefficients) nogil
 cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) nogil
 cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, int order) nogil
 cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil
-cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass) nogil
-cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass) nogil
+cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec* accumulator) nogil
+cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass, dvec* accumulator) nogil
 cdef void print_polynomial_parameters(PolynomialParameters* params) nogil
 cdef void free_polynomial_parameters(PolynomialParameters* params) nogil
 
