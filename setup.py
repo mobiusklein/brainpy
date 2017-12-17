@@ -2,9 +2,16 @@
 from setuptools import setup, find_packages, Extension
 import sys
 import traceback
-
+import functools
 try:
     from Cython.Build import cythonize
+    cython_directives = {
+        'embedsignature': True,
+        "profile": True
+    }
+    Extension = functools.partial(Extension, define_macros=[
+        ("CYTHON_TRACE_NOGIL", "1"),
+    ])
     extensions = cythonize([
         Extension(
             name="brainpy._speedup", sources=["brainpy/_speedup.pyx"],
@@ -21,7 +28,7 @@ try:
         Extension(
             name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.pyx"],
             include_dirs=["brainpy/_c/"])
-    ])
+    ], compiler_directives=cython_directives)
 except ImportError:
     extensions = ([
         Extension(
