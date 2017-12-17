@@ -56,6 +56,9 @@ cdef struct ElementHashBucket:
     size_t size
 
 
+cdef void free_element_hash_bucket(ElementHashBucket* bucket) nogil
+
+
 cdef struct ElementHashTable:
     ElementHashBucket* buckets
     size_t size
@@ -74,6 +77,8 @@ cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil
 
 cdef size_t hash_string(char *str) nogil
 
+cdef size_t free_element_hash_table(ElementHashTable* table) nogil
+
 
 # -----------------------------------------------------------------------------
 # Composition Declarations
@@ -83,6 +88,7 @@ cdef struct Composition:
     count_type* counts
     size_t size
     size_t used
+    int max_variants
 
 cdef Composition* make_composition() nogil
 cdef Composition* copy_composition(Composition* composition) nogil

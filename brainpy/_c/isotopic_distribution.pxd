@@ -1,5 +1,5 @@
 from cython cimport freelist
-from brainpy._c.composition cimport Composition
+from brainpy._c.composition cimport Composition, ElementHashTable, Element
 from brainpy._c.isotopic_constants cimport IsotopicConstants
 from brainpy._c.double_vector cimport DoubleVector
 
@@ -32,12 +32,31 @@ cdef void peak_list_shift(PeakList* peaklist, double shift) nogil
 cdef list peaklist_to_list(PeakList* peaklist)
 
 
+cdef struct ElementCache:
+    Element** elements
+    size_t used
+    size_t size
+    ElementHashTable* source
+
+
+cdef ElementCache* make_element_cache(ElementHashTable* source) nogil
+cdef void free_element_cache(ElementCache* cache) nogil
+cdef int resize_element_cache(ElementCache* cache) nogil
+cdef int element_cache_put(ElementCache* cache, Element** element) nogil
+cdef int element_cache_get(ElementCache* cache, char* symbol, Element** out) nogil
+
+
 cdef struct IsotopicDistribution:
     Composition* composition
     IsotopicConstants* _isotopic_constants
     int order
     double average_mass
     Peak* monoisotopic_peak
+    ElementCache* cache
+
+
+cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order, ElementCache* cache=*) nogil
+cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil
 
 
 @freelist(100000)
@@ -54,7 +73,7 @@ cdef class TheoreticalPeak(object):
     cpdef TheoreticalPeak clone(self)
 
 
-cdef int max_variants(Composition* composition) nogil
+cdef int max_variants(Composition* composition, ElementCache* cache) nogil
 cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks) nogil
 
 cpdef list _isotopic_variants(object composition, object npeaks=*, int charge=*, double charge_carrier=*)

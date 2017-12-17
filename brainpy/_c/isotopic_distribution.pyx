@@ -3,11 +3,12 @@
 cimport cython
 
 from brainpy._c.composition cimport (
-    Element, Isotope, Composition,
+    Element, Isotope, Composition, ElementHashTable,
     mass_charge_ratio, PROTON, element_max_neutron_shift,
     composition_get_element_count, element_monoisotopic_mass,
     composition_mass, get_isotope_by_neutron_shift, dict_to_composition,
     print_composition, free_composition, count_type,
+    make_element_hash_table, free_element_hash_table,
     _ElementTable, element_hash_table_get, make_fixed_isotope_element,
     _parse_isotope_string, element_hash_table_put)
 
@@ -23,7 +24,7 @@ from libc cimport *
 from brainpy._c.isotopic_constants cimport (
     IsotopicConstants, isotopic_constants_get, make_isotopic_constants,
     isotopic_constants_resize, free_isotopic_constants, isotopic_constants_add_element,
-    isotopic_constants_get, isotopic_constants_update_coefficients,
+    isotopic_constants_update_coefficients,
     isotopic_constants_nth_element_power_sum, print_isotopic_constants,
     isotopic_constants_nth_modified_element_power_sum,
     newton)
@@ -225,11 +226,68 @@ cdef void peak_list_shift(PeakList* peaklist, double shift) nogil:
     for i in range(n):
         peaklist.peaks[i].mz += delta
 
+# -----------------------------------------------------------------------------
+# ElementCache Methods
+
+cdef ElementCache* make_element_cache(ElementHashTable* source) nogil:
+    cdef:
+        ElementCache* cache
+    cache = <ElementCache*>malloc(sizeof(ElementCache))
+    cache.source = source
+    cache.elements = <Element**>malloc(sizeof(Element*) * 10)
+    cache.used = 0
+    cache.size = 10
+    return cache
+
+
+cdef void free_element_cache(ElementCache* cache) nogil:
+    free(cache.elements)
+    free(cache)
+
+
+cdef int resize_element_cache(ElementCache* cache) nogil:
+    cdef:
+        Element** values
+        size_t new_size
+    new_size = cache.size * 10
+    values = <Element**>realloc(cache.elements, sizeof(Element*) * new_size)
+    if values == NULL:
+        printf("resize_element_cache returned -1\n")
+        return -1
+    cache.elements = values
+    cache.size = new_size
+    return 0
+
+
+cdef int element_cache_put(ElementCache* cache, Element** element) nogil:
+    cdef:
+        size_t i
+    if (cache.used + 1) == cache.size:
+        resize_element_cache(cache)
+    cache.elements[cache.used] = element[0]
+    cache.used += 1
+    return 0
+
+
+cdef int element_cache_get(ElementCache* cache, char* symbol, Element** out) nogil:
+    cdef:
+        size_t i
+        Element* element
+
+    for i in range(cache.used):
+        element = cache.elements[i]
+        if strcmp(element.symbol, symbol) == 0:
+            out[0] = element
+            return 0
+    element_hash_table_get(cache.source, symbol, out)
+    element_cache_put(cache, out)
+    return 1
+
 
 # -----------------------------------------------------------------------------
 # Support Functions
 
-cdef int max_variants(Composition* composition) nogil:
+cdef int max_variants(Composition* composition, ElementCache* cache) nogil:
     cdef:
         size_t i
         int max_variants
@@ -237,12 +295,19 @@ cdef int max_variants(Composition* composition) nogil:
         char* symbol
         Element* element
 
+    if composition.max_variants != 0:
+        return composition.max_variants
+
     max_variants = 0
     for i in range(composition.used):
         symbol = composition.elements[i]
         count = composition.counts[i]
-        element_hash_table_get(_ElementTable, symbol, &element)
+        if cache == NULL:
+            element_hash_table_get(_ElementTable, symbol, &element)
+        else:
+            element_cache_get(cache, symbol, &element)
         max_variants += <int>(count) * element_max_neutron_shift(element)
+    composition.max_variants = max_variants
     return max_variants
 
 
@@ -298,13 +363,14 @@ cdef void isotopic_distribution_update_order(IsotopicDistribution* distribution,
     cdef:
         int possible_variants
 
-    possible_variants = max_variants(distribution.composition)
+    possible_variants = max_variants(distribution.composition, NULL)
     if order == -1:
         distribution.order = possible_variants
     else:
         distribution.order = min(order, possible_variants)
 
     isotopic_distribution_update_isotopic_constants(distribution)
+
 
 cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* distribution) nogil:
     cdef:
@@ -319,20 +385,23 @@ cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* di
 
     intensity = 0
     for i in range(distribution.composition.used):
-        status = element_hash_table_get(_ElementTable, distribution.composition.elements[i], &element)
+        status = element_cache_get(distribution.cache, distribution.composition.elements[i], &element)
         intensity += log(get_isotope_by_neutron_shift(element.isotopes, 0).abundance)
     intensity = exp(intensity)
     peak.intensity = intensity
     peak.charge = 0
     return peak
 
-cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order) nogil:
+
+cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order, ElementCache* cache=NULL) nogil:
     cdef:
         IsotopicDistribution* result
-
+    if cache == NULL:
+        cache = make_element_cache(_ElementTable)
     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))
     result.composition = composition
     validate_composition(composition)
+    result.cache = cache
     result.order = 0
     result._isotopic_constants = make_isotopic_constants()
     isotopic_distribution_update_order(result, order)
@@ -344,6 +413,8 @@ cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, 
 cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:
     free(distribution.monoisotopic_peak)
     free_isotopic_constants(distribution._isotopic_constants)
+    if distribution.cache != NULL:
+        free_element_cache(distribution.cache)
     free(distribution)
 
 
@@ -429,7 +500,7 @@ cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
 
     probability_vector = make_double_vector()
     phi_values = id_phi_values(distribution)
-    max_variant_count = max_variants(distribution.composition)
+    max_variant_count = max_variants(distribution.composition, distribution.cache)
 
     newton(phi_values, probability_vector, max_variant_count)
 
@@ -457,7 +528,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
         ElementPolynomialMap* ep_map
 
     mass_vector = make_double_vector()
-    max_variant_count = max_variants(distribution.composition)
+    max_variant_count = max_variants(distribution.composition, distribution.cache)
     base_intensity = distribution.monoisotopic_peak.intensity
     ep_map = make_element_polynomial_map(distribution.composition.size)
 
@@ -480,7 +551,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
             element_polynomial_map_get(ep_map, element, &ele_sym_poly)
 
             composition_get_element_count(distribution.composition, element, &_element_count)
-            element_hash_table_get(_ElementTable, element, &element_struct)
+            element_cache_get(distribution.cache, element, &element_struct)
 
             _monoisotopic_mass = element_monoisotopic_mass(element_struct)
 
@@ -584,7 +655,7 @@ cpdef bint check_composition_non_negative(dict composition):
 cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks) nogil:
     cdef:
         int max_n_variants, npeaks
-    max_n_variants = max_variants(composition_struct)
+    max_n_variants = max_variants(composition_struct, NULL)
     npeaks = <int>sqrt(max_n_variants) - 2
     npeaks = min(max(npeaks, 3), max_npeaks)
     return npeaks

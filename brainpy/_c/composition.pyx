@@ -274,6 +274,10 @@ cdef size_t hash_string(char *string_) nogil:
     return hash_value;
 
 
+def test_hash_string(str string_):
+    return hash_string(PyString_AsString(string_))
+
+
 cdef ElementHashTable* make_element_hash_table(size_t size) nogil:
     cdef:
         ElementHashTable* table
@@ -324,17 +328,19 @@ cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element)
 cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Element** out) nogil:
     cdef:
         size_t i
-
-    # printf("Searching bucket with capacity %d, %d used\n", bucket.size, bucket.used)
-
     for i in range(bucket.used):
-        # printf("Checking slot %d with element %s\n", i, bucket.elements[i].symbol)
         if strcmp(bucket.elements[i].symbol, symbol) == 0:
             out[0] = bucket.elements[i]
             return 0
     return -1
 
 
+cdef void free_element_hash_bucket(ElementHashBucket* bucket) nogil:
+    free(bucket.elements)
+    free(bucket)
+
+
+@cython.cdivision(True)
 cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element** out) nogil:
     cdef:
         size_t hash_value
@@ -345,11 +351,11 @@ cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element**
     hash_value = hash_string(symbol)
     position = hash_value % table.size
     bucket = (table.buckets[position])
-    # printf("Symbol %s goes in bucket %d\n", symbol, position)
     status = element_hash_bucket_find(&bucket, symbol, out)
     return status
 
 
+@cython.cdivision(True)
 cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil:
     cdef:
         size_t hash_value
@@ -359,12 +365,19 @@ cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil
 
     hash_value = hash_string(element.symbol)
     position = hash_value % table.size
-    # printf("Symbol %s goes in bucket %d\n", element.symbol, position)
     bucket = (table.buckets[position])
     status = element_hash_bucket_insert(&bucket, element)
     table.buckets[position] = bucket
     return status
 
+
+cdef size_t free_element_hash_table(ElementHashTable* table) nogil:
+    cdef:
+        size_t i
+
+    for i in range(table.size):
+        free_element_hash_bucket(&(table.buckets[i]))
+    free(table)
 
 cdef ElementHashTable* make_element_hash_table_populated(size_t size):
     cdef:
@@ -407,6 +420,7 @@ cdef Composition* make_composition() nogil:
     composition.counts = <count_type*>calloc(7, sizeof(count_type))
     composition.size = 7
     composition.used = 0
+    composition.max_variants = 0
     return composition
 
 cdef int composition_eq(Composition* composition_1, Composition* composition_2) nogil:

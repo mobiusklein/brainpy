@@ -3,10 +3,10 @@
 cimport cython
 
 from brainpy._c.composition cimport (
-    Element, Isotope, Composition,
+    Element, Isotope, Composition, ElementHashTable,
     element_max_neutron_shift, _parse_isotope_string,
     _ElementTable, element_hash_table_get, make_fixed_isotope_element,
-    element_hash_table_put)
+    element_hash_table_put, make_element_hash_table, free_element_hash_table)
 
 from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
