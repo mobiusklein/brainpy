@@ -20,6 +20,7 @@ def has_option(name):
 
 
 include_diagnostics = has_option("include-diagnostics")
+force_cythonize = has_option("force-cythonize")
 
 
 try:
@@ -48,7 +49,7 @@ try:
         Extension(
             name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.pyx"],
             include_dirs=["brainpy/_c/"])
-    ], compiler_directives=cython_directives)
+    ], compiler_directives=cython_directives, force=force_cythonize)
 except ImportError:
     extensions = ([
         Extension(

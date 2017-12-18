@@ -101,14 +101,12 @@ cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:
 
 cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec* accumulator) nogil:
     cdef:
-        # dvec* accumulator
         int max_isotope_number, current_order
         Isotope* isotope
         double coef
         size_t i, j, k
 
     max_isotope_number = element_max_neutron_shift(element)
-    # accumulator = make_double_vector()
     for i in range(element.isotopes.size):
         k = element.isotopes.size - i - 1
         isotope = &(element.isotopes.bins[k])
@@ -129,12 +127,10 @@ cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec*
 
 cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass, dvec* accumulator) nogil:
     cdef:
-        # dvec* accumulator
         dvec* elementary_symmetric_polynomial
         dvec* power_sum
         PolynomialParameters* result
 
-    # accumulator = compute_isotopic_coefficients(element, with_mass)
     compute_isotopic_coefficients(element, with_mass, accumulator)
 
     elementary_symmetric_polynomial = vietes(accumulator)
@@ -143,7 +139,6 @@ cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint wit
     result = <PolynomialParameters*>malloc(sizeof(PolynomialParameters))
     result.elementary_symmetric_polynomial = elementary_symmetric_polynomial
     result.power_sum = power_sum
-    # free_double_vector(accumulator)
     return result
 
 
@@ -268,6 +263,14 @@ cdef int isotopic_constants_get(IsotopicConstants* isotopes, char* element_symbo
     return 1
 
 
+cdef int isotopic_constants_get_by_index(IsotopicConstants* isotopes, size_t index, PhiConstants** out) nogil:
+    if index > isotopes.used:
+        return 1
+    else:
+        out[0] = isotopes.constants[index]
+        return 0
+
+
 cdef void isotopic_constants_update_coefficients(IsotopicConstants* isotopes) nogil:
     cdef:
         size_t i, j
@@ -300,10 +303,24 @@ cdef double isotopic_constants_nth_element_power_sum(IsotopicConstants* isotopes
     return constants.element_coefficients.power_sum.v[order]
 
 
+cdef double isotopic_constants_nth_element_power_sum_by_index(IsotopicConstants* isotopes, size_t index, int order) nogil:
+    cdef:
+        PhiConstants* constants
+    isotopic_constants_get_by_index(isotopes, index, &constants)
+    return constants.element_coefficients.power_sum.v[order]
+
+
 cdef double isotopic_constants_nth_modified_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:
     cdef:
         PhiConstants* constants
     isotopic_constants_get(isotopes, symbol, &constants)
+    return constants.mass_coefficients.power_sum.v[order]
+
+
+cdef double isotopic_constants_nth_modified_element_power_sum_by_index(IsotopicConstants* isotopes, size_t index, int order) nogil:
+    cdef:
+        PhiConstants* constants
+    isotopic_constants_get_by_index(isotopes, index, &constants)
     return constants.mass_coefficients.power_sum.v[order]
 
 
@@ -328,15 +345,15 @@ def main():
 
     sym = "O"
     ic = make_isotopic_constants()
-    print ic.used
+    print(ic.used)
     isotopic_constants_add_element(ic, sym)
-    print ic.used
+    print(ic.used)
     isotopic_constants_add_element(ic, "C")
     isotopic_constants_add_element(ic, "H")
 
     if isotopic_constants_get(ic, "O", &constant) == 0:
         print_phi_constants(constant)
     else:
-        print "Nope"
+        print("Nope")
 
     free_isotopic_constants(ic)

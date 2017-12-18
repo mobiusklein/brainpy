@@ -125,9 +125,20 @@ cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shi
 
     for i in range(isotopes.size):
         isotope_item = &(isotopes.bins[i])
-        if isotope_item.neutron_shift == neutron_shift:
+        # if isotope_item.neutron_shift == neutron_shift:
+        if isotopes.bins[i].neutron_shift == neutron_shift:
             return isotope_item
     return NULL
+
+
+cdef int get_isotope_by_neutron_shift_index(IsotopeMap* isotopes, int neutron_shift) nogil:
+    cdef:
+        size_t i
+
+    for i in range(isotopes.size):
+        if isotopes.bins[i].neutron_shift == neutron_shift:
+            return i
+    return -1
 
 
 cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) nogil:
@@ -159,7 +170,10 @@ cdef void free_isotope_map(IsotopeMap* isotopes) nogil:
 # Element Methods
 
 cdef double element_monoisotopic_mass(Element* element) nogil:
-    return get_isotope_by_neutron_shift(element.isotopes, 0).mass
+    if element.monoisotopic_isotope_index < 0:
+        return get_isotope_by_neutron_shift(element.isotopes, 0).mass
+    else:
+        return element.isotopes.bins[element.monoisotopic_isotope_index].mass
 
 cdef double element_isotopic_mass(Element* element, int isotope_number) nogil:
     return get_isotope_by_neutron_count(element.isotopes, isotope_number).mass
@@ -201,6 +215,7 @@ cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
             freqs[i] = mass_freqs
 
     if len(freqs) == 0:
+        isotope_frequencies[0] = make_isotope_map([], 0)
         return
 
     freq_list = list(freqs.items())
@@ -223,6 +238,9 @@ cdef Element* make_element(char* symbol):
     element = <Element*>malloc(sizeof(Element))
     element.symbol = symbol
     _isotopes_of(symbol, &element.isotopes)
+    element.monoisotopic_isotope_index = -1
+    element.monoisotopic_isotope_index = get_isotope_by_neutron_shift_index(
+        element.isotopes, 0)
     return element
 
 cdef void free_element(Element* element) nogil:
@@ -253,6 +271,7 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
     isotope_map.bins[0].neutrons = neutron_count
     out.symbol = <char*>malloc(sizeof(char) * 10)
     _make_fixed_isotope_string(element, reference, out.symbol)
+    out.monoisotopic_isotope_index = 0
     return out
 
 
@@ -523,6 +542,7 @@ cdef int composition_get_element_count(Composition* composition, char* element, 
 
     Return Values:
     0: Success
+    1: Not Found
     '''
     cdef:
         size_t i
@@ -539,7 +559,7 @@ cdef int composition_get_element_count(Composition* composition, char* element, 
 
     if not done:
         count[0] = 0
-    return 0
+    return 1
 
 cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil:
     '''
@@ -736,15 +756,15 @@ def main():
     composition_set_element_count(composition, "O[18]", 1)
     composition_set_element_count(composition, "H", 2)
     print_composition(composition)
-    print "Massing"
-    print composition_mass(composition)
+    print("Massing")
+    print(composition_mass(composition))
 
     sum_composition = composition_add(composition, composition, 1)
-    print "Summed"
-    print composition_mass(sum_composition)
-    print composition_mass(composition)
+    print("Summed")
+    print(composition_mass(sum_composition))
+    print(composition_mass(composition))
     composition_iadd(sum_composition, composition, 1)
-    print composition_mass(sum_composition)
+    print(composition_mass(sum_composition))
 
 
 def isotope_update_test(str element_symbol):
@@ -760,18 +780,18 @@ def isotope_update_test(str element_symbol):
         str out
 
     c_element_symbol = PyString_AsString(element_symbol)
-    element = _parse_isotope_string(c_element_symbol, &isotope, element)
+    _parse_isotope_string(c_element_symbol, &isotope, element)
     out = PyString_FromString(element)
     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
-    print "element_hash_table_get"
+    print("element_hash_table_get")
     status = element_hash_table_get(_ElementTable, element, &elem_obj)
     if status != 0:
         print("Error, ", element_symbol, element, isotope)
-    print "Fetched element", elem_obj.symbol
+    print("Fetched element", elem_obj.symbol)
     isotope_obj = get_isotope_by_neutron_count(elem_obj.isotopes, isotope)
     print(isotope_obj.mass, isotope_obj.neutrons, isotope_obj.neutron_shift)
     _make_isotope_string(elem_obj, isotope_obj, isotope_string)
-    print isotope_string
+    print(isotope_string)
     fixed_isotope_element = make_fixed_isotope_element(elem_obj, isotope)
     printf("Fixed: %s, %f", fixed_isotope_element.symbol, element_monoisotopic_mass(fixed_isotope_element))
 
@@ -783,9 +803,9 @@ def isotope_parse_test(str element_symbol):
         char[10] isotope_string
         int isotope
     c_element_symbol = PyString_AsString(element_symbol)
-    element = _parse_isotope_string(c_element_symbol, &isotope, element)
+    _parse_isotope_string(c_element_symbol, &isotope, element)
 
-    print element, isotope
+    print(element, isotope)
 
 
 cdef dict _string_table = {}
@@ -820,10 +840,6 @@ cdef class PyComposition(object):
         self._clean = False
 
     def __init__(self, base=None, **kwargs):
-        cdef:
-            char* c_element
-            str py_element
-            count_type count
         self.impl = make_composition()
         self._clean = False
         self.cached_mass = 0.
@@ -832,8 +848,7 @@ cdef class PyComposition(object):
             self.update(base)
 
         for py_element, count in kwargs.items():
-            c_element = PyString_AsString(py_element)
-            self[c_element] = count
+            self[py_element] = count
 
     def __dealloc__(self):
         free_composition(self.impl)
@@ -1035,7 +1050,7 @@ cdef class PyComposition(object):
         return self.impl.used
 
     def __repr__(self):
-        return "{%s}" % ', '.join("%s: %d" % kv for kv in self.items())
+        return "PyComposition({%s})" % ', '.join("\"%s\": %d" % kv for kv in self.items())
 
     cpdef bint __equality_pycomposition(self, PyComposition other):
         return composition_eq(self.impl, other.impl)

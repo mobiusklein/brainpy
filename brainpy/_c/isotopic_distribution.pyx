@@ -14,6 +14,7 @@ from brainpy._c.composition cimport (
 
 from brainpy._c.double_vector cimport(
     DoubleVector, make_double_vector, double_vector_append,
+    make_double_vector_with_size,
     free_double_vector, print_double_vector, reset_double_vector)
 
 from libc.stdlib cimport malloc, free, realloc
@@ -26,6 +27,7 @@ from brainpy._c.isotopic_constants cimport (
     isotopic_constants_resize, free_isotopic_constants, isotopic_constants_add_element,
     isotopic_constants_update_coefficients,
     isotopic_constants_nth_element_power_sum, print_isotopic_constants,
+    isotopic_constants_nth_element_power_sum_by_index,
     isotopic_constants_nth_modified_element_power_sum,
     newton)
 
@@ -403,7 +405,6 @@ cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, 
         cache = make_element_cache(_ElementTable)
     result = <IsotopicDistribution*>malloc(sizeof(IsotopicDistribution))
     result.composition = composition
-    # validate_composition(composition)
     result.cache = cache
     result.order = 0
     result._isotopic_constants = make_isotopic_constants()
@@ -425,8 +426,7 @@ cdef dvec* id_phi_values(IsotopicDistribution* distribution) nogil:
     cdef:
         dvec* power_sum
         size_t i
-
-    power_sum = make_double_vector()
+    power_sum = make_double_vector_with_size(distribution.order)
     double_vector_append(power_sum, 0.)
     for i in range(1, distribution.order + 1):
         double_vector_append(power_sum, _id_phi_value(distribution, i))
@@ -453,10 +453,8 @@ cdef double _id_phi_value(IsotopicDistribution* distribution, int order) nogil:
 
 cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element, dvec* power_sum) nogil:
     cdef:
-        # dvec* power_sum
         size_t i
 
-    # power_sum = make_double_vector()
     double_vector_append(power_sum, 0.)
     for i in range(1, distribution.order + 1):
         double_vector_append(power_sum,
@@ -501,8 +499,8 @@ cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
         size_t i
         int sign
 
-    probability_vector = make_double_vector()
     phi_values = id_phi_values(distribution)
+    probability_vector = make_double_vector_with_size(phi_values.size)
     max_variant_count = max_variants(distribution.composition, distribution.cache)
 
     newton(phi_values, probability_vector, max_variant_count)
@@ -530,7 +528,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
         size_t i, j, k
         ElementPolynomialMap* ep_map
 
-    mass_vector = make_double_vector()
+    mass_vector = make_double_vector_with_size(probability_vector.size + 3)
     power_sum = make_double_vector()
     max_variant_count = max_variants(distribution.composition, distribution.cache)
     base_intensity = distribution.monoisotopic_peak.intensity

@@ -35,6 +35,7 @@ cdef void free_isotope_map(IsotopeMap* isotopes) nogil
 cdef struct Element:
     char* symbol
     IsotopeMap* isotopes
+    int monoisotopic_isotope_index
 
 cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies)
 cdef Element* make_element(char* symbol)
