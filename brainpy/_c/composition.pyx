@@ -1159,7 +1159,7 @@ cpdef PyComposition parse_formula(str formula):
                 temp[numend - numstart] = 0
                 count = atoi(temp)
                 strncpy(temp, cstr + elstart, elend - elstart)
-                temp[elend - elstart + 1] = 0
+                temp[elend - elstart] = 0
                 found = element_hash_table_get(_ElementTable, temp, &elem)
                 if isostart != 0 and isoend != 0 and found != 0:
                     isostart += 1
@@ -1172,6 +1172,7 @@ cpdef PyComposition parse_formula(str formula):
                     elem = make_fixed_isotope_element(elem, fixed_isotope)
                     element_hash_table_put(_ElementTable, elem)
                 prev_count = 0
+                # printf("Storing Element %s with count %d\n", elem.symbol, count)
                 composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
                 state = ELEMENT
                 elstart = i
@@ -1184,7 +1185,7 @@ cpdef PyComposition parse_formula(str formula):
         temp[numend - numstart] = 0
         count = atoi(temp)
         strncpy(temp, cstr + elstart, elend - elstart)
-        temp[elend - elstart + 1] = 0
+        temp[elend - elstart] = 0
         found = element_hash_table_get(_ElementTable, temp, &elem)
         if isostart != 0 and isoend != 0 and found != 0:
             isostart += 1
@@ -1198,6 +1199,7 @@ cpdef PyComposition parse_formula(str formula):
             element_hash_table_put(_ElementTable, elem)
         prev_count = 0
         composition_get_element_count(composition.impl, elem.symbol, &prev_count)
+        # printf("Storing Element %s with count %d\n", elem.symbol, count)
         composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
 
     free(temp)
