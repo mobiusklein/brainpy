@@ -1155,22 +1155,24 @@ cpdef PyComposition parse_formula(str formula):
                 continue
             elif state == COUNT:
                 numend = i
-                strncpy(temp, cstr+numstart, numend - numstart)
+                strncpy(temp, cstr + numstart, numend - numstart)
                 temp[numend - numstart] = 0
                 count = atoi(temp)
                 strncpy(temp, cstr + elstart, elend - elstart)
-                temp[elend - elstart] = 0
+                temp[elend - elstart + 1] = 0
                 found = element_hash_table_get(_ElementTable, temp, &elem)
                 if isostart != 0 and isoend != 0 and found != 0:
                     isostart += 1
                     strncpy(temp, cstr + isostart, isoend - isostart)
                     temp[isoend - isostart] = 0
                     fixed_isotope = atoi(temp)
+                    strncpy(temp, cstr + elstart, isostart)
+                    temp[isostart - 1] = 0
+                    found = element_hash_table_get(_ElementTable, temp, &elem)
                     elem = make_fixed_isotope_element(elem, fixed_isotope)
                     element_hash_table_put(_ElementTable, elem)
                 prev_count = 0
                 composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
-
                 state = ELEMENT
                 elstart = i
                 isostart = 0
@@ -1182,14 +1184,16 @@ cpdef PyComposition parse_formula(str formula):
         temp[numend - numstart] = 0
         count = atoi(temp)
         strncpy(temp, cstr + elstart, elend - elstart)
-        temp[elend - elstart] = 0
+        temp[elend - elstart + 1] = 0
         found = element_hash_table_get(_ElementTable, temp, &elem)
-
         if isostart != 0 and isoend != 0 and found != 0:
             isostart += 1
             strncpy(temp, cstr + isostart, isoend - isostart)
             temp[isoend - isostart] = 0
             fixed_isotope = atoi(temp)
+            strncpy(temp, cstr + elstart, isostart)
+            temp[isostart - elstart - 1] = 0
+            found = element_hash_table_get(_ElementTable, temp, &elem)
             elem = make_fixed_isotope_element(elem, fixed_isotope)
             element_hash_table_put(_ElementTable, elem)
         prev_count = 0
