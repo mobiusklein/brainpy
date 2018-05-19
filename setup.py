@@ -129,7 +129,7 @@ def status_msgs(*msgs):
 def run_setup(include_cext=True):
     setup(
         name='brain-isotopic-distribution',
-        version='1.3.2',
+        version='1.3.3',
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN.
