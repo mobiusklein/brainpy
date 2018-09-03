@@ -255,7 +255,6 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
         IsotopeMap* isotope_map
         Isotope* reference
         char* symbol
-
     out = <Element*>malloc(sizeof(Element))
     isotope_map = <IsotopeMap*>malloc(sizeof(IsotopeMap))
     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
@@ -423,6 +422,13 @@ cdef ElementHashTable* make_element_hash_table_populated(size_t size):
 
 
 _ElementTable = make_element_hash_table_populated(256)
+
+
+cdef ElementHashTable* get_system_element_hash_table() nogil:
+    return _ElementTable
+
+cdef int set_system_element_hash_table(ElementHashTable* table) nogil:
+    _ElementTable[0] = table[0]
 
 
 # -----------------------------------------------------------------------------
@@ -779,8 +785,11 @@ def isotope_update_test(str element_symbol):
         Isotope* isotope_obj
         str out
 
+    element = <char*>malloc(sizeof(char) * 10)
     c_element_symbol = PyString_AsString(element_symbol)
+    printf("c_element_symbol %s\n", c_element_symbol)
     _parse_isotope_string(c_element_symbol, &isotope, element)
+    printf("status %s\n", element)
     out = PyString_FromString(element)
     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
     print("element_hash_table_get")
@@ -802,10 +811,11 @@ def isotope_parse_test(str element_symbol):
         char* element
         char[10] isotope_string
         int isotope
+    element = <char*>malloc(sizeof(char) * 10)
     c_element_symbol = PyString_AsString(element_symbol)
     _parse_isotope_string(c_element_symbol, &isotope, element)
-
     print(element, isotope)
+    free(element)
 
 
 cdef dict _string_table = {}
@@ -1113,8 +1123,9 @@ cpdef PyComposition parse_formula(str formula):
         char* temp
         char a
         Element* elem
+        Element* fixed_isotope_elem
         PyComposition composition
-        int state, count, prev_count, fixed_isotope, status
+        int state, count, prev_count, fixed_isotope, status, found
     prev_count = 0
     state = ELEMENT
     cstr = PyString_AsString(formula)
@@ -1161,16 +1172,23 @@ cpdef PyComposition parse_formula(str formula):
                 strncpy(temp, cstr + elstart, elend - elstart)
                 temp[elend - elstart] = 0
                 found = element_hash_table_get(_ElementTable, temp, &elem)
+                # something in this loop is suspicious and causes periodic crashes.
                 if isostart != 0 and isoend != 0 and found != 0:
                     isostart += 1
                     strncpy(temp, cstr + isostart, isoend - isostart)
                     temp[isoend - isostart] = 0
                     fixed_isotope = atoi(temp)
-                    strncpy(temp, cstr + elstart, isostart)
-                    temp[isostart - 1] = 0
-                    found = element_hash_table_get(_ElementTable, temp, &elem)
-                    elem = make_fixed_isotope_element(elem, fixed_isotope)
-                    element_hash_table_put(_ElementTable, elem)
+                    
+                    strncpy(temp, cstr + elstart, isoend - elstart + 1)
+                    temp[isoend - elstart + 2] = 0
+
+                    found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
+                    if found != 0:
+                        fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
+                        element_hash_table_put(_ElementTable, fixed_isotope_elem)
+                        elem = fixed_isotope_elem
+                    else:
+                        elem = fixed_isotope_elem
                 prev_count = 0
                 composition_get_element_count(composition.impl, elem.symbol, &prev_count)
                 composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
@@ -1191,12 +1209,19 @@ cpdef PyComposition parse_formula(str formula):
             isostart += 1
             strncpy(temp, cstr + isostart, isoend - isostart)
             temp[isoend - isostart] = 0
+            
             fixed_isotope = atoi(temp)
-            strncpy(temp, cstr + elstart, isostart)
-            temp[isostart - elstart - 1] = 0
-            found = element_hash_table_get(_ElementTable, temp, &elem)
-            elem = make_fixed_isotope_element(elem, fixed_isotope)
-            element_hash_table_put(_ElementTable, elem)
+            
+            strncpy(temp, cstr + elstart, isoend - elstart + 1)
+            temp[isoend - elstart + 2] = 0
+
+            found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
+            if found != 0:
+                fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
+                element_hash_table_put(_ElementTable, fixed_isotope_elem)
+                elem = fixed_isotope_elem
+            else:
+                elem = fixed_isotope_elem
         prev_count = 0
         composition_get_element_count(composition.impl, elem.symbol, &prev_count)
         composition_set_element_count(composition.impl, elem.symbol, count + prev_count)

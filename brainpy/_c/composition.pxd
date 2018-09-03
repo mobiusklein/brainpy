@@ -81,6 +81,11 @@ cdef size_t hash_string(char *str) nogil
 cdef size_t free_element_hash_table(ElementHashTable* table) nogil
 
 
+cdef ElementHashTable* get_system_element_hash_table() nogil
+
+cdef int set_system_element_hash_table(ElementHashTable* table) nogil
+
+
 # -----------------------------------------------------------------------------
 # Composition Declarations
 

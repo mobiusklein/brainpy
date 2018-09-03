@@ -369,7 +369,7 @@ class Peak(object):
 
     Peaks are comparable, hashable, and can be copied by calling
     :meth:`clone`
-    
+
     Attributes
     ----------
     charge : int
@@ -408,7 +408,7 @@ class IsotopicDistribution(object):
     """
     Constructs a theoretical isotopic distribution for a given composition
     out to a given number of peaks.
-    
+
     Attributes
     ----------
     average_mass : float
