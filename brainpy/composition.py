@@ -61,7 +61,14 @@ def _get_isotope(element_string):
         return element_string, 0
 
 
-class SimpleComposition(Counter):
+class PyComposition(Counter):
+    '''A mapping representing a chemical composition.
+
+    Implements arithmetic operations, +/- is defined
+    between a :class:`PyComposition` and a :class:`Mapping`-like
+    object, and * is defined between a :class:`PyComposition` and
+    an integer.
+    '''
     def __init__(self, base=None, **kwargs):
         if base is not None:
             self.update(base)
@@ -84,13 +91,34 @@ class SimpleComposition(Counter):
         return self
 
     def mass(self, mass_data=None):
+        '''Calculate the monoisotopic mass of this chemical composition
+
+        Returns
+        -------
+        float
+        '''
         return calculate_mass(self, mass_data)
 
 
 def parse_formula(formula):
+    """Parse a chemical formula and construct a :class:`PyComposition` object
+
+    Parameters
+    ----------
+    formula : :class:`str`
+
+    Returns
+    -------
+    :class:`PyComposition`
+
+    Raises
+    ------
+    ValueError
+        If the formula doesn't match the expected pattern
+    """
     if not formula_pattern.match(formula):
         raise ValueError("%r does not look like a formula" % (formula,))
-    composition = SimpleComposition()
+    composition = PyComposition()
     for elem, isotope, number in atom_pattern.findall(formula):
         composition[_make_isotope_string(elem, int(isotope) if isotope else 0)] += int(number)
     return composition
@@ -99,7 +127,8 @@ def parse_formula(formula):
 try:
     _has_c = True
     _parse_formula = parse_formula
-    from ._c.composition import parse_formula
+    _PyComposition = PyComposition
+    from ._c.composition import parse_formula, PyComposition
 except ImportError as e:
     print(e)
     _has_c = False

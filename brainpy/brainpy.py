@@ -9,7 +9,7 @@ from sys import float_info
 
 from brainpy.mass_dict import nist_mass
 from brainpy.composition import (
-    SimpleComposition,
+    PyComposition,
     parse_formula,
     calculate_mass,
     _make_isotope_string,

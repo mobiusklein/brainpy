@@ -831,6 +831,13 @@ cdef str _store_string(str symbol):
 
 
 cdef class PyComposition(object):
+    '''A mapping representing a chemical composition.
+
+    Implements arithmetic operations, +/- is defined
+    between a :class:`PyComposition` and a :class:`Mapping`-like
+    object, and * is defined between a :class:`PyComposition` and
+    an integer.
+    '''
 
     @staticmethod
     cdef PyComposition _create(Composition* base):
@@ -1049,6 +1056,12 @@ cdef class PyComposition(object):
         return iter(self.keys())
 
     cpdef double mass(self):
+        '''Calculate the monoisotopic mass of this chemical composition
+
+        Returns
+        -------
+        float
+        '''
         if self._clean:
             return self.cached_mass
         else:
@@ -1114,6 +1127,21 @@ cdef enum:
 
 
 cpdef PyComposition parse_formula(str formula):
+    """Parse a chemical formula and construct a :class:`PyComposition` object
+
+    Parameters
+    ----------
+    formula : :class:`str`
+
+    Returns
+    -------
+    :class:`PyComposition`
+
+    Raises
+    ------
+    ValueError
+        If the formula doesn't match the expected pattern
+    """
     cdef:
         ssize_t i, n
         ssize_t elstart, elend
