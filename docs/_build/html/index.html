@@ -1,0 +1,265 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to brainpy’s documentation! &#8212; brainpy  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-brainpy-s-documentation">
+<h1>Welcome to brainpy’s documentation!<a class="headerlink" href="#welcome-to-brainpy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="#module-brainpy" title="brainpy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">brainpy</span></code></a> is a small Python library implementing the <em>B</em> afflingly <em>R</em> ecursive
+<em>A</em> lgorithm for <em>I</em> sotopic Patter <em>N</em> generation. It includes three implementations,
+a pure-Python object oriented implementation, a <cite>Cython</cite> accelerated
+version of the object oriented implementation, and a pure <cite>C</cite> implementation,
+listed in order of ascending speed. The C implementation is used by default when available.</p>
+<p>BRAIN takes an elemental composition represented by any <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>-like Python object
+and uses it to compute its aggregated isotopic distribution. All isotopic variants of the same
+number of neutrons are collapsed into a single centroid peak, meaning it does not consider
+isotopic fine structure.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainpy</span> <span class="kn">import</span> <span class="n">isotopic_variants</span>
+
+<span class="n">peptide</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">53</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
+<span class="n">theoretical_isotopic_cluster</span> <span class="o">=</span> <span class="n">isotopic_variants</span><span class="p">(</span><span class="n">peptide</span><span class="p">,</span> <span class="n">npeaks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">theoretical_isotopic_cluster</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">peak</span><span class="o">.</span><span class="n">mz</span><span class="p">,</span> <span class="n">peak</span><span class="o">.</span><span class="n">intensity</span><span class="p">)</span>
+
+<span class="c1"># produce a theoretical profile using a gaussian peak shape</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
+<span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.002</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grid</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">theoretical_isotopic_cluster</span><span class="p">:</span>
+        <span class="n">intensity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">peak</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">peak</span><span class="o">.</span><span class="n">mz</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
+
+<span class="n">intensity</span> <span class="o">=</span> <span class="p">(</span><span class="n">intensity</span> <span class="o">/</span> <span class="n">intensity</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="c1"># draw the profile</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;m/z&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Relative intensity&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//index-1.py">Source code</a>, <a class="reference external" href=".//index-1.png">png</a>, <a class="reference external" href=".//index-1.hires.png">hires.png</a>, <a class="reference external" href=".//index-1.pdf">pdf</a>)</p>
+<div class="figure">
+<img alt="_images/index-1.png" src="_images/index-1.png" />
+</div>
+<span class="target" id="module-brainpy"></span><p>A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN</p>
+<dl class="function">
+<dt id="brainpy.isotopic_variants">
+<code class="descclassname">brainpy.</code><code class="descname">isotopic_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.isotopic_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>pyisotopic_variants(composition, npeaks=None, int charge=0, double charge_carrier=PROTON)</p>
+<p>Compute a peak list representing the theoretical isotopic cluster for <cite>composition</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers</li>
+<li><strong>n_peaks</strong> (<em>int</em>) – The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
+If given a number below 1 or above the maximum number of isotopic variants, the maximum will
+be used. If <cite>None</cite>, a “reasonable” value is chosen by <cite>int(sqrt(max_variants(composition)))</cite>.</li>
+<li><strong>charge</strong> (<em>int</em>) – The charge state of the isotopic cluster to produce. Defaults to 0, theoretical neutral mass.</li>
+<li><strong>charge_carrier</strong> (<em>double</em>) – The mass of the molecule contributing the ion’s charge</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of TheoreticalPeak</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainpy.max_variants">
+<code class="descclassname">brainpy.</code><code class="descname">max_variants</code><span class="sig-paren">(</span><em>composition</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpy/brainpy.html#max_variants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainpy.max_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the maximum number of isotopic variants that could be produced by a
+composition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>max_n_variants</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainpy.calculate_mass">
+<code class="descclassname">brainpy.</code><code class="descname">calculate_mass</code><span class="sig-paren">(</span><em>composition</em>, <em>mass_data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpy/composition.html#calculate_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainpy.calculate_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the monoisotopic mass of a composition</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers</li>
+<li><strong>mass_data</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dict with the masses of the chemical elements (the default
+value is <code class="xref py py-data docutils literal notranslate"><span class="pre">nist_mass</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>mass</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="brainpy.Peak">
+<em class="property">class </em><code class="descclassname">brainpy.</code><code class="descname">Peak</code><span class="sig-paren">(</span><em>mz</em>, <em>intensity</em>, <em>charge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpy/brainpy.html#Peak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainpy.Peak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent a single theoretical peak centroid.</p>
+<p>Peaks are comparable, hashable, and can be copied by calling
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">clone()</span></code></p>
+<dl class="attribute">
+<dt id="brainpy.Peak.charge">
+<code class="descname">charge</code><a class="headerlink" href="#brainpy.Peak.charge" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – The charge state of the peak</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="brainpy.Peak.intensity">
+<code class="descname">intensity</code><a class="headerlink" href="#brainpy.Peak.intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – The height of the peak. Peaks created as part of a
+theoretical isotopic cluster will be have an intensity
+between 0 and 1.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="brainpy.Peak.mz">
+<code class="descname">mz</code><a class="headerlink" href="#brainpy.Peak.mz" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – The mass-to-charge ratio of the peak</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="brainpy.IsotopicDistribution">
+<em class="property">class </em><code class="descclassname">brainpy.</code><code class="descname">IsotopicDistribution</code><span class="sig-paren">(</span><em>composition</em>, <em>order=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.IsotopicDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="brainpy.IsotopicDistribution.aggregated_isotopic_variants">
+<code class="descname">aggregated_isotopic_variants</code><span class="sig-paren">(</span><em>self</em>, <em>int charge=0</em>, <em>double charge_carrier=PROTON</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.IsotopicDistribution.aggregated_isotopic_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the m/z (or neutral mass when <cite>charge</cite> == 0) for each
+aggregated isotopic peak and their intensity relative to
+the monoisotopic peak.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="brainpy.parse_formula">
+<code class="descclassname">brainpy.</code><code class="descname">parse_formula</code><span class="sig-paren">(</span><em>str formula</em><span class="sig-paren">)</span> &#x2192; PyComposition<a class="headerlink" href="#brainpy.parse_formula" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="brainpy.PyComposition">
+<em class="property">class </em><code class="descclassname">brainpy.</code><code class="descname">PyComposition</code><span class="sig-paren">(</span><em>base=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.PyComposition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">brainpy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Joshua Klein and Han Hu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
