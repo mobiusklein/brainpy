@@ -33,3 +33,16 @@ if _has_c:
     from .brainpy import _IsotopicDistribution
 
 __author__ = "Joshua Klein & Han Hu"
+
+
+__all__ = [
+    "isotopic_variants", "IsotopicDistribution", "periodic_table",
+    "max_variants", "calculate_mass", "neutral_mass", "mass_charge_ratio",
+    "PROTON", "_has_c", "Peak",
+
+    "parse_formula", "PyComposition",
+
+    "_IsotopicDistribution",
+
+    "get_include"
+]
