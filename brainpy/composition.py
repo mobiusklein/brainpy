@@ -132,3 +132,6 @@ try:
 except ImportError as e:
     print(e)
     _has_c = False
+
+
+SimpleComposition = PyComposition

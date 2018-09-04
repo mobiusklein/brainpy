@@ -10,6 +10,9 @@ from .brainpy import (isotopic_variants, IsotopicDistribution, periodic_table,
 from .composition import parse_formula, PyComposition
 
 
+SimpleComposition = PyComposition
+
+
 def get_include():
     """Retrieve the path to compiled C extensions' source files to make linking simple.
 
@@ -40,7 +43,7 @@ __all__ = [
     "max_variants", "calculate_mass", "neutral_mass", "mass_charge_ratio",
     "PROTON", "_has_c", "Peak",
 
-    "parse_formula", "PyComposition",
+    "parse_formula", "PyComposition", "SimpleComposition",
 
     "_IsotopicDistribution",
 
