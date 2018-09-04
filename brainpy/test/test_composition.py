@@ -21,13 +21,17 @@ class CompositionTest(unittest.TestCase):
     def test_isotope_parse(self):
         for formula in ["O1H1H1H[2]1", "O1H1H[2]1H1"]:
             composition = parse_formula(formula)
-            self.assertEqual(composition, {"O": 1, "H": 2, "H[2]": 1})
-            self.assertAlmostEqual(composition.mass(), 20.0246, 3)
+            self.assertEqual(composition, {"O": 1, "H": 2, "H[2]": 1}, msg="%r != %r" % (
+                composition, {"O": 1, "H": 2, "H[2]": 1}))
+            self.assertAlmostEqual(composition.mass(), 20.0246, 3, msg="%r.mass() (%r) != %r" % (
+                composition, composition.mass(), 20.0246))
             self.assertEqual(composition['H'], 2)
             if _has_c:
                 composition = cparse_formula(formula)
-                self.assertEqual(composition, {"O": 1, "H": 2, "H[2]": 1})
-                self.assertAlmostEqual(composition.mass(), 20.0246, 3)
+                self.assertEqual(composition, {"O": 1, "H": 2, "H[2]": 1}, msg="%r != %r" % (
+                    composition, {"O": 1, "H": 2, "H[2]": 1}))
+                self.assertAlmostEqual(composition.mass(), 20.0246, 3, msg="%r.mass() (%r) != %r" % (
+                    composition, composition.mass(), 20.0246))
                 self.assertEqual(composition['H'], 2)
 
     def test_mass(self):
