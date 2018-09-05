@@ -1,6 +1,8 @@
 # brainpy
 A Python implementation of Baffling Recursive Algorithm for Isotopic distributioN calculations
 
+Documentation: http://mobiusklein.github.io/brainpy
+
 
 This is a direct translation of Han Hu's root-finding-free approach.
 
