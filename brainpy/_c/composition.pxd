@@ -1,6 +1,6 @@
 from brainpy.mass_dict import nist_mass as __nist_mass
 
-ctypedef int count_type
+ctypedef long count_type
 
 cdef dict nist_mass
 nist_mass = __nist_mass
@@ -108,8 +108,8 @@ cdef void free_composition(Composition* composition) nogil
 
 cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil
 cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil
-cdef Composition* composition_mul(Composition* composition, int scale) nogil
-cdef void composition_imul(Composition* composition, int scale) nogil
+cdef Composition* composition_mul(Composition* composition, long scale) nogil
+cdef void composition_imul(Composition* composition, long scale) nogil
 
 cdef dict composition_to_dict(Composition* composition)
 cdef Composition* dict_to_composition(dict comp_dict)
@@ -127,5 +127,9 @@ cdef class PyComposition(object):
     cpdef bint __equality_pycomposition(self, PyComposition other)
     cpdef bint __equality_dict(self, dict other)
     cpdef PyComposition copy(self)
+
+    cdef void add_from(self, PyComposition other)
+    cdef void subtract_from(self, PyComposition other)
+    cdef void scale_by(self, long scale)
 
 cpdef PyComposition parse_formula(str formula)

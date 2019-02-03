@@ -7,7 +7,7 @@ cimport cython
 
 from brainpy._c.compat cimport (
     PyStr_FromString as PyString_FromString, PyStr_AsString as PyString_AsString,
-    PyInt_AsLong, PyInt_FromLong)
+    PyInt_AsLong, PyInt_FromLong, PyStr_InternInPlace as PyString_InternInPlace)
 
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
 from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
@@ -271,6 +271,7 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
     out.symbol = <char*>malloc(sizeof(char) * 10)
     _make_fixed_isotope_string(element, reference, out.symbol)
     out.monoisotopic_isotope_index = 0
+    printf("Created Element %s\n", out.symbol)
     return out
 
 
@@ -686,7 +687,7 @@ cdef int composition_iadd(Composition* composition_1, Composition* composition_2
             pass
     return status
 
-cdef Composition* composition_mul(Composition* composition, int scale) nogil:
+cdef Composition* composition_mul(Composition* composition, long scale) nogil:
     cdef:
         Composition* result
         size_t i
@@ -698,7 +699,7 @@ cdef Composition* composition_mul(Composition* composition, int scale) nogil:
         i += 1
     return result
 
-cdef void composition_imul(Composition* composition, int scale) nogil:
+cdef void composition_imul(Composition* composition, long scale) nogil:
     cdef:
         size_t i
 
@@ -874,8 +875,10 @@ cdef class PyComposition(object):
         cdef:
             count_type count
             int status
+            PyObject* pkey
             char* ckey
-        key = _store_string(key)
+        pkey = <PyObject*>key
+        PyString_InternInPlace(&pkey)
         ckey = PyString_AsString(key)
         status = composition_get_element_count(self.impl, ckey, &count)
         if status == 0:
@@ -887,8 +890,10 @@ cdef class PyComposition(object):
     def __setitem__(self, str key, count_type count):
         cdef:
             int status
+            PyObject* pkey
             char* ckey
-        key = _store_string(key)
+        pkey = <PyObject*>key
+        PyString_InternInPlace(&pkey)
         ckey = PyString_AsString(key)
         status = composition_set_element_count(self.impl, ckey, count)
         self._clean = False
@@ -914,6 +919,7 @@ cdef class PyComposition(object):
             i += 1
             if count == 0:
                 continue
+            print(elem)
             key_str = PyString_FromString(elem)
             PyList_Append(keys, key_str)
         return keys
@@ -971,6 +977,12 @@ cdef class PyComposition(object):
         cdef:
             PyComposition result
             PyComposition _other
+            object temp
+
+        if not isinstance(self, PyComposition):
+            temp = self
+            self = <PyComposition>other
+            other = temp
 
         result = self.copy()
 
@@ -1002,6 +1014,12 @@ cdef class PyComposition(object):
         cdef:
             PyComposition result
             PyComposition _other
+            object temp
+
+        if not isinstance(self, PyComposition):
+            temp = self
+            self = <PyComposition>other
+            other = temp
 
         result = self.copy()
 
@@ -1033,7 +1051,7 @@ cdef class PyComposition(object):
         cdef:
             PyComposition result
             PyComposition inst
-            int scale_factor
+            long scale_factor
 
         if isinstance(self, PyComposition):
             inst = self
@@ -1048,9 +1066,19 @@ cdef class PyComposition(object):
 
         return result
 
-    def __imul__(self, int scale):
+    def __imul__(self, long scale):
         composition_imul(self.impl, scale)
         return self
+
+
+    cdef void add_from(self, PyComposition other):
+        composition_iadd(self.impl, other.impl, 1)
+    
+    cdef void subtract_from(self, PyComposition other):
+        composition_iadd(self.impl, other.impl, -1)
+
+    cdef void scale_by(self, long scale):
+        composition_imul(self.impl, scale)
 
     def __iter__(self):
         return iter(self.keys())
@@ -1153,7 +1181,8 @@ cpdef PyComposition parse_formula(str formula):
         Element* elem
         Element* fixed_isotope_elem
         PyComposition composition
-        int state, count, prev_count, fixed_isotope, status, found
+        count_type count, prev_count
+        int state, fixed_isotope, status, found
     prev_count = 0
     state = ELEMENT
     cstr = PyString_AsString(formula)
