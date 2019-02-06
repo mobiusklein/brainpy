@@ -28,6 +28,7 @@ cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size)
 
 cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil
 cdef void free_isotope_map(IsotopeMap* isotopes) nogil
+cdef void print_isotope_map(IsotopeMap* isotope_map) nogil
 
 # -----------------------------------------------------------------------------
 # Element Declarations
@@ -44,6 +45,7 @@ cdef double element_monoisotopic_mass(Element* element) nogil
 cdef int element_min_neutron_shift(Element* element) nogil
 cdef int element_max_neutron_shift(Element* element) nogil
 cdef void free_element(Element* element) nogil
+cdef void print_element(Element* element) nogil
 
 cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil
 

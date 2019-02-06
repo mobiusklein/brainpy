@@ -2,13 +2,15 @@
 
 cimport cython
 
-# from cpython.string cimport PyString_FromString, PyString_AsString
+# from cpython.string cimport PyStr_FromString, PyStr_AsString
 # from cpython.int cimport PyInt_AsLong, PyInt_FromLong
 
 from brainpy._c.compat cimport (
-    PyStr_FromString as PyString_FromString, PyStr_AsString as PyString_AsString,
-    PyInt_AsLong, PyInt_FromLong, PyStr_InternInPlace as PyString_InternInPlace)
+    PyStr_FromString, PyStr_AsString,
+    PyInt_AsLong, PyInt_FromLong, PyStr_InternInPlace,
+    PyStr_AsUTF8AndSize)
 
+from cpython.ref cimport Py_INCREF, Py_DECREF
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
 from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
 from cpython.object cimport PyObject
@@ -76,10 +78,8 @@ cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_na
         isotope_num[0] = atoi(number_part)
     else:
         isotope_num[0] = 0
-
-    element_name[name_end] = '\0'
     memcpy(element_name, label, name_end)
-
+    element_name[name_end] = '\0'
     return element_name
 
 cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
@@ -153,12 +153,13 @@ cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) n
     return NULL
 
 
-cdef void print_isotope_map(IsotopeMap* isotope_map):
+cdef void print_isotope_map(IsotopeMap* isotope_map) nogil:
     cdef:
         size_t i
 
     for i in range(isotope_map.size):
-        printf("%f, %f, %d\n", isotope_map.bins[i].mass, isotope_map.bins[i].abundance, isotope_map.bins[i].neutron_shift)
+        printf("%f, %f, %d -> %d\n", isotope_map.bins[i].mass, isotope_map.bins[i].abundance,
+                                     isotope_map.bins[i].neutron_shift, isotope_map.bins[i].neutrons)
 
 
 cdef void free_isotope_map(IsotopeMap* isotopes) nogil:
@@ -201,7 +202,7 @@ cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
         str py_element_symbol
 
     freqs = dict()
-    py_element_symbol = PyString_FromString(element_symbol)
+    py_element_symbol = PyStr_FromString(element_symbol)
 
     try:
         element_data = nist_mass[py_element_symbol]
@@ -247,6 +248,37 @@ cdef void free_element(Element* element) nogil:
     free_isotope_map(element.isotopes)
     free(element)
 
+cdef void print_element(Element* element) nogil:
+    printf("Symbol: %s; Monoisotopic Index: %d\n", element.symbol,
+                                                   element.monoisotopic_isotope_index)
+    print_isotope_map(element.isotopes)
+
+
+cdef bint ensure_fixed_isotope(char* string):
+    cdef:
+        char* element_name
+        int isotope_count
+        int found
+        Element* elem
+        Element* fixed_isotope_elem
+    found = element_hash_table_get(_ElementTable, string, &elem)
+    if found != 0:
+        elem = NULL
+    else:
+        return True
+
+    isotope_count = 0
+    element_name = <char*>malloc(sizeof(char) * 10)
+    _parse_isotope_string(string, &isotope_count, element_name)
+    found = element_hash_table_get(_ElementTable, element_name, &elem)
+    if found != 0:
+        # with gil:
+            raise KeyError(string)
+    fixed_isotope_elem = make_fixed_isotope_element(elem, isotope_count)
+    element_hash_table_put(_ElementTable, fixed_isotope_elem)
+    return False
+
+
 cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil:
     cdef:
         int i
@@ -255,6 +287,7 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
         IsotopeMap* isotope_map
         Isotope* reference
         char* symbol
+    # print_element(element)
     out = <Element*>malloc(sizeof(Element))
     isotope_map = <IsotopeMap*>malloc(sizeof(IsotopeMap))
     isotope_map.bins = <Isotope*>malloc(sizeof(Isotope) * 1)
@@ -271,8 +304,24 @@ cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) no
     out.symbol = <char*>malloc(sizeof(char) * 10)
     _make_fixed_isotope_string(element, reference, out.symbol)
     out.monoisotopic_isotope_index = 0
-    printf("Created Element %s\n", out.symbol)
     return out
+
+
+def test_make_fixed_isotope_element(str element, int neutron_count):
+    cdef:
+        Element* elem_obj
+        Element* fixed_obj
+        char* c_str_element
+    c_str_element = PyStr_AsString(element)
+    printf("Element String: %s\n", c_str_element)
+    status = element_hash_table_get(_ElementTable, c_str_element, &elem_obj)
+    print(status)
+    printf("Symbol: %s; Monoisotopic Index: %d\n", elem_obj.symbol, elem_obj.monoisotopic_isotope_index)
+    print_isotope_map(elem_obj.isotopes)
+    print("Creating Fixed Isotope")
+    fixed_obj = make_fixed_isotope_element(elem_obj, neutron_count)
+    printf("Symbol: %s; Monoisotopic Index: %d\n", fixed_obj.symbol, fixed_obj.monoisotopic_isotope_index)
+    print_isotope_map(fixed_obj.isotopes)
 
 
 # -----------------------------------------------------------------------------
@@ -294,7 +343,7 @@ cdef size_t hash_string(char *string_) nogil:
 
 
 def test_hash_string(str string_):
-    return hash_string(PyString_AsString(string_))
+    return hash_string(PyStr_AsString(string_))
 
 
 cdef ElementHashTable* make_element_hash_table(size_t size) nogil:
@@ -398,6 +447,7 @@ cdef size_t free_element_hash_table(ElementHashTable* table) nogil:
         free_element_hash_bucket(&(table.buckets[i]))
     free(table)
 
+
 cdef ElementHashTable* make_element_hash_table_populated(size_t size):
     cdef:
         Element* element
@@ -411,7 +461,7 @@ cdef ElementHashTable* make_element_hash_table_populated(size_t size):
     table = make_element_hash_table(size)
 
     for pk in nist_mass:
-        k = PyString_AsString(pk)
+        k = PyStr_AsString(pk)
         element = make_element(k)
         status = element_hash_table_put(table, element)
         if status != 0:
@@ -428,8 +478,21 @@ _ElementTable = make_element_hash_table_populated(256)
 cdef ElementHashTable* get_system_element_hash_table() nogil:
     return _ElementTable
 
+
 cdef int set_system_element_hash_table(ElementHashTable* table) nogil:
     _ElementTable[0] = table[0]
+
+
+def show_element(str element):
+    cdef:
+        Element* elem_obj
+        char* c_str_element
+    c_str_element = PyStr_AsString(element)
+    printf("Element String: %s\n", c_str_element)
+    status = element_hash_table_get(_ElementTable, c_str_element, &elem_obj)
+    print(status)
+    printf("Symbol: %s; Monoisotopic Index: %d\n", elem_obj.symbol, elem_obj.monoisotopic_isotope_index)
+    print_isotope_map(elem_obj.isotopes)
 
 
 # -----------------------------------------------------------------------------
@@ -722,7 +785,7 @@ cdef dict composition_to_dict(Composition* composition):
         composition_get_element_count(composition, symbol_c, &value)
         if value == 0:
             continue
-        symbol = PyString_FromString(symbol_c)
+        symbol = PyStr_FromString(symbol_c)
         result[symbol] = value
         i += 1
     return result
@@ -736,7 +799,7 @@ cdef Composition* dict_to_composition(dict comp_dict):
         count_type value
     result = make_composition()
     for symbol, value in comp_dict.items():
-        symbol_c = PyString_AsString(symbol)
+        symbol_c = PyStr_AsString(symbol)
         composition_set_element_count(result, symbol_c, value)
     return result
 
@@ -787,11 +850,11 @@ def isotope_update_test(str element_symbol):
         str out
 
     element = <char*>malloc(sizeof(char) * 10)
-    c_element_symbol = PyString_AsString(element_symbol)
+    c_element_symbol = PyStr_AsString(element_symbol)
     printf("c_element_symbol %s\n", c_element_symbol)
     _parse_isotope_string(c_element_symbol, &isotope, element)
     printf("status %s\n", element)
-    out = PyString_FromString(element)
+    out = PyStr_FromString(element)
     printf("Element Symbol: %s, Isotope: %d\n", element, isotope)
     print("element_hash_table_get")
     status = element_hash_table_get(_ElementTable, element, &elem_obj)
@@ -813,7 +876,7 @@ def isotope_parse_test(str element_symbol):
         char[10] isotope_string
         int isotope
     element = <char*>malloc(sizeof(char) * 10)
-    c_element_symbol = PyString_AsString(element_symbol)
+    c_element_symbol = PyStr_AsString(element_symbol)
     _parse_isotope_string(c_element_symbol, &isotope, element)
     print(element, isotope)
     free(element)
@@ -877,24 +940,24 @@ cdef class PyComposition(object):
             int status
             PyObject* pkey
             char* ckey
-        pkey = <PyObject*>key
-        PyString_InternInPlace(&pkey)
-        ckey = PyString_AsString(key)
+        key = _store_string(key)
+        ckey = PyStr_AsString(key)
         status = composition_get_element_count(self.impl, ckey, &count)
         if status == 0:
             return count
         else:
-            # composition_set_element_count(self.impl, ckey, 0)
-            return 0.
+            return 0
 
     def __setitem__(self, str key, count_type count):
         cdef:
             int status
+            Py_ssize_t size
             PyObject* pkey
             char* ckey
-        pkey = <PyObject*>key
-        PyString_InternInPlace(&pkey)
-        ckey = PyString_AsString(key)
+        key = _store_string(key)
+        ckey = PyStr_AsUTF8AndSize(key, &size)
+        if ckey[size - 1] == ']':
+            ensure_fixed_isotope(ckey)
         status = composition_set_element_count(self.impl, ckey, count)
         self._clean = False
 
@@ -919,8 +982,7 @@ cdef class PyComposition(object):
             i += 1
             if count == 0:
                 continue
-            print(elem)
-            key_str = PyString_FromString(elem)
+            key_str = PyStr_FromString(elem)
             PyList_Append(keys, key_str)
         return keys
 
@@ -965,7 +1027,7 @@ cdef class PyComposition(object):
             i += 1
             if value == 0:
                 continue
-            items.append((PyString_FromString(elem), value))
+            items.append((PyStr_FromString(elem), value))
         return items
 
     cpdef PyComposition copy(self):
@@ -1183,9 +1245,10 @@ cpdef PyComposition parse_formula(str formula):
         PyComposition composition
         count_type count, prev_count
         int state, fixed_isotope, status, found
+    elem = NULL
     prev_count = 0
     state = ELEMENT
-    cstr = PyString_AsString(formula)
+    cstr = PyStr_AsString(formula)
     temp = <char*>malloc(sizeof(char) * 10)
     for i in range(10):
         temp[i] = "\0"
@@ -1234,19 +1297,24 @@ cpdef PyComposition parse_formula(str formula):
                     isostart += 1
                     strncpy(temp, cstr + isostart, isoend - isostart)
                     temp[isoend - isostart] = 0
-                    fixed_isotope = atoi(temp)
-                    
+                    fixed_isotope = atoi(temp)                    
                     strncpy(temp, cstr + elstart, isoend - elstart + 1)
                     temp[isoend - elstart + 2] = 0
 
                     found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
                     if found != 0:
+                        strncpy(temp, cstr + elstart, isostart)
+                        temp[isostart - elstart - 1] = 0
+                        found = element_hash_table_get(_ElementTable, temp, &elem)
+                        if found != 0:
+                            raise KeyError(temp)
                         fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
                         element_hash_table_put(_ElementTable, fixed_isotope_elem)
                         elem = fixed_isotope_elem
                     else:
                         elem = fixed_isotope_elem
                 prev_count = 0
+                # print("Incrementing value for %s by %d" % (elem.symbol, count))
                 composition_get_element_count(composition.impl, elem.symbol, &prev_count)
                 composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
                 state = ELEMENT
@@ -1266,20 +1334,23 @@ cpdef PyComposition parse_formula(str formula):
             isostart += 1
             strncpy(temp, cstr + isostart, isoend - isostart)
             temp[isoend - isostart] = 0
-            
             fixed_isotope = atoi(temp)
-            
             strncpy(temp, cstr + elstart, isoend - elstart + 1)
             temp[isoend - elstart + 2] = 0
-
             found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
             if found != 0:
+                strncpy(temp, cstr + elstart, isostart)
+                temp[isostart - elstart - 1] = 0
+                found = element_hash_table_get(_ElementTable, temp, &elem)
+                if found != 0:
+                    raise KeyError(temp)
                 fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
                 element_hash_table_put(_ElementTable, fixed_isotope_elem)
                 elem = fixed_isotope_elem
             else:
                 elem = fixed_isotope_elem
         prev_count = 0
+        # print("Incrementing value for %s by %d" % (elem.symbol, count))
         composition_get_element_count(composition.impl, elem.symbol, &prev_count)
         composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
 
