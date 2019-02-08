@@ -112,9 +112,11 @@ cdef Composition* composition_add(Composition* composition_1, Composition* compo
 cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil
 cdef Composition* composition_mul(Composition* composition, long scale) nogil
 cdef void composition_imul(Composition* composition, long scale) nogil
+cdef int initialize_composition_from_formula(char* formula, ssize_t n, Composition* composition) nogil
 
 cdef dict composition_to_dict(Composition* composition)
 cdef Composition* dict_to_composition(dict comp_dict)
+
 
 cdef class PyComposition(object):
     cdef:
@@ -125,10 +127,23 @@ cdef class PyComposition(object):
     cdef PyComposition _create(Composition* base)
     cdef void _set_impl(self, Composition* composition, bint free_existing=*)
 
+    cdef void _initialize_from_formula(self, str formula)
+
     cpdef double mass(self)
     cpdef bint __equality_pycomposition(self, PyComposition other)
     cpdef bint __equality_dict(self, dict other)
     cpdef PyComposition copy(self)
+
+    cpdef update(self, arg)
+    cpdef list keys(self)
+    cpdef list values(self)
+    cpdef list items(self)
+
+    cpdef pop(self, str key, object default=*)
+
+    cdef count_type getitem(self, str key)
+    cdef void setitem(self, str key, count_type value)
+    cdef void increment(self, str key, count_type value)
 
     cdef void add_from(self, PyComposition other)
     cdef void subtract_from(self, PyComposition other)

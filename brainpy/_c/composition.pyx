@@ -10,6 +10,11 @@ from brainpy._c.compat cimport (
     PyInt_AsLong, PyInt_FromLong, PyStr_InternInPlace,
     PyStr_AsUTF8AndSize)
 
+try:
+    from collections import Mapping
+except ImportError:
+    from collections.abc import Mapping
+
 from cpython.ref cimport Py_INCREF, Py_DECREF
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
 from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
@@ -882,18 +887,6 @@ def isotope_parse_test(str element_symbol):
     free(element)
 
 
-cdef dict _string_table = {}
-
-cdef str _store_string(str symbol):
-    cdef:
-        PyObject* po
-    po = PyDict_GetItem(_string_table, symbol)
-    if po == NULL:
-        PyDict_SetItem(_string_table, symbol, symbol)
-        po = PyDict_GetItem(_string_table, symbol)
-    return <str>po
-
-
 cdef class PyComposition(object):
     '''A mapping representing a chemical composition.
 
@@ -909,6 +902,7 @@ cdef class PyComposition(object):
             PyComposition inst
 
         inst = PyComposition.__new__(PyComposition)
+        inst.impl = make_composition()
         if base != NULL:
             composition_iadd(inst.impl, base, 1)
         inst._clean = False
@@ -920,54 +914,116 @@ cdef class PyComposition(object):
         self.impl = composition
         self._clean = False
 
+    cdef void _initialize_from_formula(self, str formula):
+        cdef:
+            ssize_t i, n
+            char* cstr
+            int state
+        cstr = PyStr_AsString(formula)
+        n = len(formula)
+        state = initialize_composition_from_formula(cstr, n, self.impl)
+        if state == 1:
+            raise ValueError()
+        elif state == 2:
+            raise KeyError()
+
     def __init__(self, base=None, **kwargs):
         self.impl = make_composition()
         self._clean = False
         self.cached_mass = 0.
 
-        if base is not None and isinstance(base, dict):
-            self.update(base)
+        if base is not None:
+            if isinstance(base, (dict, PyComposition)):
+                self.update(base)
+            elif isinstance(base, str):
+                self._initialize_from_formula(<str>base)
 
-        for py_element, count in kwargs.items():
-            self[py_element] = count
+        if kwargs:
+            self.update(<dict>kwargs)
 
     def __dealloc__(self):
         free_composition(self.impl)
 
     def __getitem__(self, str key):
+        return self.getitem(key)
+
+    def __setitem__(self, str key, count_type value):
+        self.setitem(key, value)
+
+    def __contains__(self, str key):
+        return self.getitem(key) != 0
+
+    cdef count_type getitem(self, str key):
         cdef:
             count_type count
             int status
             PyObject* pkey
             char* ckey
-        key = _store_string(key)
-        ckey = PyStr_AsString(key)
+        Py_INCREF(key)
+        pkey = <PyObject*>key
+        PyStr_InternInPlace(&pkey)
+        Py_INCREF(<str>pkey)
+        ckey = PyStr_AsString(<str>pkey)
         status = composition_get_element_count(self.impl, ckey, &count)
         if status == 0:
             return count
         else:
             return 0
 
-    def __setitem__(self, str key, count_type count):
+    cdef void setitem(self, str key, count_type value):
         cdef:
             int status
             Py_ssize_t size
             PyObject* pkey
             char* ckey
-        key = _store_string(key)
-        ckey = PyStr_AsUTF8AndSize(key, &size)
+        Py_INCREF(key)
+        pkey = <PyObject*>key
+        PyStr_InternInPlace(&pkey)
+        Py_INCREF(<str>pkey)
+        ckey = PyStr_AsUTF8AndSize(<str>pkey, &size)
         if ckey[size - 1] == ']':
             ensure_fixed_isotope(ckey)
-        status = composition_set_element_count(self.impl, ckey, count)
+        status = composition_set_element_count(self.impl, ckey, value)
         self._clean = False
 
-    def update(self, arg=None, **kwargs):
-        if arg is not None:
-            self.update(**arg)
-        for key, value in kwargs.items():
-            self[key] = value
+    cdef void increment(self, str key, count_type value):
+        cdef:
+            int status
+            Py_ssize_t size
+            PyObject* pkey
+            char* ckey
+        Py_INCREF(key)
+        pkey = <PyObject*>key
+        PyStr_InternInPlace(&pkey)
+        Py_INCREF(<str>pkey)
+        ckey = PyStr_AsUTF8AndSize(<str>pkey, &size)
+        if ckey[size - 1] == ']':
+            ensure_fixed_isotope(ckey)
+        status = composition_inc_element_count(self.impl, ckey, value)
+        self._clean = False
 
-    def keys(self):
+    cpdef update(self, arg):
+        cdef:
+            Py_ssize_t i, n
+            PyComposition composition
+            dict d
+
+        if isinstance(arg, PyComposition):
+            composition = <PyComposition>arg
+            for i in range(composition.impl.used):
+                composition_set_element_count(
+                    self.impl, composition.impl.elements[i],
+                    composition.impl.counts[i])
+
+        elif isinstance(arg, dict):
+            d = <dict>arg
+            for key, value in d.items():
+                self.setitem(key, value)
+        else:
+            for key, value in arg.items():
+                self.setitem(key, value)
+
+    cpdef list keys(self):
         cdef:
             size_t i
             int count
@@ -986,7 +1042,7 @@ cdef class PyComposition(object):
             PyList_Append(keys, key_str)
         return keys
 
-    def values(self):
+    cpdef list values(self):
         cdef:
             size_t i
             count_type value
@@ -1001,7 +1057,7 @@ cdef class PyComposition(object):
             counts.append(value)
         return counts
 
-    def pop(self, str key, object default=None):
+    cpdef pop(self, str key, object default=None):
         value = self[key]
         self[key] = 0
         if value == 0:
@@ -1009,10 +1065,7 @@ cdef class PyComposition(object):
         else:
             return value
 
-    def __contains__(self, str key):
-        return self[key] != 0
-
-    def items(self):
+    cpdef list items(self):
         cdef:
             size_t i
             char* elem
@@ -1031,8 +1084,7 @@ cdef class PyComposition(object):
         return items
 
     cpdef PyComposition copy(self):
-        inst = PyComposition()
-        composition_iadd(inst.impl, self.impl, 1)
+        inst = PyComposition._create(self.impl)
         return inst
 
     def __add__(self, other):
@@ -1046,11 +1098,11 @@ cdef class PyComposition(object):
             self = <PyComposition>other
             other = temp
 
-        result = self.copy()
+        result = (<PyComposition>self).copy()
 
         if isinstance(other, dict):
             for key, value in other.items():
-                result[key] += value
+                result[key] += PyInt_AsLong(value)
         elif isinstance(other, PyComposition):
             _other = other
             composition_iadd(result.impl, _other.impl, 1)
@@ -1064,7 +1116,7 @@ cdef class PyComposition(object):
 
         if isinstance(other, dict):
             for key, value in other.items():
-                self[key] += value
+                self[key] += PyInt_AsLong(value)
         elif isinstance(other, PyComposition):
             _other = other
             composition_iadd(self.impl, _other.impl, 1)
@@ -1083,11 +1135,11 @@ cdef class PyComposition(object):
             self = <PyComposition>other
             other = temp
 
-        result = self.copy()
+        result = (<PyComposition>self).copy()
 
         if isinstance(other, dict):
             for key, value in other.items():
-                result[key] -= value
+                result[key] -= PyInt_AsLong(value)
         elif isinstance(other, PyComposition):
             _other = other
             composition_iadd(result.impl, _other.impl, -1)
@@ -1101,7 +1153,7 @@ cdef class PyComposition(object):
 
         if isinstance(other, dict):
             for key, value in other.items():
-                self[key] -= value
+                self[key] -= PyInt_AsLong(value)
         elif isinstance(other, PyComposition):
             _other = other
             composition_iadd(self.impl, _other.impl, -1)
@@ -1121,7 +1173,6 @@ cdef class PyComposition(object):
         else:
             inst = scale
             scale_factor = PyInt_AsLong(self)
-
         result = inst.copy()
 
         composition_imul(result.impl, scale_factor)
@@ -1131,7 +1182,6 @@ cdef class PyComposition(object):
     def __imul__(self, long scale):
         composition_imul(self.impl, scale)
         return self
-
 
     cdef void add_from(self, PyComposition other):
         composition_iadd(self.impl, other.impl, 1)
@@ -1165,6 +1215,9 @@ cdef class PyComposition(object):
     def __repr__(self):
         return "PyComposition({%s})" % ', '.join("\"%s\": %d" % kv for kv in self.items())
 
+    def __str__(self):
+        return repr(self)
+
     cpdef bint __equality_pycomposition(self, PyComposition other):
         return composition_eq(self.impl, other.impl)
 
@@ -1179,30 +1232,35 @@ cdef class PyComposition(object):
         if n != self.impl.used:
             return False
         for key, value in other.items():
-            my_value = self[key]
+            my_value = self.getitem(key)
             if my_value != value:
                 return False
         return True
 
     def __richcmp__(self, object other, int code):
         if not isinstance(self, PyComposition):
-            other, self = self, other
+            temp = self
+            self = <PyComposition>other
+            other = temp
         if isinstance(other, PyComposition):
             if code == 2:
-                return self.__equality_pycomposition(other)
+                return self.__equality_pycomposition(<PyComposition>other)
             elif code == 3:
-                return not self.__equality_pycomposition(other)
+                return not self.__equality_pycomposition(<PyComposition>other)
         elif isinstance(other, dict):
             if code == 2:
-                return self.__equality_dict(other)
+                return self.__equality_dict(<dict>other)
             elif code == 3:
-                return not self.__equality_dict(other)
+                return not self.__equality_dict(<dict>other)
         else:
             other = dict(other)
             if code == 2:
-                return self.__equality_dict(other)
+                return self.__equality_dict(<dict>other)
             elif code == 3:
-                return not self.__equality_dict(other)
+                return not self.__equality_dict(<dict>other)
+
+
+Mapping.register(PyComposition)
 
 
 cdef extern from "<stdlib.h>" nogil:
@@ -1214,6 +1272,124 @@ cdef enum:
       ISOTOPE
       ELEMENT
       COUNT
+
+
+cdef int initialize_composition_from_formula(char* formula, ssize_t n, Composition* composition) nogil:
+    cdef:
+        ssize_t i
+        ssize_t elstart, elend
+        ssize_t numstart, numend
+        ssize_t isostart, isoend
+        char* temp
+        char a
+        Element* elem
+        Element* fixed_isotope_elem
+        count_type count, prev_count
+        int state, fixed_isotope, status, found
+
+    elem = NULL
+    prev_count = 0
+    state = ELEMENT
+    temp = <char*>malloc(sizeof(char) * 10)
+    for i in range(10):
+        temp[i] = "\0"
+    elstart = isostart = isoend = 0
+    for i in range(n):
+        a = formula[i]
+        if a == ']':
+            if state == ISOTOPE:
+                elend = i
+                isoend = i
+                numstart = i + 1
+                state = COUNT
+            else:
+                return 1
+        elif a == '[':
+            if state == ELEMENT:
+                elend = i
+                isostart = i
+                state = ISOTOPE
+            else:
+                return 1
+        elif isdigit(a):
+            if state == ISOTOPE or state == COUNT:
+                pass
+            elif state == ELEMENT:
+                elend = i
+                numstart = i
+                state = COUNT
+            else:
+                return 1
+        else:
+            if state == ELEMENT:
+                continue
+            elif state == COUNT:
+                numend = i
+                strncpy(temp, formula + numstart, numend - numstart)
+                temp[numend - numstart] = 0
+                count = atoi(temp)
+                strncpy(temp, formula + elstart, elend - elstart)
+                temp[elend - elstart] = 0
+                found = element_hash_table_get(_ElementTable, temp, &elem)
+                if isostart != 0 and isoend != 0 and found != 0:
+                    isostart += 1
+                    strncpy(temp, formula + isostart, isoend - isostart)
+                    temp[isoend - isostart] = 0
+                    fixed_isotope = atoi(temp)                    
+                    strncpy(temp, formula + elstart, isoend - elstart + 1)
+                    temp[isoend - elstart + 2] = 0
+
+                    found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
+                    if found != 0:
+                        strncpy(temp, formula + elstart, isostart)
+                        temp[isostart - elstart - 1] = 0
+                        found = element_hash_table_get(_ElementTable, temp, &elem)
+                        if found != 0:
+                            return 2
+                        fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
+                        element_hash_table_put(_ElementTable, fixed_isotope_elem)
+                        elem = fixed_isotope_elem
+                    else:
+                        elem = fixed_isotope_elem
+                prev_count = 0
+                # print("Incrementing value for %s by %d" % (elem.symbol, count))
+                composition_inc_element_count(composition, elem.symbol, count)
+                state = ELEMENT
+                elstart = i
+                isostart = 0
+                isoend = 0
+
+    if state == COUNT:
+        numend = i + 1
+        strncpy(temp, formula + numstart, numend - numstart)
+        temp[numend - numstart] = 0
+        count = atoi(temp)
+        strncpy(temp, formula + elstart, elend - elstart)
+        temp[elend - elstart] = 0
+        found = element_hash_table_get(_ElementTable, temp, &elem)
+        if isostart != 0 and isoend != 0 and found != 0:
+            isostart += 1
+            strncpy(temp, formula + isostart, isoend - isostart)
+            temp[isoend - isostart] = 0
+            fixed_isotope = atoi(temp)
+            strncpy(temp, formula + elstart, isoend - elstart + 1)
+            temp[isoend - elstart + 2] = 0
+            found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
+            if found != 0:
+                strncpy(temp, formula + elstart, isostart)
+                temp[isostart - elstart - 1] = 0
+                found = element_hash_table_get(_ElementTable, temp, &elem)
+                if found != 0:
+                    return 2
+                fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
+                element_hash_table_put(_ElementTable, fixed_isotope_elem)
+                elem = fixed_isotope_elem
+            else:
+                elem = fixed_isotope_elem
+        prev_count = 0
+        composition_inc_element_count(composition, elem.symbol, count)
+    free(temp)
+    return 0
 
 
 cpdef PyComposition parse_formula(str formula):
@@ -1234,125 +1410,15 @@ cpdef PyComposition parse_formula(str formula):
     """
     cdef:
         ssize_t i, n
-        ssize_t elstart, elend
-        ssize_t numstart, numend
-        ssize_t isostart, isoend
         char* cstr
-        char* temp
-        char a
-        Element* elem
-        Element* fixed_isotope_elem
+        int state
         PyComposition composition
-        count_type count, prev_count
-        int state, fixed_isotope, status, found
-    elem = NULL
-    prev_count = 0
-    state = ELEMENT
     cstr = PyStr_AsString(formula)
-    temp = <char*>malloc(sizeof(char) * 10)
-    for i in range(10):
-        temp[i] = "\0"
     n = len(formula)
-    elstart = isostart = isoend = 0
     composition = PyComposition()
-    for i in range(n):
-        a = cstr[i]
-        if a == ']':
-            if state == ISOTOPE:
-                elend = i
-                isoend = i
-                numstart = i + 1
-                state = COUNT
-            else:
-                raise ValueError((formula, i, state))
-        elif a == '[':
-            if state == ELEMENT:
-                elend = i
-                isostart = i
-                state = ISOTOPE
-            else:
-                raise ValueError((formula, i, state))
-        elif isdigit(a):
-            if state == ISOTOPE or state == COUNT:
-                pass
-            elif state == ELEMENT:
-                elend = i
-                numstart = i
-                state = COUNT
-            else:
-                raise ValueError((formula, i, state))
-        else:
-            if state == ELEMENT:
-                continue
-            elif state == COUNT:
-                numend = i
-                strncpy(temp, cstr + numstart, numend - numstart)
-                temp[numend - numstart] = 0
-                count = atoi(temp)
-                strncpy(temp, cstr + elstart, elend - elstart)
-                temp[elend - elstart] = 0
-                found = element_hash_table_get(_ElementTable, temp, &elem)
-                # something in this loop is suspicious and causes periodic crashes.
-                if isostart != 0 and isoend != 0 and found != 0:
-                    isostart += 1
-                    strncpy(temp, cstr + isostart, isoend - isostart)
-                    temp[isoend - isostart] = 0
-                    fixed_isotope = atoi(temp)                    
-                    strncpy(temp, cstr + elstart, isoend - elstart + 1)
-                    temp[isoend - elstart + 2] = 0
-
-                    found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
-                    if found != 0:
-                        strncpy(temp, cstr + elstart, isostart)
-                        temp[isostart - elstart - 1] = 0
-                        found = element_hash_table_get(_ElementTable, temp, &elem)
-                        if found != 0:
-                            raise KeyError(temp)
-                        fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
-                        element_hash_table_put(_ElementTable, fixed_isotope_elem)
-                        elem = fixed_isotope_elem
-                    else:
-                        elem = fixed_isotope_elem
-                prev_count = 0
-                # print("Incrementing value for %s by %d" % (elem.symbol, count))
-                composition_get_element_count(composition.impl, elem.symbol, &prev_count)
-                composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
-                state = ELEMENT
-                elstart = i
-                isostart = 0
-                isoend = 0
-
-    if state == COUNT:
-        numend = i + 1
-        strncpy(temp, cstr + numstart, numend - numstart)
-        temp[numend - numstart] = 0
-        count = atoi(temp)
-        strncpy(temp, cstr + elstart, elend - elstart)
-        temp[elend - elstart] = 0
-        found = element_hash_table_get(_ElementTable, temp, &elem)
-        if isostart != 0 and isoend != 0 and found != 0:
-            isostart += 1
-            strncpy(temp, cstr + isostart, isoend - isostart)
-            temp[isoend - isostart] = 0
-            fixed_isotope = atoi(temp)
-            strncpy(temp, cstr + elstart, isoend - elstart + 1)
-            temp[isoend - elstart + 2] = 0
-            found = element_hash_table_get(_ElementTable, temp, &fixed_isotope_elem)
-            if found != 0:
-                strncpy(temp, cstr + elstart, isostart)
-                temp[isostart - elstart - 1] = 0
-                found = element_hash_table_get(_ElementTable, temp, &elem)
-                if found != 0:
-                    raise KeyError(temp)
-                fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
-                element_hash_table_put(_ElementTable, fixed_isotope_elem)
-                elem = fixed_isotope_elem
-            else:
-                elem = fixed_isotope_elem
-        prev_count = 0
-        # print("Incrementing value for %s by %d" % (elem.symbol, count))
-        composition_get_element_count(composition.impl, elem.symbol, &prev_count)
-        composition_set_element_count(composition.impl, elem.symbol, count + prev_count)
-
-    free(temp)
+    state = initialize_composition_from_formula(cstr, n, composition.impl)
+    if state == 1:
+        raise ValueError()
+    elif state == 2:
+        raise KeyError()
     return composition
