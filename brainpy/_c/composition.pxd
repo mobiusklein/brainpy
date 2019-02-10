@@ -1,6 +1,6 @@
 from brainpy.mass_dict import nist_mass as __nist_mass
 
-ctypedef int count_type
+ctypedef long count_type
 
 cdef dict nist_mass
 nist_mass = __nist_mass
@@ -28,6 +28,7 @@ cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size)
 
 cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil
 cdef void free_isotope_map(IsotopeMap* isotopes) nogil
+cdef void print_isotope_map(IsotopeMap* isotope_map) nogil
 
 # -----------------------------------------------------------------------------
 # Element Declarations
@@ -44,6 +45,7 @@ cdef double element_monoisotopic_mass(Element* element) nogil
 cdef int element_min_neutron_shift(Element* element) nogil
 cdef int element_max_neutron_shift(Element* element) nogil
 cdef void free_element(Element* element) nogil
+cdef void print_element(Element* element) nogil
 
 cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil
 
@@ -108,11 +110,15 @@ cdef void free_composition(Composition* composition) nogil
 
 cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil
 cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil
-cdef Composition* composition_mul(Composition* composition, int scale) nogil
-cdef void composition_imul(Composition* composition, int scale) nogil
+cdef Composition* composition_mul(Composition* composition, long scale) nogil
+cdef void composition_imul(Composition* composition, long scale) nogil
+cdef int initialize_composition_from_formula(char* formula, ssize_t n, Composition* composition) nogil
 
 cdef dict composition_to_dict(Composition* composition)
 cdef Composition* dict_to_composition(dict comp_dict)
+cdef int fill_composition_from_dict(dict comp_dict, Composition* composition) except 1
+cdef int composition_add_from_dict(Composition* composition, dict comp_dict, int sign) except 1
+
 
 cdef class PyComposition(object):
     cdef:
@@ -123,9 +129,26 @@ cdef class PyComposition(object):
     cdef PyComposition _create(Composition* base)
     cdef void _set_impl(self, Composition* composition, bint free_existing=*)
 
+    cdef void _initialize_from_formula(self, str formula)
+
     cpdef double mass(self)
     cpdef bint __equality_pycomposition(self, PyComposition other)
     cpdef bint __equality_dict(self, dict other)
     cpdef PyComposition copy(self)
+
+    cpdef update(self, arg)
+    cpdef list keys(self)
+    cpdef list values(self)
+    cpdef list items(self)
+
+    cpdef pop(self, str key, object default=*)
+
+    cdef count_type getitem(self, str key)
+    cdef void setitem(self, str key, count_type value)
+    cdef void increment(self, str key, count_type value)
+
+    cdef void add_from(self, PyComposition other)
+    cdef void subtract_from(self, PyComposition other)
+    cdef void scale_by(self, long scale)
 
 cpdef PyComposition parse_formula(str formula)
