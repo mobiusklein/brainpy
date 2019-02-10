@@ -11,13 +11,13 @@ from brainpy._c.compat cimport (
     PyStr_AsUTF8AndSize)
 
 try:
-    from collections import Mapping
+    from collections import Mapping, MutableMapping
 except ImportError:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, MutableMapping
 
 from cpython.ref cimport Py_INCREF, Py_DECREF
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
-from cpython.dict cimport PyDict_SetItem, PyDict_GetItem
+from cpython.dict cimport PyDict_SetItem, PyDict_GetItem, PyDict_Next
 from cpython.object cimport PyObject
 from libc.string cimport strcmp, memcpy, strlen, strncpy
 from libc.stdlib cimport malloc, free, realloc, atoi, calloc
@@ -795,18 +795,67 @@ cdef dict composition_to_dict(Composition* composition):
         i += 1
     return result
 
+
 cdef Composition* dict_to_composition(dict comp_dict):
     cdef:
         Composition* result
+    result = make_composition()
+    fill_composition_from_dict(comp_dict, result)
+    return result
+
+
+cdef int fill_composition_from_dict(dict comp_dict, Composition* composition) except 1:
+    cdef:
+        PyObject* pkey
+        PyObject* pvalue
+        Py_ssize_t pos
         str symbol
         size_t i
         char* symbol_c
         count_type value
-    result = make_composition()
-    for symbol, value in comp_dict.items():
+    pos = 0
+    while PyDict_Next(comp_dict, &pos, &pkey, &pvalue):
+        if not isinstance(<object>pkey, str):
+            raise TypeError("Composition keys must be strings!")
+        if not isinstance(<object>pvalue, int):
+            raise TypeError("Composition values must be integers!")
+        PyStr_InternInPlace(&pkey)
+        symbol = <str>pkey
+        Py_INCREF(symbol)
         symbol_c = PyStr_AsString(symbol)
-        composition_set_element_count(result, symbol_c, value)
-    return result
+        i = strlen(symbol_c)
+        if symbol_c[i - 1] == ']':
+            ensure_fixed_isotope(symbol_c)
+        value = PyInt_AsLong(<object>pvalue)
+        composition_set_element_count(composition, symbol_c, value)
+    return 0
+
+
+cdef int composition_add_from_dict(Composition* composition, dict comp_dict, int sign) except 1:
+    cdef:
+        PyObject* pkey
+        PyObject* pvalue
+        Py_ssize_t pos
+        str symbol
+        size_t i
+        char* symbol_c
+        count_type value
+    pos = 0
+    while PyDict_Next(comp_dict, &pos, &pkey, &pvalue):
+        if not isinstance(<object>pkey, str):
+            raise TypeError("Composition keys must be strings!")
+        if not isinstance(<object>pvalue, int):
+            raise TypeError("Composition values must be integers!")
+        PyStr_InternInPlace(&pkey)
+        symbol = <str>pkey
+        Py_INCREF(symbol)
+        symbol_c = PyStr_AsString(symbol)
+        i = strlen(symbol_c)
+        if symbol_c[i - 1] == ']':
+            ensure_fixed_isotope(symbol_c)
+        value = PyInt_AsLong(<object>pvalue)
+        composition_inc_element_count(composition, symbol_c, value * sign)
+    return 0
 
 
 # -----------------------------------------------------------------------------
@@ -950,6 +999,9 @@ cdef class PyComposition(object):
     def __setitem__(self, str key, count_type value):
         self.setitem(key, value)
 
+    def __delitem__(self, str key):
+        self.setitem(key, 0)
+
     def __contains__(self, str key):
         return self.getitem(key) != 0
 
@@ -1017,8 +1069,7 @@ cdef class PyComposition(object):
 
         elif isinstance(arg, dict):
             d = <dict>arg
-            for key, value in d.items():
-                self.setitem(key, value)
+            fill_composition_from_dict(d, self.impl)
         else:
             for key, value in arg.items():
                 self.setitem(key, value)
@@ -1100,28 +1151,36 @@ cdef class PyComposition(object):
 
         result = (<PyComposition>self).copy()
 
-        if isinstance(other, dict):
-            for key, value in other.items():
-                result[key] += PyInt_AsLong(value)
-        elif isinstance(other, PyComposition):
+        if isinstance(other, PyComposition):
             _other = other
             composition_iadd(result.impl, _other.impl, 1)
+        elif isinstance(other, dict):
+            composition_add_from_dict(result.impl, <dict>other, 1)
         else:
-            return NotImplemented
+            for key, value in other.items():
+                if not isinstance(key, str):
+                    raise TypeError("Composition keys must be strings!")
+                if not isinstance(value, int):
+                    raise TypeError("Composition values must be integers!")
+                result[key] += PyInt_AsLong(value)
         return result
 
     def __iadd__(self, other):
         cdef:
             PyComposition _other
 
-        if isinstance(other, dict):
-            for key, value in other.items():
-                self[key] += PyInt_AsLong(value)
-        elif isinstance(other, PyComposition):
+        if isinstance(other, PyComposition):
             _other = other
             composition_iadd(self.impl, _other.impl, 1)
+        elif isinstance(other, dict):
+            composition_add_from_dict(self.impl, <dict>other, 1)
         else:
-            raise TypeError("Cannot add %s to PyComposition" % type(other))
+            for key, value in other.items():
+                if not isinstance(key, str):
+                    raise TypeError("Composition keys must be strings!")
+                if not isinstance(value, int):
+                    raise TypeError("Composition values must be integers!")
+                self[key] += PyInt_AsLong(value)
         return self
 
     def __sub__(self, other):
@@ -1137,28 +1196,36 @@ cdef class PyComposition(object):
 
         result = (<PyComposition>self).copy()
 
-        if isinstance(other, dict):
-            for key, value in other.items():
-                result[key] -= PyInt_AsLong(value)
-        elif isinstance(other, PyComposition):
+        if isinstance(other, PyComposition):
             _other = other
             composition_iadd(result.impl, _other.impl, -1)
+        elif isinstance(other, dict):
+            composition_add_from_dict(result.impl, <dict>other, -1)
         else:
-            return NotImplemented
+            for key, value in other.items():
+                if not isinstance(key, str):
+                    raise TypeError("Composition keys must be strings!")
+                if not isinstance(value, int):
+                    raise TypeError("Composition values must be integers!")
+                result[key] -= PyInt_AsLong(value)
         return result
 
     def __isub__(self, other):
         cdef:
             PyComposition _other
 
-        if isinstance(other, dict):
-            for key, value in other.items():
-                self[key] -= PyInt_AsLong(value)
-        elif isinstance(other, PyComposition):
+        if isinstance(other, PyComposition):
             _other = other
             composition_iadd(self.impl, _other.impl, -1)
+        elif isinstance(other, dict):
+            composition_add_from_dict(self.impl, <dict>other, -1)
         else:
-            raise TypeError("Cannot subtract %s from PyComposition" % type(other))
+            for key, value in other.items():
+                if not isinstance(key, str):
+                    raise TypeError("Composition keys must be strings!")
+                if not isinstance(value, int):
+                    raise TypeError("Composition values must be integers!")
+                self[key] -= PyInt_AsLong(value)
         return self
 
     def __mul__(self, scale):
@@ -1168,11 +1235,16 @@ cdef class PyComposition(object):
             long scale_factor
 
         if isinstance(self, PyComposition):
-            inst = self
+            inst = <PyComposition>self
+            if not isinstance(scale, int):
+                raise TypeError("Cannot multiply a Composition by a non-integer!")
             scale_factor = PyInt_AsLong(scale)
         else:
-            inst = scale
+            inst = <PyComposition>scale
+            if not isinstance(self, int):
+                raise TypeError("Cannot multiply a Composition by a non-integer!")
             scale_factor = PyInt_AsLong(self)
+
         result = inst.copy()
 
         composition_imul(result.impl, scale_factor)
@@ -1261,10 +1333,12 @@ cdef class PyComposition(object):
 
 
 Mapping.register(PyComposition)
+MutableMapping.register(PyComposition)
 
 
 cdef extern from "<stdlib.h>" nogil:
-    int isdigit( int ch );
+    int isdigit(int ch) nogil;
+    int isuppser(int ch) nogil;
 
 
 cdef enum:

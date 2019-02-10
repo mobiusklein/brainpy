@@ -116,6 +116,8 @@ cdef int initialize_composition_from_formula(char* formula, ssize_t n, Compositi
 
 cdef dict composition_to_dict(Composition* composition)
 cdef Composition* dict_to_composition(dict comp_dict)
+cdef int fill_composition_from_dict(dict comp_dict, Composition* composition) except 1
+cdef int composition_add_from_dict(Composition* composition, dict comp_dict, int sign) except 1
 
 
 cdef class PyComposition(object):
