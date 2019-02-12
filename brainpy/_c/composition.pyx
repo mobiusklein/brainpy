@@ -817,8 +817,6 @@ cdef int fill_composition_from_dict(dict comp_dict, Composition* composition) ex
     while PyDict_Next(comp_dict, &pos, &pkey, &pvalue):
         if not isinstance(<object>pkey, str):
             raise TypeError("Composition keys must be strings!")
-        if not isinstance(<object>pvalue, int):
-            raise TypeError("Composition values must be integers!")
         PyStr_InternInPlace(&pkey)
         symbol = <str>pkey
         Py_INCREF(symbol)
@@ -826,7 +824,7 @@ cdef int fill_composition_from_dict(dict comp_dict, Composition* composition) ex
         i = strlen(symbol_c)
         if symbol_c[i - 1] == ']':
             ensure_fixed_isotope(symbol_c)
-        value = PyInt_AsLong(<object>pvalue)
+        value = PyInt_AsLong(int(<object>pvalue))
         composition_set_element_count(composition, symbol_c, value)
     return 0
 
@@ -853,7 +851,7 @@ cdef int composition_add_from_dict(Composition* composition, dict comp_dict, int
         i = strlen(symbol_c)
         if symbol_c[i - 1] == ']':
             ensure_fixed_isotope(symbol_c)
-        value = PyInt_AsLong(<object>pvalue)
+        value = PyInt_AsLong(int(<object>pvalue))
         composition_inc_element_count(composition, symbol_c, value * sign)
     return 0
 
