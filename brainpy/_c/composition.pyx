@@ -17,7 +17,7 @@ except ImportError:
 
 from cpython.ref cimport Py_INCREF, Py_DECREF
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
-from cpython.dict cimport PyDict_SetItem, PyDict_GetItem, PyDict_Next
+from cpython.dict cimport PyDict_SetItem, PyDict_GetItem, PyDict_Next, PyDict_SetItemString
 from cpython.object cimport PyObject
 from libc.string cimport strcmp, memcpy, strlen, strncpy
 from libc.stdlib cimport malloc, free, realloc, atoi, calloc
@@ -565,6 +565,24 @@ cdef Composition* copy_composition(Composition* composition) nogil:
         i += 1
     return result
 
+
+cdef int fill_composition_from_composition(Composition* result, Composition* composition) nogil:
+    cdef:
+        int status
+        size_t i
+
+    if result.size < composition.used:
+        composition_resize(result, )
+    i = 0
+    while i < composition.used:
+        status = composition_set_element_count(result, composition.elements[i], composition.counts[i])
+        composition.elements[i] = composition.elements[i]
+        composition.counts[i] = composition.counts[i]
+        i += 1
+    return 0
+
+
+
 cdef void print_composition(Composition* composition) nogil:
     cdef:
         size_t i
@@ -684,6 +702,21 @@ cdef int composition_resize(Composition* composition) nogil:
         return -1
     return 0
 
+cdef int composition_resize_to(Composition* composition, size_t size) nogil:
+    '''
+    Increases the size of the parallel arrays in `composition`, doubling them in length
+
+    Return Values:
+    0: Success
+    -1: Failure due to Out-of-Memory
+    '''
+    composition.elements = <char**>realloc(composition.elements, sizeof(char*) * size)
+    composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * size)
+    composition.size = size
+    if composition.counts == NULL:
+        return -1
+    return 0
+
 cdef double composition_mass(Composition* composition) nogil:
     '''
     Calculates the monoisotopic mass of `composition`
@@ -790,8 +823,7 @@ cdef dict composition_to_dict(Composition* composition):
         composition_get_element_count(composition, symbol_c, &value)
         if value == 0:
             continue
-        symbol = PyStr_FromString(symbol_c)
-        result[symbol] = value
+        PyDict_SetItemString(result, symbol_c, PyInt_FromLong(value))
         i += 1
     return result
 
@@ -842,8 +874,6 @@ cdef int composition_add_from_dict(Composition* composition, dict comp_dict, int
     while PyDict_Next(comp_dict, &pos, &pkey, &pvalue):
         if not isinstance(<object>pkey, str):
             raise TypeError("Composition keys must be strings!")
-        if not isinstance(<object>pvalue, int):
-            raise TypeError("Composition values must be integers!")
         PyStr_InternInPlace(&pkey)
         symbol = <str>pkey
         Py_INCREF(symbol)
@@ -1158,9 +1188,7 @@ cdef class PyComposition(object):
             for key, value in other.items():
                 if not isinstance(key, str):
                     raise TypeError("Composition keys must be strings!")
-                if not isinstance(value, int):
-                    raise TypeError("Composition values must be integers!")
-                result[key] += PyInt_AsLong(value)
+                result[key] += PyInt_AsLong(int(value))
         return result
 
     def __iadd__(self, other):
@@ -1176,9 +1204,7 @@ cdef class PyComposition(object):
             for key, value in other.items():
                 if not isinstance(key, str):
                     raise TypeError("Composition keys must be strings!")
-                if not isinstance(value, int):
-                    raise TypeError("Composition values must be integers!")
-                self[key] += PyInt_AsLong(value)
+                self[key] += PyInt_AsLong(int(value))
         return self
 
     def __sub__(self, other):
@@ -1203,9 +1229,7 @@ cdef class PyComposition(object):
             for key, value in other.items():
                 if not isinstance(key, str):
                     raise TypeError("Composition keys must be strings!")
-                if not isinstance(value, int):
-                    raise TypeError("Composition values must be integers!")
-                result[key] -= PyInt_AsLong(value)
+                result[key] -= PyInt_AsLong(int(value))
         return result
 
     def __isub__(self, other):
@@ -1221,9 +1245,7 @@ cdef class PyComposition(object):
             for key, value in other.items():
                 if not isinstance(key, str):
                     raise TypeError("Composition keys must be strings!")
-                if not isinstance(value, int):
-                    raise TypeError("Composition values must be integers!")
-                self[key] -= PyInt_AsLong(value)
+                self[key] -= PyInt_AsLong(int(value))
         return self
 
     def __mul__(self, scale):
