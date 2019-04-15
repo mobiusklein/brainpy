@@ -827,12 +827,26 @@ cdef dict composition_to_dict(Composition* composition):
         i += 1
     return result
 
+# appears to introduce memory corruption when called repeatedly.
+# cdef Composition* dict_to_composition(dict comp_dict):
+#     cdef:
+#         Composition* result
+#     result = make_composition()
+#     fill_composition_from_dict(comp_dict, result)
+#     return result
+
 
 cdef Composition* dict_to_composition(dict comp_dict):
     cdef:
         Composition* result
+        str symbol
+        size_t i
+        char* symbol_c
+        count_type value
     result = make_composition()
-    fill_composition_from_dict(comp_dict, result)
+    for symbol, value in comp_dict.items():
+        symbol_c = PyStr_AsString(symbol)
+        composition_set_element_count(result, symbol_c, value)
     return result
 
 
@@ -1277,7 +1291,7 @@ cdef class PyComposition(object):
 
     cdef void add_from(self, PyComposition other):
         composition_iadd(self.impl, other.impl, 1)
-    
+
     cdef void subtract_from(self, PyComposition other):
         composition_iadd(self.impl, other.impl, -1)
 
@@ -1429,7 +1443,7 @@ cdef int initialize_composition_from_formula(char* formula, ssize_t n, Compositi
                     isostart += 1
                     strncpy(temp, formula + isostart, isoend - isostart)
                     temp[isoend - isostart] = 0
-                    fixed_isotope = atoi(temp)                    
+                    fixed_isotope = atoi(temp)
                     strncpy(temp, formula + elstart, isoend - elstart + 1)
                     temp[isoend - elstart + 2] = 0
 
