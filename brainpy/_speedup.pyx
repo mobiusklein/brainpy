@@ -1,5 +1,5 @@
 # cython: embedsignature=True
-# cython: profile=True
+# cython: profile=False
 
 from cpython.list cimport PyList_GET_ITEM, PyList_GET_SIZE, PyList_Append
 from cpython.int cimport PyInt_FromLong
