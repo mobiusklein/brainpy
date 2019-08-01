@@ -129,7 +129,7 @@ def status_msgs(*msgs):
 def run_setup(include_cext=True):
     setup(
         name='brain-isotopic-distribution',
-        version='1.4.0',
+        version='1.5.3',
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN.
@@ -144,7 +144,7 @@ This package is an implementation of the algorithm originally described in
     Anal. Chem., vol. 85, no. 24, pp. 12189–92, Dec. 2013.
     ''',
         author=', '.join(["Joshua Klein", "Han Hu"]),
-        author_email=["jaklein@bu.edu"],
+        author_email="jaklein@bu.edu",
         url="https://github.com/mobiusklein/brainpy",
         maintainer='Joshua Klein',
         keywords=["isotopic distribution", "isotopic pattern"],
@@ -156,7 +156,12 @@ This package is an implementation of the algorithm originally described in
             'Development Status :: 4 - Beta',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: Apache Software License',
-            'Topic :: Scientific/Engineering :: Bio-Informatics']
+            'Topic :: Scientific/Engineering :: Bio-Informatics'],
+        project_urls={
+            "Bug Tracker": "https://github.com/mobiusklein/brainpy/issues",
+            "Source Code": "https://github.com/mobiusklein/brainpy",
+            "Documentation": "http://mobiusklein.github.io/brainpy",
+        }
     )
 
 

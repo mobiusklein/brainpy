@@ -6,6 +6,12 @@ from brainpy import _has_c
 if _has_c:
     from brainpy._c.composition import parse_formula as cparse_formula
 
+try:
+    import faulthandler
+    faulthandler.enable()
+except ImportError:
+    pass
+
 
 class CompositionTest(unittest.TestCase):
     def test_parse(self):
@@ -37,7 +43,19 @@ class CompositionTest(unittest.TestCase):
     def test_mass(self):
         formula = "C6H12O6"
         composition = parse_formula(formula)
-        self.assertAlmostEqual(composition.mass(), calculate_mass({"C": 6, "H": 12, "O": 6}))
+        self.assertEqual(composition['C'], 6)
+        self.assertEqual(composition['H'], 12)
+        self.assertEqual(composition['O'], 6)
+        self.assertAlmostEqual(composition.mass(), calculate_mass({"C": 6, "H": 12, "O": 6}),
+                               msg="%s did not have the right mass (%f)" % (composition, composition.mass()))
         if _has_c:
-            composition = cparse_formula(formula)
-            self.assertAlmostEqual(composition.mass(), calculate_mass({"C": 6, "H": 12, "O": 6}))
+            ccomposition = cparse_formula(formula)
+            self.assertEqual(ccomposition['C'], 6)
+            self.assertEqual(ccomposition['H'], 12)
+            self.assertEqual(ccomposition['O'], 6)
+            self.assertAlmostEqual(ccomposition.mass(), calculate_mass({"C": 6, "H": 12, "O": 6}),
+                                   msg="%s did not have the right mass (%f)" % (ccomposition, ccomposition.mass()))
+
+
+if __name__ == '__main__':
+    unittest.main()
