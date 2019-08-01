@@ -7,7 +7,7 @@ Welcome to brainpy's documentation!
 ===================================
 
 :mod:`brainpy` is a small Python library implementing the *B* afflingly *R* ecursive
-*A* lgorithm for *I* sotopic Patter *N* generation. It includes three implementations,
+*A* lgorithm for *I* sotopic Patter *N* generation [Dittwald2014]. It includes three implementations,
 a pure-Python object oriented implementation, a :title-reference:`Cython` accelerated
 version of the object oriented implementation, and a pure :title-reference:`C` implementation,
 listed in order of ascending speed. The C implementation is used by default when available.
@@ -22,7 +22,8 @@ isotopic fine structure.
     :include-source:
 
     from brainpy import isotopic_variants
-    
+
+    # Generate theoretical isotopic pattern
     peptide = {'H': 53, 'C': 34, 'O': 15, 'N': 7}
     theoretical_isotopic_cluster = isotopic_variants(peptide, npeaks=5, charge=1)
     for peak in theoretical_isotopic_cluster:
@@ -30,32 +31,33 @@ isotopic fine structure.
 
     # produce a theoretical profile using a gaussian peak shape
     import numpy as np
-    grid = np.arange(theoretical_isotopic_cluster[0].mz - 1,
-                     theoretical_isotopic_cluster[-1].mz + 1, 0.02)
-    intensity = np.zeros_like(grid)
+    mz_grid = np.arange(theoretical_isotopic_cluster[0].mz - 1,
+                        theoretical_isotopic_cluster[-1].mz + 1, 0.02)
+    intensity = np.zeros_like(mz_grid)
     sigma = 0.002
-    for i, mz in enumerate(grid):
-        for peak in theoretical_isotopic_cluster:
-            intensity[i] += peak.intensity * np.exp(-(mz - peak.mz) ** 2 / (2 * sigma)
-                    ) / (np.sqrt(2 * np.pi) * sigma)
+    for peak in theoretical_isotopic_cluster:
+        # Add gaussian peak shape centered around each theoretical peak
+        intensity += peak.intensity * np.exp(-(mz_grid - peak.mz) ** 2 / (2 * sigma)
+                ) / (np.sqrt(2 * np.pi) * sigma)
 
+    # Normalize profile to 0-100
     intensity = (intensity / intensity.max()) * 100
 
     # draw the profile
     from matplotlib import pyplot as plt
-    plt.plot(grid, intensity)
+    plt.plot(mz_grid, intensity)
     plt.xlabel("m/z")
     plt.ylabel("Relative intensity")
 
 
 .. automodule:: brainpy
-    
+
     .. autofunction:: isotopic_variants
-    
+
     .. autofunction:: max_variants
-    
+
     .. autofunction:: calculate_mass
-    
+
     .. autoclass:: Peak
 
     .. autoclass:: IsotopicDistribution
@@ -74,3 +76,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. [Dittwald2014]
+    Dittwald, P., & Valkenborg, D. (2014). BRAIN 2.0: time and memory complexity improvements in the algorithm for calculating the isotope distribution. Journal of the American Society for Mass Spectrometry, 25(4), 588–94. https://doi.org/10.1007/s13361-013-0796-5

@@ -13,6 +13,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -32,7 +33,7 @@
   <div class="section" id="welcome-to-brainpy-s-documentation">
 <h1>Welcome to brainpy’s documentation!<a class="headerlink" href="#welcome-to-brainpy-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference internal" href="#module-brainpy" title="brainpy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">brainpy</span></code></a> is a small Python library implementing the <em>B</em> afflingly <em>R</em> ecursive
-<em>A</em> lgorithm for <em>I</em> sotopic Patter <em>N</em> generation. It includes three implementations,
+<em>A</em> lgorithm for <em>I</em> sotopic Patter <em>N</em> generation [Dittwald2014]. It includes three implementations,
 a pure-Python object oriented implementation, a <cite>Cython</cite> accelerated
 version of the object oriented implementation, and a pure <cite>C</cite> implementation,
 listed in order of ascending speed. The C implementation is used by default when available.</p>
@@ -42,6 +43,7 @@ number of neutrons are collapsed into a single centroid peak, meaning it does no
 isotopic fine structure.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainpy</span> <span class="kn">import</span> <span class="n">isotopic_variants</span>
 
+<span class="c1"># Generate theoretical isotopic pattern</span>
 <span class="n">peptide</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">53</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
 <span class="n">theoretical_isotopic_cluster</span> <span class="o">=</span> <span class="n">isotopic_variants</span><span class="p">(</span><span class="n">peptide</span><span class="p">,</span> <span class="n">npeaks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">theoretical_isotopic_cluster</span><span class="p">:</span>
@@ -49,20 +51,21 @@ isotopic fine structure.</p>
 
 <span class="c1"># produce a theoretical profile using a gaussian peak shape</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-                 <span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
-<span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="n">mz_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
+<span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mz_grid</span><span class="p">)</span>
 <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.002</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grid</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">theoretical_isotopic_cluster</span><span class="p">:</span>
-        <span class="n">intensity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">peak</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">peak</span><span class="o">.</span><span class="n">mz</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
-                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">theoretical_isotopic_cluster</span><span class="p">:</span>
+    <span class="c1"># Add gaussian peak shape centered around each theoretical peak</span>
+    <span class="n">intensity</span> <span class="o">+=</span> <span class="n">peak</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">mz_grid</span> <span class="o">-</span> <span class="n">peak</span><span class="o">.</span><span class="n">mz</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
 
+<span class="c1"># Normalize profile to 0-100</span>
 <span class="n">intensity</span> <span class="o">=</span> <span class="p">(</span><span class="n">intensity</span> <span class="o">/</span> <span class="n">intensity</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">*</span> <span class="mi">100</span>
 
 <span class="c1"># draw the profile</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mz_grid</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;m/z&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Relative intensity&quot;</span><span class="p">)</span>
 </pre></div>
@@ -154,21 +157,45 @@ value is <code class="xref py py-data docutils literal notranslate"><span class=
 <dl class="attribute">
 <dt id="brainpy.Peak.charge">
 <code class="descname">charge</code><a class="headerlink" href="#brainpy.Peak.charge" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The charge state of the peak</p>
+<dd><p>The charge state of the peak</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="brainpy.Peak.intensity">
 <code class="descname">intensity</code><a class="headerlink" href="#brainpy.Peak.intensity" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – The height of the peak. Peaks created as part of a
+<dd><p>The height of the peak. Peaks created as part of a
 theoretical isotopic cluster will be have an intensity
 between 0 and 1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="brainpy.Peak.mz">
 <code class="descname">mz</code><a class="headerlink" href="#brainpy.Peak.mz" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – The mass-to-charge ratio of the peak</p>
+<dd><p>The mass-to-charge ratio of the peak</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -189,12 +216,32 @@ the monoisotopic peak.</p>
 <dl class="function">
 <dt id="brainpy.parse_formula">
 <code class="descclassname">brainpy.</code><code class="descname">parse_formula</code><span class="sig-paren">(</span><em>str formula</em><span class="sig-paren">)</span> &#x2192; PyComposition<a class="headerlink" href="#brainpy.parse_formula" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Parse a chemical formula and construct a <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a> object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>formula</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the formula doesn’t match the expected pattern</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="class">
 <dt id="brainpy.PyComposition">
 <em class="property">class </em><code class="descclassname">brainpy.</code><code class="descname">PyComposition</code><span class="sig-paren">(</span><em>base=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.PyComposition" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A mapping representing a chemical composition.</p>
+<p>Implements arithmetic operations, +/- is defined
+between a <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a> and a <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>-like
+object, and * is defined between a <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a> and
+an integer.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="indices-and-tables">
@@ -204,6 +251,12 @@ the monoisotopic peak.</p>
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
+<table class="docutils citation" frame="void" id="dittwald2014" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Dittwald2014]</td><td>Dittwald, P., &amp; Valkenborg, D. (2014). BRAIN 2.0: time and memory complexity improvements in the algorithm for calculating the isotope distribution. Journal of the American Society for Mass Spectrometry, 25(4), 588–94. <a class="reference external" href="https://doi.org/10.1007/s13361-013-0796-5">https://doi.org/10.1007/s13361-013-0796-5</a></td></tr>
+</tbody>
+</table>
 </div>
 
 
@@ -250,7 +303,7 @@ the monoisotopic peak.</p>
       &copy;2015, Joshua Klein and Han Hu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
