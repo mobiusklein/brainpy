@@ -7,7 +7,7 @@ Welcome to brainpy's documentation!
 ===================================
 
 :mod:`brainpy` is a small Python library implementing the *B* afflingly *R* ecursive
-*A* lgorithm for *I* sotopic Patter *N* generation. It includes three implementations,
+*A* lgorithm for *I* sotopic Patter *N* generation [Dittwald2014]. It includes three implementations,
 a pure-Python object oriented implementation, a :title-reference:`Cython` accelerated
 version of the object oriented implementation, and a pure :title-reference:`C` implementation,
 listed in order of ascending speed. The C implementation is used by default when available.
@@ -22,7 +22,7 @@ isotopic fine structure.
     :include-source:
 
     from brainpy import isotopic_variants
-    
+
     peptide = {'H': 53, 'C': 34, 'O': 15, 'N': 7}
     theoretical_isotopic_cluster = isotopic_variants(peptide, npeaks=5, charge=1)
     for peak in theoretical_isotopic_cluster:
@@ -49,13 +49,13 @@ isotopic fine structure.
 
 
 .. automodule:: brainpy
-    
+
     .. autofunction:: isotopic_variants
-    
+
     .. autofunction:: max_variants
-    
+
     .. autofunction:: calculate_mass
-    
+
     .. autoclass:: Peak
 
     .. autoclass:: IsotopicDistribution
@@ -74,3 +74,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. [Dittwald2014]
+    Dittwald, P., & Valkenborg, D. (2014). BRAIN 2.0: time and memory complexity improvements in the algorithm for calculating the isotope distribution. Journal of the American Society for Mass Spectrometry, 25(4), 588–94. https://doi.org/10.1007/s13361-013-0796-5
