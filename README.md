@@ -28,7 +28,7 @@ for peak in theoretical_isotopic_cluster:
 import numpy as np
 mz_grid = np.arange(theoretical_isotopic_cluster[0].mz - 1,
                     theoretical_isotopic_cluster[-1].mz + 1, 0.02)
-intensity = np.zeros_like(grid)
+intensity = np.zeros_like(mz_grid)
 sigma = 0.002
 for peak in theoretical_isotopic_cluster:
     # Add gaussian peak shape centered around each theoretical peak
@@ -40,7 +40,7 @@ intensity = (intensity / intensity.max()) * 100
 
 # draw the profile
 from matplotlib import pyplot as plt
-plt.plot(grid, intensity)
+plt.plot(mz_grid, intensity)
 plt.xlabel("m/z")
 plt.ylabel("Relative intensity")
 ```
