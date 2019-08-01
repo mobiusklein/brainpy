@@ -43,6 +43,7 @@ plt.xlabel("m/z")
 plt.ylabel("Relative intensity")
 ```
 
+!(An isotopic pattern)[https://raw.githubusercontent.com/mobiusklein/brainpy/master/isodist.png]
 
 
 #### Original Algorithm:
