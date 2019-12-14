@@ -120,7 +120,7 @@ def parse_formula(formula):
         raise ValueError("%r does not look like a formula" % (formula,))
     composition = PyComposition()
     for elem, isotope, number in atom_pattern.findall(formula):
-        composition[_make_isotope_string(elem, int(isotope) if isotope else 0)] += int(number)
+        composition[_make_isotope_string(elem, int(isotope) if isotope else 0)] += int(number) if number else 1
     return composition
 
 
