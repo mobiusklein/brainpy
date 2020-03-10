@@ -24,6 +24,9 @@ theoretical_isotopic_cluster = isotopic_variants(peptide, npeaks=5, charge=1)
 for peak in theoretical_isotopic_cluster:
     print(peak.mz, peak.intensity)
 
+
+# All following code is to illustrate what brainpy just did.
+
 # produce a theoretical profile using a gaussian peak shape
 import numpy as np
 mz_grid = np.arange(theoretical_isotopic_cluster[0].mz - 1,
