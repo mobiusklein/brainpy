@@ -103,6 +103,9 @@ class PyComposition(Counter):
 def parse_formula(formula):
     """Parse a chemical formula and construct a :class:`PyComposition` object
 
+    The formula must be made up of zero or more pieces following the pattern
+    ``(<element>[A-Z][a-z]*)(<isotope>\[\d+\])?(<count>\d+)``.
+
     Parameters
     ----------
     formula : :class:`str`
@@ -110,6 +113,17 @@ def parse_formula(formula):
     Returns
     -------
     :class:`PyComposition`
+
+    Examples
+    --------
+    >>>parse_formula("H2O1") # The 1 following the O must be present
+    PyComposition({"H": 2, "O": 1})
+    >>>parse_formula("C34H53O15N7").mass()
+    799.35996402671
+    >>>parse_formula("C7H15C[13]1O6N[15]1")
+    PyComposition({"C": 7, "H": 15, "C[13]": 1, "O": 6, "N[15]": 1})
+    >>>parse_formula("C7H15C[13]1O6N[15]1").mass()
+    223.09032693441
 
     Raises
     ------

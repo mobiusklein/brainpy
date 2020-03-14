@@ -316,14 +316,16 @@ cdef int max_variants(Composition* composition, ElementCache* cache) nogil:
     return max_variants
 
 
-cdef void validate_composition(Composition* composition) nogil:
+cdef int validate_composition(Composition* composition) nogil:
     cdef:
         size_t i
         char* element_symbol
         char* element_buffer
         int status, isotope_number
         Element* element
+        int retcode
 
+    retcode = 0
     for i in range(composition.used):
         element_symbol = composition.elements[i]
         status = element_hash_table_get(_ElementTable, element_symbol, &element)
@@ -337,12 +339,16 @@ cdef void validate_composition(Composition* composition) nogil:
                 status = element_hash_table_get(_ElementTable, element_buffer, &element)
                 # printf("Retreived Base Element: %s. Status: %d\n", element_buffer, status)
                 element = make_fixed_isotope_element(element, isotope_number)
+                if element == NULL:
+                    retcode = 1
+                    free(element_buffer)
+                    return retcode
                 element_hash_table_put(_ElementTable, element)
                 free(element_buffer)
             else:
                 # printf("Could not resolve element %s\n", element_symbol)
                 free(element_buffer)
-                return
+    return retcode
 
 # -----------------------------------------------------------------------------
 # IsotopicDistribution Methods
@@ -672,7 +678,9 @@ def pyisotopic_variants(object composition not None, object npeaks=None, int cha
     Parameters
     ----------
     composition : Mapping
-        Any Mapping type where keys are element symbols and values are integers
+        Any Mapping type where keys are element symbols and values are integers. Elements may be fixed
+        isotopes where their isotope number is enclosed in square braces (e.g. "C[13]"). Fixed isotopes
+        that are not recognized will throw an error.
     n_peaks: int
         The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
         If given a number below 1 or above the maximum number of isotopic variants, the maximum will
@@ -696,7 +704,9 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
     Parameters
     ----------
     composition : Mapping
-        Any Mapping type where keys are element symbols and values are integers
+        Any Mapping type where keys are element symbols and values are integers. Elements may be fixed
+        isotopes where their isotope number is enclosed in square braces (e.g. "C[13]"). Fixed isotopes
+        that are not recognized will throw an error.
     n_peaks: int
         The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
         If given a number below 1 or above the maximum number of isotopic variants, the maximum will
@@ -718,7 +728,9 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
         int _npeaks, max_n_variants
 
     composition_struct = dict_to_composition(dict(composition))
-    validate_composition(composition_struct)
+    if validate_composition(composition_struct) != 0:
+        free_composition(composition_struct)
+        raise KeyError("Unrecognized Isotope")
 
     if npeaks is None:
         _npeaks = guess_npeaks(composition_struct, 300)
@@ -744,7 +756,9 @@ cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charg
         PeakList* peaklist
         int max_n_variants
 
-    validate_composition(composition)
+    if validate_composition(composition) != 0:
+        printf("Malformed composition\n")
+        return NULL
 
     if npeaks == 0:
         npeaks = guess_npeaks(composition, 300)

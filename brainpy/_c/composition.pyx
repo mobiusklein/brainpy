@@ -280,6 +280,9 @@ cdef bint ensure_fixed_isotope(char* string):
         # with gil:
             raise KeyError(string)
     fixed_isotope_elem = make_fixed_isotope_element(elem, isotope_count)
+    if fixed_isotope_elem == NULL:
+        printf("Could not ensure fixed isotope %s\n", string)
+        raise KeyError(string)
     element_hash_table_put(_ElementTable, fixed_isotope_elem)
     return False
 
@@ -1455,12 +1458,13 @@ cdef int initialize_composition_from_formula(char* formula, ssize_t n, Compositi
                         if found != 0:
                             return 2
                         fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
+                        if fixed_isotope_elem == NULL:
+                            return 3
                         element_hash_table_put(_ElementTable, fixed_isotope_elem)
                         elem = fixed_isotope_elem
                     else:
                         elem = fixed_isotope_elem
                 prev_count = 0
-                # print("Incrementing value for %s by %d" % (elem.symbol, count))
                 composition_inc_element_count(composition, elem.symbol, count)
                 state = ELEMENT
                 elstart = i
@@ -1490,6 +1494,8 @@ cdef int initialize_composition_from_formula(char* formula, ssize_t n, Compositi
                 if found != 0:
                     return 2
                 fixed_isotope_elem = make_fixed_isotope_element(elem, fixed_isotope)
+                if fixed_isotope_elem == NULL:
+                    return 3
                 element_hash_table_put(_ElementTable, fixed_isotope_elem)
                 elem = fixed_isotope_elem
             else:
@@ -1503,6 +1509,10 @@ cdef int initialize_composition_from_formula(char* formula, ssize_t n, Compositi
 cpdef PyComposition parse_formula(str formula):
     """Parse a chemical formula and construct a :class:`PyComposition` object
 
+    The formula must be made up of zero or more pieces following the pattern
+    ``(<element>[A-Z][a-z]*)(<isotope>\[\d+\])?(<count>\d+)``. You cannot omit
+    the `<count>` digits.
+
     Parameters
     ----------
     formula : :class:`str`
@@ -1510,6 +1520,17 @@ cpdef PyComposition parse_formula(str formula):
     Returns
     -------
     :class:`PyComposition`
+
+    Examples
+    --------
+    >>> parse_formula("H2O1")
+    PyComposition({"H": 2, "O": 1})
+    >>> parse_formula("C34H53O15N7").mass()
+    799.35996402671
+    >>> parse_formula("C7H15C[13]1O6N[15]1")
+    PyComposition({"C": 7, "H": 15, "C[13]": 1, "O": 6, "N[15]": 1})
+    >>> parse_formula("C7H15C[13]1O6N[15]1").mass()
+    223.09032693441
 
     Raises
     ------
@@ -1526,7 +1547,9 @@ cpdef PyComposition parse_formula(str formula):
     composition = PyComposition()
     state = initialize_composition_from_formula(cstr, n, composition.impl)
     if state == 1:
-        raise ValueError()
+        raise ValueError("Malformed Formula")
     elif state == 2:
-        raise KeyError()
+        raise KeyError("Unrecognized Element")
+    elif state == 3:
+        raise KeyError("Unrecognized Isotope")
     return composition
