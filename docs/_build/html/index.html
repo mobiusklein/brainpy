@@ -49,6 +49,8 @@ isotopic fine structure.</p>
 <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">theoretical_isotopic_cluster</span><span class="p">:</span>
     <span class="k">print</span><span class="p">(</span><span class="n">peak</span><span class="o">.</span><span class="n">mz</span><span class="p">,</span> <span class="n">peak</span><span class="o">.</span><span class="n">intensity</span><span class="p">)</span>
 
+<span class="c1"># All following code is to illustrate what brainpy just did.</span>
+
 <span class="c1"># produce a theoretical profile using a gaussian peak shape</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="n">mz_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">theoretical_isotopic_cluster</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
@@ -85,7 +87,9 @@ isotopic fine structure.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers</li>
+<li><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers. Elements may be fixed
+isotopes where their isotope number is enclosed in square braces (e.g. “C[13]”). Fixed isotopes
+that are not recognized will throw an error.</li>
 <li><strong>n_peaks</strong> (<em>int</em>) – The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
 If given a number below 1 or above the maximum number of isotopic variants, the maximum will
 be used. If <cite>None</cite>, a “reasonable” value is chosen by <cite>int(sqrt(max_variants(composition)))</cite>.</li>
@@ -217,6 +221,9 @@ the monoisotopic peak.</p>
 <dt id="brainpy.parse_formula">
 <code class="descclassname">brainpy.</code><code class="descname">parse_formula</code><span class="sig-paren">(</span><em>str formula</em><span class="sig-paren">)</span> &#x2192; PyComposition<a class="headerlink" href="#brainpy.parse_formula" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a chemical formula and construct a <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a> object</p>
+<p>The formula must be made up of zero or more pieces following the pattern
+<code class="docutils literal notranslate"><span class="pre">(&lt;element&gt;[A-Z][a-z]*)(&lt;isotope&gt;\[\d+\])?(&lt;count&gt;\d+)</span></code>. You cannot omit
+the <cite>&lt;count&gt;</cite> digits.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -227,7 +234,24 @@ the monoisotopic peak.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the formula doesn’t match the expected pattern</td>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_formula</span><span class="p">(</span><span class="s2">&quot;H2O1&quot;</span><span class="p">)</span>
+<span class="go">PyComposition({&quot;H&quot;: 2, &quot;O&quot;: 1})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_formula</span><span class="p">(</span><span class="s2">&quot;C34H53O15N7&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mass</span><span class="p">()</span>
+<span class="go">799.35996402671</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_formula</span><span class="p">(</span><span class="s2">&quot;C7H15C[13]1O6N[15]1&quot;</span><span class="p">)</span>
+<span class="go">PyComposition({&quot;C&quot;: 7, &quot;H&quot;: 15, &quot;C[13]&quot;: 1, &quot;O&quot;: 6, &quot;N[15]&quot;: 1})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_formula</span><span class="p">(</span><span class="s2">&quot;C7H15C[13]1O6N[15]1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mass</span><span class="p">()</span>
+<span class="go">223.09032693441</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If the formula doesn’t match the expected pattern</td>
 </tr>
 </tbody>
 </table>

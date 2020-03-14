@@ -136,6 +136,9 @@
 <span class="k">def</span> <span class="nf">parse_formula</span><span class="p">(</span><span class="n">formula</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse a chemical formula and construct a :class:`PyComposition` object</span>
 
+<span class="sd">    The formula must be made up of zero or more pieces following the pattern</span>
+<span class="sd">    ``(&lt;element&gt;[A-Z][a-z]*)(&lt;isotope&gt;\[\d+\])?(&lt;count&gt;\d+)``.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    formula : :class:`str`</span>
@@ -143,6 +146,17 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :class:`PyComposition`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt;parse_formula(&quot;H2O1&quot;) # The 1 following the O must be present</span>
+<span class="sd">    PyComposition({&quot;H&quot;: 2, &quot;O&quot;: 1})</span>
+<span class="sd">    &gt;&gt;&gt;parse_formula(&quot;C34H53O15N7&quot;).mass()</span>
+<span class="sd">    799.35996402671</span>
+<span class="sd">    &gt;&gt;&gt;parse_formula(&quot;C7H15C[13]1O6N[15]1&quot;)</span>
+<span class="sd">    PyComposition({&quot;C&quot;: 7, &quot;H&quot;: 15, &quot;C[13]&quot;: 1, &quot;O&quot;: 6, &quot;N[15]&quot;: 1})</span>
+<span class="sd">    &gt;&gt;&gt;parse_formula(&quot;C7H15C[13]1O6N[15]1&quot;).mass()</span>
+<span class="sd">    223.09032693441</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
