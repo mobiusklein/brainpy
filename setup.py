@@ -129,10 +129,10 @@ def status_msgs(*msgs):
 def run_setup(include_cext=True):
     setup(
         name='brain-isotopic-distribution',
-        version='1.5.4',
+        version='1.5.5',
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
-        long_description='''A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN.
+        long_description='''A Python Implementation of the **B**affling Recursive Algorithm for Isotopic cluster distributioN.
 
 This package is an implementation of the algorithm originally described in
     P. Dittwald, J. Claesen, T. Burzykowski, D. Valkenborg, and A. Gambin,

@@ -739,8 +739,9 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
         # allow it to be any Python numeric type
         _npeaks = npeaks - 1
 
-    dist = make_isotopic_distribution(composition_struct, _npeaks)
-    peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
+    with nogil:
+        dist = make_isotopic_distribution(composition_struct, _npeaks)
+        peak_set = id_aggregated_isotopic_variants(dist, charge, charge_carrier)
 
     peaklist = peaklist_to_list(peak_set)
 

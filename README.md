@@ -1,5 +1,5 @@
 # brainpy
-A Python implementation of Baffling Recursive Algorithm for Isotopic distributioN calculations (`BRAIN`).
+A Python implementation of **B**affling **R**ecursive **A**lgorithm for **I**sotopic distributio**N** calculations (`BRAIN`).
 This is a direct translation of Han Hu's root-finding-free approach.
 
 Documentation: http://mobiusklein.github.io/brainpy
@@ -47,6 +47,18 @@ plt.plot(mz_grid, intensity)
 plt.xlabel("m/z")
 plt.ylabel("Relative intensity")
 ```
+
+## Installing
+`brainpy` has three implementations, a pure Python implementation, a Cython translation
+of that implementation, and a pure C implementation that releases the `GIL`.
+
+To install from a package index, you will need to have a C compiler appropriate to your Python
+version to build these extension modules. Additionally, there are prebuilt wheels for Windows
+available on [PyPI](https://pypi.org/project/brain-isotopic-distribution/).
+
+To build from source, in addition to a C compiler you will also need to install a recent version
+of [Cython](https://pypi.org/project/Cython/) to transpile C code.
+
 
 ![An isotopic pattern](https://raw.githubusercontent.com/mobiusklein/brainpy/master/isodist.png)
 
