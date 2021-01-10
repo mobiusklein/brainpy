@@ -10,12 +10,8 @@ retest:
 update-docs:
 	git checkout gh-pages
 	git pull origin master
-	cd docs && make clean
 	cd docs && make html
 	git add docs/_build/html -f
 	git commit -m "update docs"
 	git push origin gh-pages
 	git checkout master
-
-foo:
-	git config --global -e
