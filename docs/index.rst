@@ -6,17 +6,21 @@
 Welcome to brainpy's documentation!
 ===================================
 
+.. contents:: Table of Contents
+    :depth: 3
+
+
 :mod:`brainpy` is a small Python library implementing the *B* afflingly *R* ecursive
-*A* lgorithm for *I* sotopic Patter *N* generation [Dittwald2014]. It includes three implementations,
+*A* lgorithm for *I* sotopic Patter *N* generation [Dittwald2014]_. It includes three implementations,
 a pure-Python object oriented implementation, a :title-reference:`Cython` accelerated
 version of the object oriented implementation, and a pure :title-reference:`C` implementation,
 listed in order of ascending speed. The C implementation is used by default when available.
 
-
-BRAIN takes an elemental composition represented by any :class:`Mapping`-like Python object
-and uses it to compute its aggregated isotopic distribution. All isotopic variants of the same
-number of neutrons are collapsed into a single centroid peak, meaning it does not consider
-isotopic fine structure.
+BRAIN, implemented in :func:`brainpy.isotopic_variants`, takes an elemental
+composition represented by  any :class:`~.collections.abc.Mapping`-like Python object and uses
+it to compute its aggregated isotopic distribution. All isotopic variants of the same number
+of neutrons are collapsed into a single centroid peak, meaning it does not consider isotopic
+fine structure.
 
 .. plot::
     :include-source:
@@ -55,15 +59,29 @@ isotopic fine structure.
 Installing
 ----------
 :mod:`brainpy` has three implementations, a pure Python implementation, a Cython translation
-of that implementation, and a pure C implementation that releases the :term:`GIL`.
+of that implementation, and a pure C implementation that releases the :title-reference:`GIL`.
 
 To install from a package index, you will need to have a C compiler appropriate to your Python
 version to build these extension modules. Additionally, there are prebuilt wheels for Windows
-available on `PyPI <https://pypi.org/project/brain-isotopic-distribution/>`_.
+available on `PyPI <https://pypi.org/project/brain-isotopic-distribution/>`_:
+
+.. code-block:: sh
+
+    $ pip install brain-isotopic-distribution
 
 To build from source, in addition to a C compiler you will also need to install a recent version
 of `Cython <https://pypi.org/project/Cython/>`_ to transpile C code.
 
+
+Usage
+-----
+
+:mod:`brainpy` provides a single top-level function for taking a :class:`~collections.abc.Mapping`-like object
+defining a elemental composition and generating an isotopic pattern from it, :func:`brainpy.isotopic_variants`.
+
+
+Module Reference
+----------------
 
 .. automodule:: brainpy
 
@@ -73,15 +91,20 @@ of `Cython <https://pypi.org/project/Cython/>`_ to transpile C code.
 
     .. autofunction:: calculate_mass
 
+    .. autofunction:: parse_formula
+
+    .. autoclass:: PyComposition
+        :members:
+
+Supporting Objects
+******************
+
     .. autoclass:: Peak
 
     .. autoclass:: IsotopicDistribution
 
         .. automethod:: aggregated_isotopic_variants
 
-    .. autofunction:: parse_formula
-
-    .. autoclass:: PyComposition
 
 
 Indices and tables
@@ -90,6 +113,10 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+Bibliography
+============
 
 .. [Dittwald2014]
     Dittwald, P., & Valkenborg, D. (2014). BRAIN 2.0: time and memory complexity improvements in the algorithm for calculating the isotope distribution. Journal of the American Society for Mass Spectrometry, 25(4), 588–94. https://doi.org/10.1007/s13361-013-0796-5

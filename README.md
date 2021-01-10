@@ -56,6 +56,8 @@ To install from a package index, you will need to have a C compiler appropriate 
 version to build these extension modules. Additionally, there are prebuilt wheels for Windows
 available on [PyPI](https://pypi.org/project/brain-isotopic-distribution/).
 
+`$ pip install brain-isotopic-distribution`
+
 To build from source, in addition to a C compiler you will also need to install a recent version
 of [Cython](https://pypi.org/project/Cython/) to transpile C code.
 

@@ -16,3 +16,6 @@ update-docs:
 	git commit -m "update docs"
 	git push origin gh-pages
 	git checkout master
+
+foo:
+	git config --global -e
