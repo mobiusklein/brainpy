@@ -52,6 +52,19 @@ isotopic fine structure.
     plt.ylabel("Relative intensity")
 
 
+Installing
+----------
+:mod:`brainpy` has three implementations, a pure Python implementation, a Cython translation
+of that implementation, and a pure C implementation that releases the :term:`GIL`.
+
+To install from a package index, you will need to have a C compiler appropriate to your Python
+version to build these extension modules. Additionally, there are prebuilt wheels for Windows
+available on `PyPI <https://pypi.org/project/brain-isotopic-distribution/>`_.
+
+To build from source, in addition to a C compiler you will also need to install a recent version
+of `Cython <https://pypi.org/project/Cython/>`_ to transpile C code.
+
+
 .. automodule:: brainpy
 
     .. autofunction:: isotopic_variants
