@@ -133,7 +133,36 @@ def run_setup(include_cext=True):
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''
-A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN.
+:mod:`brainpy` is a small Python library implementing the *B* afflingly *R* ecursive
+*A* lgorithm for *I* sotopic Patter *N* generation [Dittwald2014]_. It includes three implementations,
+a pure-Python object oriented implementation, a :title-reference:`Cython` accelerated
+version of the object oriented implementation, and a pure :title-reference:`C` implementation,
+listed in order of ascending speed. The C implementation is used by default when available.
+
+BRAIN, implemented in :func:`brainpy.isotopic_variants`, takes an elemental
+composition represented by  any :class:`~.collections.abc.Mapping`-like Python object and uses
+it to compute its aggregated isotopic distribution. All isotopic variants of the same number
+of neutrons are collapsed into a single centroid peak, meaning it does not consider isotopic
+fine structure.
+
+Installing
+----------
+:mod:`brainpy` has three implementations, a pure Python implementation, a Cython translation
+of that implementation, and a pure C implementation that releases the :title-reference:`GIL`.
+
+To install from a package index, you will need to have a C compiler appropriate to your Python
+version to build these extension modules. Additionally, there are prebuilt wheels for Windows
+available on `PyPI <https://pypi.org/project/brain-isotopic-distribution/>`_:
+
+.. code-block:: sh
+
+    $ pip install brain-isotopic-distribution
+
+To build from source, in addition to a C compiler you will also need to install a recent version
+of `Cython <https://pypi.org/project/Cython/>`_ to transpile C code.
+
+References
+----------
 
 This package is an implementation of the algorithm originally described in
     P. Dittwald, J. Claesen, T. Burzykowski, D. Valkenborg, and A. Gambin,
