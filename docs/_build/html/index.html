@@ -32,16 +32,35 @@
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-brainpy-s-documentation">
-<h1>Welcome to brainpy’s documentation!<a class="headerlink" href="#welcome-to-brainpy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id2">Welcome to brainpy’s documentation!</a><a class="headerlink" href="#welcome-to-brainpy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#welcome-to-brainpy-s-documentation" id="id2">Welcome to brainpy’s documentation!</a></p>
+<ul>
+<li><p><a class="reference internal" href="#installing" id="id3">Installing</a></p></li>
+<li><p><a class="reference internal" href="#usage" id="id4">Usage</a></p></li>
+<li><p><a class="reference internal" href="#module-brainpy" id="id5">Module Reference</a></p>
+<ul>
+<li><p><a class="reference internal" href="#supporting-objects" id="id6">Supporting Objects</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#indices-and-tables" id="id7">Indices and tables</a></p></li>
+<li><p><a class="reference internal" href="#bibliography" id="id8">Bibliography</a></p></li>
+</ul>
+</div>
 <p><a class="reference internal" href="#module-brainpy" title="brainpy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">brainpy</span></code></a> is a small Python library implementing the <em>B</em> afflingly <em>R</em> ecursive
-<em>A</em> lgorithm for <em>I</em> sotopic Patter <em>N</em> generation [Dittwald2014]. It includes three implementations,
+<em>A</em> lgorithm for <em>I</em> sotopic Patter <em>N</em> generation <a class="reference internal" href="#dittwald2014" id="id1"><span>[Dittwald2014]</span></a>. It includes three implementations,
 a pure-Python object oriented implementation, a <cite>Cython</cite> accelerated
 version of the object oriented implementation, and a pure <cite>C</cite> implementation,
 listed in order of ascending speed. The C implementation is used by default when available.</p>
-<p>BRAIN takes an elemental composition represented by any <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>-like Python object
-and uses it to compute its aggregated isotopic distribution. All isotopic variants of the same
-number of neutrons are collapsed into a single centroid peak, meaning it does not consider
-isotopic fine structure.</p>
+<p>BRAIN, implemented in <a class="reference internal" href="#brainpy.isotopic_variants" title="brainpy.isotopic_variants"><code class="xref py py-func docutils literal notranslate"><span class="pre">brainpy.isotopic_variants()</span></code></a>, takes an elemental
+composition represented by  any <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>-like Python object and uses
+it to compute its aggregated isotopic distribution. All isotopic variants of the same number
+of neutrons are collapsed into a single centroid peak, meaning it does not consider isotopic
+fine structure.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">brainpy</span> <span class="kn">import</span> <span class="n">isotopic_variants</span>
 
 <span class="c1"># Generate theoretical isotopic pattern</span>
@@ -78,15 +97,26 @@ isotopic fine structure.</p>
 <img alt="_images/index-1.png" src="_images/index-1.png" />
 </div>
 <div class="section" id="installing">
-<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Installing</a><a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#module-brainpy" title="brainpy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">brainpy</span></code></a> has three implementations, a pure Python implementation, a Cython translation
-of that implementation, and a pure C implementation that releases the <span class="xref std std-term">GIL</span>.</p>
+of that implementation, and a pure C implementation that releases the <cite>GIL</cite>.</p>
 <p>To install from a package index, you will need to have a C compiler appropriate to your Python
 version to build these extension modules. Additionally, there are prebuilt wheels for Windows
-available on <a class="reference external" href="https://pypi.org/project/brain-isotopic-distribution/">PyPI</a>.</p>
+available on <a class="reference external" href="https://pypi.org/project/brain-isotopic-distribution/">PyPI</a>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ pip install brain-isotopic-distribution
+</pre></div>
+</div>
 <p>To build from source, in addition to a C compiler you will also need to install a recent version
 of <a class="reference external" href="https://pypi.org/project/Cython/">Cython</a> to transpile C code.</p>
-<span class="target" id="module-brainpy"></span><p>A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN</p>
+</div>
+<div class="section" id="usage">
+<h2><a class="toc-backref" href="#id4">Usage</a><a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-brainpy" title="brainpy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">brainpy</span></code></a> provides a single top-level function for taking a <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>-like object
+defining a elemental composition and generating an isotopic pattern from it, <a class="reference internal" href="#brainpy.isotopic_variants" title="brainpy.isotopic_variants"><code class="xref py py-func docutils literal notranslate"><span class="pre">brainpy.isotopic_variants()</span></code></a>.</p>
+</div>
+<div class="section" id="module-brainpy">
+<span id="module-reference"></span><h2><a class="toc-backref" href="#id5">Module Reference</a><a class="headerlink" href="#module-brainpy" title="Permalink to this headline">¶</a></h2>
+<p>A Python Implementation of the Baffling Recursive Algorithm for Isotopic cluster distributioN</p>
 <dl class="py function">
 <dt id="brainpy.isotopic_variants">
 <code class="sig-prename descclassname">brainpy.</code><code class="sig-name descname">isotopic_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.isotopic_variants" title="Permalink to this definition">¶</a></dt>
@@ -98,10 +128,10 @@ of <a class="reference external" href="https://pypi.org/project/Cython/">Cython<
 <li><p><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers. Elements may be fixed
 isotopes where their isotope number is enclosed in square braces (e.g. “C[13]”). Fixed isotopes
 that are not recognized will throw an error.</p></li>
-<li><p><strong>n_peaks</strong> (<em>int</em>) – The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
+<li><p><strong>n_peaks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of peaks to include in the isotopic cluster, starting from the monoisotopic peak.
 If given a number below 1 or above the maximum number of isotopic variants, the maximum will
 be used. If <cite>None</cite>, a “reasonable” value is chosen by <cite>int(sqrt(max_variants(composition)))</cite>.</p></li>
-<li><p><strong>charge</strong> (<em>int</em>) – The charge state of the isotopic cluster to produce. Defaults to 0, theoretical neutral mass.</p></li>
+<li><p><strong>charge</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The charge state of the isotopic cluster to produce. Defaults to 0, theoretical neutral mass.</p></li>
 <li><p><strong>charge_carrier</strong> (<em>double</em>) – The mass of the molecule contributing the ion’s charge</p></li>
 </ul>
 </dd>
@@ -127,7 +157,7 @@ composition.</p>
 <dd class="field-even"><p><strong>max_n_variants</strong></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>int</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -140,7 +170,7 @@ composition.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>composition</strong> (<em>Mapping</em>) – Any Mapping type where keys are element symbols and values are integers</p></li>
-<li><p><strong>mass_data</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dict with the masses of the chemical elements (the default
+<li><p><strong>mass_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><em>optional</em>) – A dict with the masses of the chemical elements (the default
 value is <code class="xref py py-data docutils literal notranslate"><span class="pre">nist_mass</span></code>).</p></li>
 </ul>
 </dd>
@@ -148,65 +178,9 @@ value is <code class="xref py py-data docutils literal notranslate"><span class=
 <dd class="field-even"><p><strong>mass</strong></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py class">
-<dt id="brainpy.Peak">
-<em class="property">class </em><code class="sig-prename descclassname">brainpy.</code><code class="sig-name descname">Peak</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mz</span></em>, <em class="sig-param"><span class="n">intensity</span></em>, <em class="sig-param"><span class="n">charge</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpy/brainpy.html#Peak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainpy.Peak" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represent a single theoretical peak centroid.</p>
-<p>Peaks are comparable, hashable, and can be copied by calling
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">clone()</span></code></p>
-<dl class="py attribute">
-<dt id="brainpy.Peak.charge">
-<code class="sig-name descname">charge</code><a class="headerlink" href="#brainpy.Peak.charge" title="Permalink to this definition">¶</a></dt>
-<dd><p>The charge state of the peak</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="brainpy.Peak.intensity">
-<code class="sig-name descname">intensity</code><a class="headerlink" href="#brainpy.Peak.intensity" title="Permalink to this definition">¶</a></dt>
-<dd><p>The height of the peak. Peaks created as part of a
-theoretical isotopic cluster will be have an intensity
-between 0 and 1.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="brainpy.Peak.mz">
-<code class="sig-name descname">mz</code><a class="headerlink" href="#brainpy.Peak.mz" title="Permalink to this definition">¶</a></dt>
-<dd><p>The mass-to-charge ratio of the peak</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="brainpy.IsotopicDistribution">
-<em class="property">class </em><code class="sig-prename descclassname">brainpy.</code><code class="sig-name descname">IsotopicDistribution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">composition</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.IsotopicDistribution" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt id="brainpy.IsotopicDistribution.aggregated_isotopic_variants">
-<code class="sig-name descname">aggregated_isotopic_variants</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">int charge=0</em>, <em class="sig-param">double charge_carrier=PROTON</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.IsotopicDistribution.aggregated_isotopic_variants" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the m/z (or neutral mass when <cite>charge</cite> == 0) for each
-aggregated isotopic peak and their intensity relative to
-the monoisotopic peak.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py function">
@@ -218,7 +192,7 @@ the monoisotopic peak.</p>
 the <cite>&lt;count&gt;</cite> digits.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>formula</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p>
+<dd class="field-odd"><p><strong>formula</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – </p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -240,7 +214,7 @@ the <cite>&lt;count&gt;</cite> digits.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If the formula doesn’t match the expected pattern</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If the formula doesn’t match the expected pattern</p>
 </dd>
 </dl>
 </dd></dl>
@@ -253,19 +227,138 @@ the <cite>&lt;count&gt;</cite> digits.</p>
 between a <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a> and a <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>-like
 object, and * is defined between a <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyComposition</span></code></a> and
 an integer.</p>
+<dl class="py attribute">
+<dt id="brainpy.PyComposition.cached_mass">
+<code class="sig-name descname">cached_mass</code><a class="headerlink" href="#brainpy.PyComposition.cached_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘double’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>cached_mass</p>
+</dd>
+</dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="brainpy.PyComposition.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#brainpy.PyComposition" title="brainpy.PyComposition">PyComposition</a><a class="headerlink" href="#brainpy.PyComposition.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="brainpy.PyComposition.items">
+<code class="sig-name descname">items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><a class="headerlink" href="#brainpy.PyComposition.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="brainpy.PyComposition.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><a class="headerlink" href="#brainpy.PyComposition.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="brainpy.PyComposition.mass">
+<code class="sig-name descname">mass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span> &#x2192; double<a class="headerlink" href="#brainpy.PyComposition.mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the monoisotopic mass of this chemical composition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="brainpy.PyComposition.pop">
+<code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">str key</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.PyComposition.pop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="brainpy.PyComposition.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">arg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.PyComposition.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="brainpy.PyComposition.values">
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><a class="headerlink" href="#brainpy.PyComposition.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="section" id="supporting-objects">
+<h3><a class="toc-backref" href="#id6">Supporting Objects</a><a class="headerlink" href="#supporting-objects" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="py class">
+<dt id="brainpy.Peak">
+<em class="property">class </em><code class="sig-prename descclassname">brainpy.</code><code class="sig-name descname">Peak</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mz</span></em>, <em class="sig-param"><span class="n">intensity</span></em>, <em class="sig-param"><span class="n">charge</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brainpy/brainpy.html#Peak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brainpy.Peak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent a single theoretical peak centroid.</p>
+<p>Peaks are comparable, hashable, and can be copied by calling
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">clone()</span></code></p>
+<dl class="py attribute">
+<dt id="brainpy.Peak.charge">
+<code class="sig-name descname">charge</code><a class="headerlink" href="#brainpy.Peak.charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>The charge state of the peak</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="brainpy.Peak.intensity">
+<code class="sig-name descname">intensity</code><a class="headerlink" href="#brainpy.Peak.intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The height of the peak. Peaks created as part of a
+theoretical isotopic cluster will be have an intensity
+between 0 and 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="brainpy.Peak.mz">
+<code class="sig-name descname">mz</code><a class="headerlink" href="#brainpy.Peak.mz" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mass-to-charge ratio of the peak</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="brainpy.IsotopicDistribution">
+<em class="property">class </em><code class="sig-prename descclassname">brainpy.</code><code class="sig-name descname">IsotopicDistribution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">composition</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.IsotopicDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="brainpy.IsotopicDistribution.aggregated_isotopic_variants">
+<code class="sig-name descname">aggregated_isotopic_variants</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">int charge=0</em>, <em class="sig-param">double charge_carrier=PROTON</em><span class="sig-paren">)</span><a class="headerlink" href="#brainpy.IsotopicDistribution.aggregated_isotopic_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the m/z (or neutral mass when <cite>charge</cite> == 0) for each
+aggregated isotopic peak and their intensity relative to
+the monoisotopic peak.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div></blockquote>
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id7">Indices and tables</a><a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
+</div>
+<div class="section" id="bibliography">
+<h1><a class="toc-backref" href="#id8">Bibliography</a><a class="headerlink" href="#bibliography" title="Permalink to this headline">¶</a></h1>
 <dl class="citation">
-<dt class="label" id="dittwald2014"><span class="brackets">Dittwald2014</span></dt>
+<dt class="label" id="dittwald2014"><span class="brackets"><a class="fn-backref" href="#id1">Dittwald2014</a></span></dt>
 <dd><p>Dittwald, P., &amp; Valkenborg, D. (2014). BRAIN 2.0: time and memory complexity improvements in the algorithm for calculating the isotope distribution. Journal of the American Society for Mass Spectrometry, 25(4), 588–94. <a class="reference external" href="https://doi.org/10.1007/s13361-013-0796-5">https://doi.org/10.1007/s13361-013-0796-5</a></p>
 </dd>
 </dl>
