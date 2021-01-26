@@ -65,4 +65,5 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         TWINE_USERNAME: __token__
       run: |
-        twine upload dist\*.whl
+        twine upload dist/*.whl
+      shell: bash
