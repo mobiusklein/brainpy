@@ -23,7 +23,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools wheel twine
+        python -m pip install --upgrade pip setuptools wheel twine
         pip install coverage pytest pytest-cov -U
         pip install Cython --install-option="--no-cython-compile"
         pip install -e .
@@ -45,8 +45,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         TWINE_USERNAME: __token__
       run: |
-        echo `ls dist`
-        twine upload/*manylinux*.whl
+        twine upload dist/*manylinux*.whl
   build-windows:
     runs-on: windows-latest
     strategy:
@@ -60,7 +59,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools wheel twine
+        python -m install --upgrade pip setuptools wheel twine
         pip install coverage pytest pytest-cov -U
         pip install Cython --install-option="--no-cython-compile"
         pip install -e .
@@ -72,5 +71,4 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         TWINE_USERNAME: __token__
       run: |
-        echo `ls dist`
-        twine upload/*.whl
+        twine upload dist/*.whl
