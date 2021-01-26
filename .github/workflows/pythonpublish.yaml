@@ -39,7 +39,8 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         TWINE_USERNAME: __token__
       run: |
-        twine upload dist/*manylinux*.whl
+        python setup.py sdist
+        twine upload dist/*manylinux*.whl dist/*.tar.gz
   build-windows:
     runs-on: windows-latest
     strategy:
