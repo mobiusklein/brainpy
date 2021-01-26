@@ -129,7 +129,7 @@ def status_msgs(*msgs):
 def run_setup(include_cext=True):
     setup(
         name='brain-isotopic-distribution',
-        version='1.5.7rc',
+        version='1.5.7rc3',
         packages=find_packages(),
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''
