@@ -11,9 +11,9 @@ from brainpy._c.compat cimport (
     PyStr_AsUTF8AndSize)
 
 try:
-    from collections import Mapping, MutableMapping
-except ImportError:
     from collections.abc import Mapping, MutableMapping
+except ImportError:
+    from collections import Mapping, MutableMapping
 
 from cpython.ref cimport Py_INCREF, Py_DECREF
 from cpython.list cimport PyList_New, PyList_Append, PyList_Append
