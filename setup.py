@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages, Extension
+from setuptools.command.build_ext import build_ext
 import sys
 import os
 import traceback
@@ -70,17 +71,6 @@ except ImportError:
     ])
 
 
-from distutils.command.build_ext import build_ext
-from distutils.errors import (CCompilerError, DistutilsExecError,
-                              DistutilsPlatformError)
-
-ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
-if sys.platform == 'win32':
-    # 2.6's distutils.msvc9compiler can raise an IOError when failing to
-    # find the compiler
-    ext_errors += (IOError,)
-
-
 class BuildFailed(Exception):
 
     def __init__(self):
@@ -96,14 +86,14 @@ class ve_build_ext(build_ext):
     def run(self):
         try:
             build_ext.run(self)
-        except DistutilsPlatformError:
+        except Exception:
             traceback.print_exc()
             raise BuildFailed()
 
     def build_extension(self, ext):
         try:
             build_ext.build_extension(self, ext)
-        except ext_errors:
+        except Exception:
             traceback.print_exc()
             raise BuildFailed()
         except ValueError:
