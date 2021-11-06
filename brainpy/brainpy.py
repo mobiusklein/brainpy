@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 import operator
 import re
 
 from collections import OrderedDict, Counter
-from math import exp, log, sqrt
+from math import exp, log, sqrt, isinf
 from sys import float_info
 
 from brainpy.mass_dict import nist_mass
@@ -362,6 +363,58 @@ def max_variants(composition):
     return max_n_variants
 
 
+def max_variants_approx(mass, lambda_factor=1800.0, maxiter=255, threshold=0.9999):
+    '''Approximate the maximum number of isotopic peaks to include in an isotopic distribution
+    approximation for biomolecules using the Poisson distribution, using the method described
+    in Bellew et al [1].
+
+    This algorithm adds peaks to the approximated isotopic pattern until `threshold`% signal
+    is generated.
+
+    Parameters
+    -----------
+    mass : double
+        The mass generate th approximate pattern for.
+    lambda_factor : double
+        The initial Poisson parameter. The default value is taken from the original
+        reference [1]
+    maxiter : int
+        The maximum number of iterations to run for, also the maximum number of peaks
+        that can be added. This approximation becomes more and more inaccurate the
+        larger the value gets.
+    threshold : double
+        The percentage of the total signal to collect until terminating.
+
+    Returns
+    -------
+    n_peaks : int
+        The number of isotopic peaks to generate, or exceeded the `maxiter` if 0
+
+    References
+    ----------
+    [1] Bellew, M., Coram, M., Fitzgibbon, M., Igra, M., Randolph, T., Wang, P., May, D., Eng, J., Fang, R., Lin, C., Chen, J.,
+        Goodlett, D., Whiteaker, J., Paulovich, A., & Mcintosh, M. (2006). A suite of algorithms for the comprehensive analysis
+        of complex protein mixtures using high-resolution LC-MS. 22(15), 1902–1909. https://doi.org/10.1093/bioinformatics/btl276
+    '''
+    lmbda = mass / lambda_factor
+    p_i = 1.0
+    factorial_acc = 1.0
+    acc = 1.0
+    threshold = 1.0 - threshold
+    for i in range(1, maxiter):
+        p_i *= lmbda
+        factorial_acc *= i
+        cur_intensity = p_i / factorial_acc
+        if isinf(cur_intensity):
+            return i
+        acc += cur_intensity
+        if cur_intensity / acc < threshold:
+            return i
+    return 0
+
+
+
+
 @give_repr
 class Peak(object):
     """
@@ -615,7 +668,7 @@ try:
     _has_c = True
     _IsotopicDistribution = IsotopicDistribution
     from ._speedup import IsotopicDistribution
-    from ._c.isotopic_distribution import pyisotopic_variants as isotopic_variants
+    from ._c.isotopic_distribution import pyisotopic_variants as isotopic_variants, py_max_variants_approx as max_variants_approx
 
 except ImportError:
     _has_c = False

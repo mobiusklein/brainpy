@@ -1,5 +1,5 @@
 # cython: embedsignature=True
-
+# -*- coding: utf-8 -*-
 cimport cython
 
 from brainpy._c.composition cimport (
@@ -19,7 +19,7 @@ from brainpy._c.double_vector cimport(
 
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport strcmp
-from libc.math cimport log, exp, sqrt
+from libc.math cimport log, exp, sqrt, isinf
 from libc cimport *
 
 from brainpy._c.isotopic_constants cimport (
@@ -507,7 +507,7 @@ cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
 
     phi_values = id_phi_values(distribution)
     probability_vector = make_double_vector_with_size(phi_values.size)
-    max_variant_count = max_variants(distribution.composition, distribution.cache)
+    max_variant_count = distribution.order + 1
 
     newton(phi_values, probability_vector, max_variant_count)
 
@@ -536,7 +536,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
 
     mass_vector = make_double_vector_with_size(probability_vector.size + 3)
     power_sum = make_double_vector()
-    max_variant_count = max_variants(distribution.composition, distribution.cache)
+    max_variant_count = distribution.order + 1
     base_intensity = distribution.monoisotopic_peak.intensity
     ep_map = make_element_polynomial_map(distribution.composition.size)
 
@@ -883,3 +883,65 @@ def test(object composition, int max_npeaks=300):
     free_isotopic_distribution(dist)
     free_composition(composition_struct)
     return peaklist
+
+
+cdef size_t max_variants_approx(double mass, double lambda_factor=1800.0, size_t maxiter=255,
+                                double threshold=0.9999) nogil:
+    '''Approximate the maximum number of isotopic peaks to include in an isotopic distribution
+    approximation for biomolecules using the Poisson distribution, using the method described
+    in Bellew et al [1].
+
+    This algorithm adds peaks to the approximated isotopic pattern until `threshold`% signal
+    is generated.
+
+    Parameters
+    -----------
+    mass : double
+        The mass generate th approximate pattern for.
+    lambda_factor : double
+        The initial Poisson parameter. The default value is taken from the original
+        reference [1]
+    maxiter : int
+        The maximum number of iterations to run for, also the maximum number of peaks
+        that can be added. This approximation becomes more and more inaccurate the
+        larger the value gets.
+    threshold : double
+        The percentage of the total signal to collect until terminating.
+
+    Returns
+    -------
+    n_peaks : int
+        The number of isotopic peaks to generate, or exceeded the `maxiter` if 0
+
+    References
+    ----------
+    [1] Bellew, M., Coram, M., Fitzgibbon, M., Igra, M., Randolph, T., Wang, P., May, D., Eng, J., Fang, R., Lin, C., Chen, J.,
+        Goodlett, D., Whiteaker, J., Paulovich, A., & Mcintosh, M. (2006). A suite of algorithms for the comprehensive analysis
+        of complex protein mixtures using high-resolution LC-MS. 22(15), 1902–1909. https://doi.org/10.1093/bioinformatics/btl276
+    '''
+    cdef:
+        double lmbda = mass / lambda_factor
+        double p_i = 1.0
+        double factorial_acc = 1.0
+        double acc = 1.0
+        double cur_intensity
+        size_t i
+
+    threshold = 1.0 - threshold
+    for i in range(1, maxiter):
+        p_i *= lmbda
+        factorial_acc *= i
+        cur_intensity = p_i / factorial_acc
+        if isinf(cur_intensity):
+            return i
+        acc += cur_intensity
+        if cur_intensity / acc < threshold:
+            return i
+    return 0
+
+
+def py_max_variants_approx(double mass, double lambda_factor=1800.0, size_t maxiter=255,
+                           double threshold=0.9999):
+    with nogil:
+        val = max_variants_approx(mass, lambda_factor, maxiter, threshold)
+    return val

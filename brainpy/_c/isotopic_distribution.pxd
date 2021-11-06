@@ -80,3 +80,6 @@ cpdef list _isotopic_variants(object composition, object npeaks=*, int charge=*,
 
 
 cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=*, double charge_carrier=*) nogil
+
+
+cdef size_t max_variants_approx(double mass, double lambda_factor=*, size_t maxiter=*, double threshold=*) nogil
