@@ -19,7 +19,7 @@ from brainpy._c.double_vector cimport(
 
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport strcmp
-from libc.math cimport log, exp, sqrt, isinf
+from libc.math cimport log, exp, sqrt, fabs
 from libc cimport *
 
 from brainpy._c.isotopic_constants cimport (
@@ -43,6 +43,18 @@ cdef extern from * nogil:
     int printf (const char *template, ...)
     void qsort (void *base, unsigned short n, unsigned short w, int (*cmp_func)(void*, void*))
 
+
+IF int == long:
+    DEF PY_VERSION = 3
+ELSE:
+    DEF PY_VERSION = 2
+IF UNAME_SYSNAME == "Windows" and PY_VERSION == 2:
+    cdef double INFINITY = float('inf')
+
+    cdef int isinf(double x) nogil:
+        return fabs(x) == INFINITY
+ELSE:
+    from libc.math cimport isinf as isinf
 
 # -----------------------------------------------------------------------------
 # ElementPolynomialMap Declaration and Methods
