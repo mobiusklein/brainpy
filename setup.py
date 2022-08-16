@@ -36,38 +36,38 @@ try:
         ])
     extensions = cythonize([
         Extension(
-            name="brainpy._speedup", sources=["brainpy/_speedup.pyx"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._speedup", sources=["src/brainpy/_speedup.pyx"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.composition", sources=["brainpy/_c/composition.pyx"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._c.composition", sources=["src/brainpy/_c/composition.pyx"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.pyx"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._c.double_vector", sources=["src/brainpy/_c/double_vector.pyx"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.pyx"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._c.isotopic_constants", sources=["src/brainpy/_c/isotopic_constants.pyx"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.pyx"],
-            include_dirs=["brainpy/_c/"])
+            name="brainpy._c.isotopic_distribution", sources=["src/brainpy/_c/isotopic_distribution.pyx"],
+            include_dirs=["src/brainpy/_c/"])
     ], compiler_directives=cython_directives, force=force_cythonize)
 except ImportError:
     extensions = ([
         Extension(
-            name="brainpy._speedup", sources=["brainpy/_speedup.c"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._speedup", sources=["src/brainpy/_speedup.c"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.composition", sources=["brainpy/_c/composition.c"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._c.composition", sources=["src/brainpy/_c/composition.c"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.double_vector", sources=["brainpy/_c/double_vector.c"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._c.double_vector", sources=["src/brainpy/_c/double_vector.c"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.isotopic_constants", sources=["brainpy/_c/isotopic_constants.c"],
-            include_dirs=["brainpy/_c/"]),
+            name="brainpy._c.isotopic_constants", sources=["src/brainpy/_c/isotopic_constants.c"],
+            include_dirs=["src/brainpy/_c/"]),
         Extension(
-            name="brainpy._c.isotopic_distribution", sources=["brainpy/_c/isotopic_distribution.c"],
-            include_dirs=["brainpy/_c/"])
+            name="brainpy._c.isotopic_distribution", sources=["src/brainpy/_c/isotopic_distribution.c"],
+            include_dirs=["src/brainpy/_c/"])
     ])
 
 
@@ -120,7 +120,8 @@ def run_setup(include_cext=True):
     setup(
         name='brain-isotopic-distribution',
         version='1.5.12',
-        packages=find_packages(),
+        packages=find_packages(where='src'),
+        package_dir={"": "src"},
         description="Fast and efficient theoretical isotopic profile generation",
         long_description='''
 :mod:`brainpy` is a small Python library implementing the *B* afflingly *R* ecursive

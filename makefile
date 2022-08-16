@@ -2,10 +2,10 @@ dev:
 	python setup.py develop
 
 test:
-	py.test -v  brainpy --cov=brainpy --cov-report=html --cov-report term
+	py.test -v  ./tests --cov=brainpy --cov-report=html --cov-report term
 
 retest:
-	py.test -v brainpy --lf
+	py.test -v ./tests --lf
 
 update-docs:
 	git checkout gh-pages
