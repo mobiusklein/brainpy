@@ -733,6 +733,7 @@ cdef double composition_mass(Composition* composition) nogil:
         int status
         size_t i
     i = 0
+    mass = 0
     while i < composition.used:
         element_label = composition.elements[i]
         _parse_isotope_string(element_label, &isotope_number, element_name)

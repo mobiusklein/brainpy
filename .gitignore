@@ -23,8 +23,8 @@ var/
 .installed.cfg
 *.egg
 .vscode
-brainpy/**.c
-brainpy/**.html
+src/brainpy/**.c
+src/brainpy/**.html
 .pytest*
 *sublime*
 # PyInstaller
