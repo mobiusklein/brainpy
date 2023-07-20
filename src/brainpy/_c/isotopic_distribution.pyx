@@ -44,17 +44,7 @@ cdef extern from * nogil:
     void qsort (void *base, unsigned short n, unsigned short w, int (*cmp_func)(void*, void*))
 
 
-IF int == long:
-    DEF PY_VERSION = 3
-ELSE:
-    DEF PY_VERSION = 2
-IF UNAME_SYSNAME == "Windows" and PY_VERSION == 2:
-    cdef double INFINITY = float('inf')
-
-    cdef int isinf(double x) nogil:
-        return fabs(x) == INFINITY
-ELSE:
-    from libc.math cimport isinf as isinf
+from libc.math cimport isinf as isinf
 
 # -----------------------------------------------------------------------------
 # ElementPolynomialMap Declaration and Methods
@@ -650,7 +640,7 @@ cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distributio
 cdef void sort_by_mz(PeakList* peaklist) nogil:
     qsort(peaklist.peaks, peaklist.used, sizeof(Peak), compare_by_mz)
 
-cdef int compare_by_mz(const void * a, const void * b) nogil:
+cdef int compare_by_mz(const void * a, const void * b) noexcept nogil:
     if (<Peak*>a).mz < (<Peak*>b).mz:
         return -1
     elif (<Peak*>a).mz == (<Peak*>b).mz:
