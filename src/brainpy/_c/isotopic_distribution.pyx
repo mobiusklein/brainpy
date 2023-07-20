@@ -847,26 +847,26 @@ def main():
         IsotopicDistribution* distribution2
 
     comp_dict = dict(H=2, O=1)
-    print comp_dict
+    print(comp_dict)
     composition = dict_to_composition(comp_dict)
     print_composition(composition)
     distribution = make_isotopic_distribution(composition, 4)
-    print "Going to print constants"
+    print("Going to print constants")
     print_isotopic_constants(distribution._isotopic_constants)
-    print "Done"
+    print("Done")
 
-    print "Trying to free"
+    print("Trying to free")
     free_isotopic_distribution(distribution)
-    print "Free Done"
+    print( "Free Done")
 
     distribution2 = make_isotopic_distribution(composition, 4)
-    print "Seconc construction"
+    print( "Seconc construction")
     print_isotopic_constants(distribution2._isotopic_constants)
-    print "Second Free"
+    print( "Second Free")
     free_isotopic_distribution(distribution2)
-    print comp_dict
+    print(comp_dict)
     free_composition(composition)
-    print "Really done"
+    print( "Really done")
 
 
 def test(object composition, int max_npeaks=300):
