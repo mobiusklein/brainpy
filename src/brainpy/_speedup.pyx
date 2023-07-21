@@ -14,7 +14,7 @@ import re
 
 mz_getter = operator.attrgetter("mz")
 
-from mass_dict import nist_mass as _nist_mass
+from brainpy.mass_dict import nist_mass as _nist_mass
 from brainpy._c.isotopic_distribution cimport TheoreticalPeak as Peak
 
 
