@@ -62,13 +62,13 @@ def _get_isotope(element_string):
 
 
 class PyComposition(Counter):
-    '''A mapping representing a chemical composition.
+    """A mapping representing a chemical composition.
 
     Implements arithmetic operations, +/- is defined
     between a :class:`PyComposition` and a :class:`Mapping`-like
     object, and * is defined between a :class:`PyComposition` and
     an integer.
-    '''
+    """
     def __init__(self, base=None, **kwargs):
         if base is not None:
             self.update(base)
@@ -91,12 +91,12 @@ class PyComposition(Counter):
         return self
 
     def mass(self, mass_data=None):
-        '''Calculate the monoisotopic mass of this chemical composition
+        """Calculate the monoisotopic mass of this chemical composition
 
         Returns
         -------
         float
-        '''
+        """
         return calculate_mass(self, mass_data)
 
 

@@ -507,9 +507,9 @@ def show_element(str element):
 # Composition Methods
 
 cdef Composition* make_composition() nogil:
-    '''
+    """
     Create a new, empty Composition struct
-    '''
+    """
     cdef:
         Composition* composition
     composition = <Composition*>malloc(sizeof(Composition))
@@ -521,9 +521,9 @@ cdef Composition* make_composition() nogil:
     return composition
 
 cdef int composition_eq(Composition* composition_1, Composition* composition_2) nogil:
-    '''
+    """
     Test two Composition instances for element-wise equality
-    '''
+    """
     cdef:
         int status
         size_t i
@@ -548,10 +548,10 @@ cdef int composition_eq(Composition* composition_1, Composition* composition_2) 
     return 1
 
 cdef Composition* copy_composition(Composition* composition) nogil:
-    '''
+    """
     Create a new Composition instance whose element counts are copied from
     `composition`
-    '''
+    """
     cdef:
         Composition* result
         int status
@@ -600,14 +600,14 @@ cdef void print_composition(Composition* composition) nogil:
     printf("}\n\n")
 
 cdef int composition_set_element_count(Composition* composition, char* element, count_type count) nogil:
-    '''
+    """
     Set the count for `element` in `composition`
 
     Return Values:
     0: Success
     1: General Failure
     -1: Failure due to Out-of-Memory
-    '''
+    """
     cdef:
         size_t i
         int status
@@ -633,13 +633,13 @@ cdef int composition_set_element_count(Composition* composition, char* element, 
     return 1
 
 cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) nogil:
-    '''
+    """
     Get the count of `element` in `composition`. The count is 0 if `element` is not in `composition`
 
     Return Values:
     0: Success
     1: Not Found
-    '''
+    """
     cdef:
         size_t i
         int status
@@ -658,14 +658,14 @@ cdef int composition_get_element_count(Composition* composition, char* element, 
     return 1
 
 cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil:
-    '''
+    """
     Increase the count for `element` in `composition` by `increment`.
 
     Return Values:
     0: Success
     1: General Failure
     -1: Failure due to Out-of-Memory
-    '''
+    """
     cdef:
         size_t i
         int status
@@ -691,13 +691,13 @@ cdef int composition_inc_element_count(Composition* composition, char* element, 
     return 1
 
 cdef int composition_resize(Composition* composition) nogil:
-    '''
+    """
     Increases the size of the parallel arrays in `composition`, doubling them in length
 
     Return Values:
     0: Success
     -1: Failure due to Out-of-Memory
-    '''
+    """
     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * composition.size * 2)
     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * composition.size * 2)
     composition.size *= 2
@@ -706,13 +706,13 @@ cdef int composition_resize(Composition* composition) nogil:
     return 0
 
 cdef int composition_resize_to(Composition* composition, size_t size) nogil:
-    '''
+    """
     Increases the size of the parallel arrays in `composition`, doubling them in length
 
     Return Values:
     0: Success
     -1: Failure due to Out-of-Memory
-    '''
+    """
     composition.elements = <char**>realloc(composition.elements, sizeof(char*) * size)
     composition.counts = <count_type*>realloc(composition.counts, sizeof(count_type) * size)
     composition.size = size
@@ -721,9 +721,9 @@ cdef int composition_resize_to(Composition* composition, size_t size) nogil:
     return 0
 
 cdef double composition_mass(Composition* composition) nogil:
-    '''
+    """
     Calculates the monoisotopic mass of `composition`
-    '''
+    """
     cdef:
         double mass
         Element* element
@@ -983,13 +983,14 @@ def isotope_parse_test(str element_symbol):
 
 
 cdef class PyComposition(object):
-    '''A mapping representing a chemical composition.
+    """
+    A mapping representing a chemical composition.
 
     Implements arithmetic operations, +/- is defined
     between a :class:`PyComposition` and a :class:`Mapping`-like
     object, and * is defined between a :class:`PyComposition` and
     an integer.
-    '''
+    """
 
     @staticmethod
     cdef PyComposition _create(Composition* base):
@@ -1306,12 +1307,13 @@ cdef class PyComposition(object):
         return iter(self.keys())
 
     cpdef double mass(self):
-        '''Calculate the monoisotopic mass of this chemical composition
+        """
+        Calculate the monoisotopic mass of this chemical composition
 
         Returns
         -------
         float
-        '''
+        """
         if self._clean:
             return self.cached_mass
         else:

@@ -2,9 +2,8 @@
 from __future__ import absolute_import
 
 import operator
-import re
 
-from collections import OrderedDict, Counter
+from collections import OrderedDict
 from math import exp, log, sqrt, isinf
 from sys import float_info
 
@@ -74,7 +73,7 @@ class PhiConstants(object):
 
 
 def newton(power_sum, elementary_symmetric_polynomial, order):
-    r'''
+    r"""
     Given two lists of values, the first list being the `power sum`s of a
     polynomial, and the second being expressions of the roots of the
     polynomial as found by Viete's Formula, use information from the longer list to
@@ -93,7 +92,7 @@ def newton(power_sum, elementary_symmetric_polynomial, order):
     See Also
     --------
     https://en.wikipedia.org/wiki/Newton%27s_identities[https://en.wikipedia.org/wiki/Newton%27s_identities]
-    '''
+    """
     if len(power_sum) > len(elementary_symmetric_polynomial):
         _update_elementary_symmetric_polynomial(power_sum, elementary_symmetric_polynomial, order)
     elif len(power_sum) < len(elementary_symmetric_polynomial):
@@ -135,7 +134,7 @@ def _update_power_sum(ps_vec, esp_vec, order):
 
 
 def vietes(coefficients):
-    r'''
+    r"""
     Given the coefficients of a polynomial of a single variable,
     compute an elementary symmetric polynomial of the roots of the
     input polynomial by Viete's Formula:
@@ -157,7 +156,7 @@ def vietes(coefficients):
     --------
     https://en.wikipedia.org/wiki/Vieta%27s_formulas
 
-    '''
+    """
     elementary_symmetric_polynomial = []
     tail = float(coefficients[-1])
     size = len(coefficients)
@@ -171,7 +170,7 @@ def vietes(coefficients):
 
 @give_repr
 class Isotope(object):
-    '''
+    """
     Isotope represents an elenent with an integer number of neutrons specified.
 
     Attributes
@@ -183,7 +182,7 @@ class Isotope(object):
     neutron_shift: int
         The number of neutrons different between this isotope and the "normal" form. May be 0
         if this represents that normal form.
-    '''
+    """
     def __init__(self, mass, abundance, neutron_shift, neutrons):
         self.mass = mass
         self.abundance = abundance
@@ -364,7 +363,7 @@ def max_variants(composition):
 
 
 def max_variants_approx(mass, lambda_factor=1800.0, maxiter=255, threshold=0.9999):
-    '''Approximate the maximum number of isotopic peaks to include in an isotopic distribution
+    """Approximate the maximum number of isotopic peaks to include in an isotopic distribution
     approximation for biomolecules using the Poisson distribution, using the method described
     in Bellew et al [1].
 
@@ -395,7 +394,7 @@ def max_variants_approx(mass, lambda_factor=1800.0, maxiter=255, threshold=0.999
     [1] Bellew, M., Coram, M., Fitzgibbon, M., Igra, M., Randolph, T., Wang, P., May, D., Eng, J., Fang, R., Lin, C., Chen, J.,
         Goodlett, D., Whiteaker, J., Paulovich, A., & Mcintosh, M. (2006). A suite of algorithms for the comprehensive analysis
         of complex protein mixtures using high-resolution LC-MS. 22(15), 1902–1909. https://doi.org/10.1093/bioinformatics/btl276
-    '''
+    """
     lmbda = mass / lambda_factor
     p_i = 1.0
     factorial_acc = 1.0
@@ -584,7 +583,7 @@ class IsotopicDistribution(object):
         return mass_vector
 
     def aggregated_isotopic_variants(self, charge=0, charge_carrier=PROTON):
-        '''
+        """
         Compute the m/z (or neutral mass when `charge` == 0) for each
         aggregated isotopic peak and their intensity relative to
         the monoisotopic peak.
@@ -602,7 +601,7 @@ class IsotopicDistribution(object):
             A list of :class:`Peak` objects whose intensities are proportional to
             each other to reflect relative peak heights.
 
-        '''
+        """
         probability_vector = self.probability()
         center_mass_vector = self.center_mass(probability_vector)
 
@@ -630,7 +629,7 @@ class IsotopicDistribution(object):
 
 
 def isotopic_variants(composition, npeaks=None, charge=0, charge_carrier=PROTON):
-    '''
+    """
     Compute a peak list representing the theoretical isotopic cluster for `composition`.
 
     Parameters
@@ -652,7 +651,7 @@ def isotopic_variants(composition, npeaks=None, charge=0, charge_carrier=PROTON)
     --------
     :class:`IsotopicDistribution`
 
-    '''
+    """
     if npeaks is None:
         max_n_variants = max_variants(composition)
         npeaks = int(sqrt(max_n_variants) - 2)

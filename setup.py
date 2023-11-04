@@ -123,7 +123,7 @@ def run_setup(include_cext=True):
         packages=find_packages(where='src'),
         package_dir={"": "src"},
         description="Fast and efficient theoretical isotopic profile generation",
-        long_description='''
+        long_description="""
 :mod:`brainpy` is a small Python library implementing the *B* afflingly *R* ecursive
 *A* lgorithm for *I* sotopic Patter *N* generation [Dittwald2014]_. It includes three implementations,
 a pure-Python object oriented implementation, a :title-reference:`Cython` accelerated
@@ -163,7 +163,7 @@ This package is an implementation of the algorithm originally described in
     H. Hu, P. Dittwald, J. Zaia, and D. Valkenborg,
     "Comment on 'Computation of isotopic peak center-mass distribution by fourier transform'.",
     Anal. Chem., vol. 85, no. 24, pp. 12189–92, Dec. 2013.
-    ''',
+    """,
         long_description_content_type='text/markdown',
         author=', '.join(["Joshua Klein", "Han Hu"]),
         author_email="jaklein@bu.edu",
@@ -190,7 +190,7 @@ This package is an implementation of the algorithm originally described in
 if __name__ == '__main__':
     try:
         run_setup(True)
-    except Exception as exc:
+    except Exception:
         run_setup(False)
 
         status_msgs(

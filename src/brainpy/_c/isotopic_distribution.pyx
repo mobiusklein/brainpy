@@ -674,7 +674,7 @@ cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks, Elemen
 
 def pyisotopic_variants(object composition not None, object npeaks=None, int charge=0,
                         double charge_carrier=PROTON):
-    '''
+    """
     Compute a peak list representing the theoretical isotopic cluster for `composition`.
 
     Parameters
@@ -695,12 +695,12 @@ def pyisotopic_variants(object composition not None, object npeaks=None, int cha
     Returns
     -------
     list of TheoreticalPeak
-    '''
+    """
     return _isotopic_variants(composition, npeaks, charge, charge_carrier)
 
 
 cpdef list _isotopic_variants(object composition, object npeaks=None, int charge=0, double charge_carrier=PROTON):
-    '''
+    """
     Compute a peak list representing the theoretical isotopic cluster for `composition`.
 
     Parameters
@@ -721,7 +721,7 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
     Returns
     -------
     list of TheoreticalPeak
-    '''
+    """
     cdef:
         Composition* composition_struct
         list peaklist
@@ -889,7 +889,7 @@ def test(object composition, int max_npeaks=300):
 
 cdef size_t max_variants_approx(double mass, double lambda_factor=1800.0, size_t maxiter=255,
                                 double threshold=0.9999) nogil:
-    '''Approximate the maximum number of isotopic peaks to include in an isotopic distribution
+    """Approximate the maximum number of isotopic peaks to include in an isotopic distribution
     approximation for biomolecules using the Poisson distribution, using the method described
     in Bellew et al [1].
 
@@ -920,7 +920,7 @@ cdef size_t max_variants_approx(double mass, double lambda_factor=1800.0, size_t
     [1] Bellew, M., Coram, M., Fitzgibbon, M., Igra, M., Randolph, T., Wang, P., May, D., Eng, J., Fang, R., Lin, C., Chen, J.,
         Goodlett, D., Whiteaker, J., Paulovich, A., & Mcintosh, M. (2006). A suite of algorithms for the comprehensive analysis
         of complex protein mixtures using high-resolution LC-MS. 22(15), 1902–1909. https://doi.org/10.1093/bioinformatics/btl276
-    '''
+    """
     cdef:
         double lmbda = mass / lambda_factor
         double p_i = 1.0

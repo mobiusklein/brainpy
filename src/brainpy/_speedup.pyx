@@ -122,7 +122,7 @@ cdef class PhiConstants(object):
 
 
 cdef class Isotope(object):
-    '''
+    """
     Isotope represents an elenent with an integer number of neutrons specified.
 
     Attributes
@@ -134,7 +134,7 @@ cdef class Isotope(object):
     neutron_shift: int
         The number of neutrons different between this isotope and the "normal" form. May be 0
         if this represents that normal form.
-    '''
+    """
     cdef:
         public double mass
         public double abundance
@@ -607,11 +607,11 @@ cdef class IsotopicDistribution(object):
         return mass_vector
 
     def aggregated_isotopic_variants(self, int charge=0, double charge_carrier=PROTON):
-        '''
+        """
         Compute the m/z (or neutral mass when `charge` == 0) for each
         aggregated isotopic peak and their intensity relative to
         the monoisotopic peak.
-        '''
+        """
         cdef:
             list probability_vector
             list center_mass_vector
