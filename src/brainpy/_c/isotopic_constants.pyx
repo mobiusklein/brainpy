@@ -24,7 +24,7 @@ cdef extern from * nogil:
 # PolynomialParameters Methods
 
 @cython.cdivision
-cdef dvec* vietes(dvec* coefficients) nogil:
+cdef dvec* vietes(dvec* coefficients) noexcept nogil:
     cdef:
         DoubleVector* elementary_symmetric_polynomial
         size_t i
@@ -44,7 +44,7 @@ cdef dvec* vietes(dvec* coefficients) nogil:
     return elementary_symmetric_polynomial
 
 
-cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) nogil:
+cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) noexcept nogil:
     cdef:
         size_t begin, end, k, j
         int sign
@@ -69,7 +69,7 @@ cdef void _update_power_sum(dvec* ps_vec, dvec* esp_vec, int order) nogil:
 
 
 @cython.cdivision
-cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, int order) nogil:
+cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, int order) noexcept nogil:
     cdef:
         size_t begin, end, k, j
         int sign
@@ -92,14 +92,14 @@ cdef void _update_elementary_symmetric_polynomial(dvec* ps_vec, dvec* esp_vec, i
             double_vector_append(esp_vec, el)
 
 
-cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) nogil:
+cdef void newton(dvec* ps_vec, dvec* esp_vec, int order) noexcept nogil:
     if ps_vec.used > esp_vec.used:
         _update_elementary_symmetric_polynomial(ps_vec, esp_vec, order)
     elif ps_vec.used < esp_vec.used:
         _update_power_sum(ps_vec, esp_vec, order)
 
 
-cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec* accumulator) nogil:
+cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec* accumulator) noexcept nogil:
     cdef:
         int max_isotope_number, current_order
         Isotope* isotope
@@ -125,7 +125,7 @@ cdef dvec* compute_isotopic_coefficients(Element* element, bint with_mass, dvec*
             printf("Error, unordered isotopes for %s\n", element.symbol)
     return accumulator
 
-cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass, dvec* accumulator) nogil:
+cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint with_mass, dvec* accumulator) noexcept nogil:
     cdef:
         dvec* elementary_symmetric_polynomial
         dvec* power_sum
@@ -142,7 +142,7 @@ cdef PolynomialParameters* make_polynomial_parameters(Element* element, bint wit
     return result
 
 
-cdef void print_polynomial_parameters(PolynomialParameters* params) nogil:
+cdef void print_polynomial_parameters(PolynomialParameters* params) noexcept nogil:
     printf("PolynomialParameters: %d\n", <int>params)
     printf("  ")
     print_double_vector(params.elementary_symmetric_polynomial)
@@ -151,7 +151,7 @@ cdef void print_polynomial_parameters(PolynomialParameters* params) nogil:
     printf("\n")
 
 
-cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:
+cdef void free_polynomial_parameters(PolynomialParameters* params) noexcept nogil:
     free_double_vector(params.elementary_symmetric_polynomial)
     free_double_vector(params.power_sum)
     free(params)
@@ -160,7 +160,7 @@ cdef void free_polynomial_parameters(PolynomialParameters* params) nogil:
 # PhiConstants Methods
 
 
-cdef void print_phi_constants(PhiConstants* constants) nogil:
+cdef void print_phi_constants(PhiConstants* constants) noexcept nogil:
     printf("PhiConstants: %d\n", <int>constants)
     printf("Element: %s, Order: %d\n", constants.element.symbol, constants.order)
     printf("Element Coefficients:\n")
@@ -170,7 +170,7 @@ cdef void print_phi_constants(PhiConstants* constants) nogil:
     printf("\n")
 
 
-cdef void free_phi_constants(PhiConstants* constants) nogil:
+cdef void free_phi_constants(PhiConstants* constants) noexcept nogil:
     free_polynomial_parameters(constants.element_coefficients)
     free_polynomial_parameters(constants.mass_coefficients)
     free(constants)
@@ -182,7 +182,7 @@ cdef void free_phi_constants(PhiConstants* constants) nogil:
 cdef size_t DEFAULT_ISOTOPIC_CONSTANTS_SIZE = 7
 
 
-cdef IsotopicConstants* make_isotopic_constants() nogil:
+cdef IsotopicConstants* make_isotopic_constants() noexcept nogil:
     cdef:
         IsotopicConstants* result
     result = <IsotopicConstants*>malloc(sizeof(IsotopicConstants))
@@ -192,7 +192,7 @@ cdef IsotopicConstants* make_isotopic_constants() nogil:
     return result
 
 
-cdef int isotopic_constants_resize(IsotopicConstants* ics) nogil:
+cdef int isotopic_constants_resize(IsotopicConstants* ics) noexcept nogil:
     ics.constants = <PhiConstants**>realloc(ics.constants, sizeof(PhiConstants*) * ics.size * 2)
     ics.size *= 2
     if ics.constants == NULL:
@@ -200,7 +200,7 @@ cdef int isotopic_constants_resize(IsotopicConstants* ics) nogil:
     return 0
 
 
-cdef void free_isotopic_constants(IsotopicConstants* isotopes) nogil:
+cdef void free_isotopic_constants(IsotopicConstants* isotopes) noexcept nogil:
     cdef:
         size_t i
 
@@ -212,7 +212,7 @@ cdef void free_isotopic_constants(IsotopicConstants* isotopes) nogil:
     free(isotopes)
 
 
-cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* element_symbol) nogil:
+cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* element_symbol) noexcept nogil:
     cdef:
         Element* element
         dvec* accumulator
@@ -249,7 +249,7 @@ cdef void isotopic_constants_add_element(IsotopicConstants* isotopes, char* elem
     isotopes.used += 1
 
 
-cdef int isotopic_constants_get(IsotopicConstants* isotopes, char* element_symbol, PhiConstants** out) nogil:
+cdef int isotopic_constants_get(IsotopicConstants* isotopes, char* element_symbol, PhiConstants** out) noexcept nogil:
     cdef:
         size_t i
         int status
@@ -263,7 +263,7 @@ cdef int isotopic_constants_get(IsotopicConstants* isotopes, char* element_symbo
     return 1
 
 
-cdef int isotopic_constants_get_by_index(IsotopicConstants* isotopes, size_t index, PhiConstants** out) nogil:
+cdef int isotopic_constants_get_by_index(IsotopicConstants* isotopes, size_t index, PhiConstants** out) noexcept nogil:
     if index > isotopes.used:
         return 1
     else:
@@ -271,7 +271,7 @@ cdef int isotopic_constants_get_by_index(IsotopicConstants* isotopes, size_t ind
         return 0
 
 
-cdef void isotopic_constants_update_coefficients(IsotopicConstants* isotopes) nogil:
+cdef void isotopic_constants_update_coefficients(IsotopicConstants* isotopes) noexcept nogil:
     cdef:
         size_t i, j
         PhiConstants* constants
@@ -296,35 +296,35 @@ cdef void isotopic_constants_update_coefficients(IsotopicConstants* isotopes) no
                constants.order)
 
 
-cdef double isotopic_constants_nth_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:
+cdef double isotopic_constants_nth_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) noexcept nogil:
     cdef:
         PhiConstants* constants
     isotopic_constants_get(isotopes, symbol, &constants)
     return constants.element_coefficients.power_sum.v[order]
 
 
-cdef double isotopic_constants_nth_element_power_sum_by_index(IsotopicConstants* isotopes, size_t index, int order) nogil:
+cdef double isotopic_constants_nth_element_power_sum_by_index(IsotopicConstants* isotopes, size_t index, int order) noexcept nogil:
     cdef:
         PhiConstants* constants
     isotopic_constants_get_by_index(isotopes, index, &constants)
     return constants.element_coefficients.power_sum.v[order]
 
 
-cdef double isotopic_constants_nth_modified_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) nogil:
+cdef double isotopic_constants_nth_modified_element_power_sum(IsotopicConstants* isotopes, char* symbol, int order) noexcept nogil:
     cdef:
         PhiConstants* constants
     isotopic_constants_get(isotopes, symbol, &constants)
     return constants.mass_coefficients.power_sum.v[order]
 
 
-cdef double isotopic_constants_nth_modified_element_power_sum_by_index(IsotopicConstants* isotopes, size_t index, int order) nogil:
+cdef double isotopic_constants_nth_modified_element_power_sum_by_index(IsotopicConstants* isotopes, size_t index, int order) noexcept nogil:
     cdef:
         PhiConstants* constants
     isotopic_constants_get_by_index(isotopes, index, &constants)
     return constants.mass_coefficients.power_sum.v[order]
 
 
-cdef void print_isotopic_constants(IsotopicConstants* isotopes) nogil:
+cdef void print_isotopic_constants(IsotopicConstants* isotopes) noexcept nogil:
     cdef:
         size_t i
 

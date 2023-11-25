@@ -38,16 +38,16 @@ nist_mass = __nist_mass
 cdef double PROTON = nist_mass["H+"][0][0]
 
 
-cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) nogil:
+cdef double neutral_mass(double mz,  int z, double charge_carrier=PROTON) noexcept nogil:
     return (mz * fabs(z)) - (z * charge_carrier)
 
 
 @cython.cdivision
-cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) nogil:
+cdef double mass_charge_ratio(double neutral_mass, int z, double charge_carrier=PROTON) noexcept nogil:
     return (neutral_mass + (z * charge_carrier)) / fabs(z)
 
 
-cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) nogil:
+cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_name) noexcept nogil:
     cdef:
         size_t i = 0
         bint in_bracket = False
@@ -87,7 +87,7 @@ cdef char* _parse_isotope_string(char* label, int* isotope_num, char* element_na
     element_name[name_end] = '\0'
     return element_name
 
-cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) noexcept nogil:
     if isotope.neutron_shift == 0:
         sprintf(out, "%s", element.symbol)
         return out
@@ -95,7 +95,7 @@ cdef char* _make_isotope_string(Element* element, Isotope* isotope, char* out) n
         sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)
         return out
 
-cdef char* _make_fixed_isotope_string(Element* element, Isotope* isotope, char* out) nogil:
+cdef char* _make_fixed_isotope_string(Element* element, Isotope* isotope, char* out) noexcept nogil:
     sprintf(out, "%s[%d]", element.symbol, isotope.neutrons)
     return out
 
@@ -123,7 +123,7 @@ cdef IsotopeMap* make_isotope_map(list organized_isotope_data, size_t size):
     return result
 
 
-cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) nogil:
+cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shift) noexcept nogil:
     cdef:
         size_t i
         Isotope* isotope_item
@@ -136,7 +136,7 @@ cdef Isotope* get_isotope_by_neutron_shift(IsotopeMap* isotopes, int neutron_shi
     return NULL
 
 
-cdef int get_isotope_by_neutron_shift_index(IsotopeMap* isotopes, int neutron_shift) nogil:
+cdef int get_isotope_by_neutron_shift_index(IsotopeMap* isotopes, int neutron_shift) noexcept nogil:
     cdef:
         size_t i
 
@@ -146,7 +146,7 @@ cdef int get_isotope_by_neutron_shift_index(IsotopeMap* isotopes, int neutron_sh
     return -1
 
 
-cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) nogil:
+cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) noexcept nogil:
     cdef:
         size_t i
         Isotope* isotope_item
@@ -158,7 +158,7 @@ cdef Isotope* get_isotope_by_neutron_count(IsotopeMap* isotopes, int neutrons) n
     return NULL
 
 
-cdef void print_isotope_map(IsotopeMap* isotope_map) nogil:
+cdef void print_isotope_map(IsotopeMap* isotope_map) noexcept nogil:
     cdef:
         size_t i
 
@@ -167,7 +167,7 @@ cdef void print_isotope_map(IsotopeMap* isotope_map) nogil:
                                      isotope_map.bins[i].neutron_shift, isotope_map.bins[i].neutrons)
 
 
-cdef void free_isotope_map(IsotopeMap* isotopes) nogil:
+cdef void free_isotope_map(IsotopeMap* isotopes) noexcept nogil:
     free(isotopes.bins)
     free(isotopes)
 
@@ -175,19 +175,19 @@ cdef void free_isotope_map(IsotopeMap* isotopes) nogil:
 # -----------------------------------------------------------------------------
 # Element Methods
 
-cdef double element_monoisotopic_mass(Element* element) nogil:
+cdef double element_monoisotopic_mass(Element* element) noexcept nogil:
     if element.monoisotopic_isotope_index < 0:
         return get_isotope_by_neutron_shift(element.isotopes, 0).mass
     else:
         return element.isotopes.bins[element.monoisotopic_isotope_index].mass
 
-cdef double element_isotopic_mass(Element* element, int isotope_number) nogil:
+cdef double element_isotopic_mass(Element* element, int isotope_number) noexcept nogil:
     return get_isotope_by_neutron_count(element.isotopes, isotope_number).mass
 
-cdef int element_min_neutron_shift(Element* element) nogil:
+cdef int element_min_neutron_shift(Element* element) noexcept nogil:
     return element.isotopes.bins[0].neutron_shift
 
-cdef int element_max_neutron_shift(Element* element) nogil:
+cdef int element_max_neutron_shift(Element* element) noexcept nogil:
     return element.isotopes.bins[element.isotopes.size - 1].neutron_shift
 
 def __select_1_1(object x):
@@ -216,12 +216,23 @@ cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
 
     for i, mass_freqs in element_data.items():
         if i == 0:
+            mono_neutrons = PyInt_AsLong(mass_freqs[0])
             continue
         if mass_freqs[1] > 0:
             freqs[i] = mass_freqs
 
     if len(freqs) == 0:
-        isotope_frequencies[0] = make_isotope_map([], 0)
+        if mono_neutrons not in element_data:
+            isotope_frequencies[0] = make_isotope_map([], 0)
+        else:
+            isotope_frequencies[0] = make_isotope_map([
+                (0, (
+                    element_data[mono_neutrons][0],
+                    1.0,
+                    0,
+                    mono_neutrons
+                ))
+            ], 1)
         return
 
     freq_list = list(freqs.items())
@@ -249,11 +260,11 @@ cdef Element* make_element(char* symbol):
         element.isotopes, 0)
     return element
 
-cdef void free_element(Element* element) nogil:
+cdef void free_element(Element* element) noexcept nogil:
     free_isotope_map(element.isotopes)
     free(element)
 
-cdef void print_element(Element* element) nogil:
+cdef void print_element(Element* element) noexcept nogil:
     printf("Symbol: %s; Monoisotopic Index: %d\n", element.symbol,
                                                    element.monoisotopic_isotope_index)
     print_isotope_map(element.isotopes)
@@ -287,7 +298,7 @@ cdef bint ensure_fixed_isotope(char* string):
     return False
 
 
-cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) nogil:
+cdef Element* make_fixed_isotope_element(Element* element, int neutron_count) noexcept nogil:
     cdef:
         int i
         size_t j
@@ -335,7 +346,7 @@ def test_make_fixed_isotope_element(str element, int neutron_count):
 # -----------------------------------------------------------------------------
 # ElementHashTable and ElementHashBucket Methods
 
-cdef size_t hash_string(char *string_) nogil:
+cdef size_t hash_string(char *string_) noexcept nogil:
     cdef:
         size_t hash_value
         size_t i
@@ -354,7 +365,7 @@ def test_hash_string(str string_):
     return hash_string(PyStr_AsString(string_))
 
 
-cdef ElementHashTable* make_element_hash_table(size_t size) nogil:
+cdef ElementHashTable* make_element_hash_table(size_t size) noexcept nogil:
     cdef:
         ElementHashTable* table
         size_t i
@@ -370,7 +381,7 @@ cdef ElementHashTable* make_element_hash_table(size_t size) nogil:
     return table
 
 
-cdef int element_hash_bucket_resize(ElementHashBucket* bucket) nogil:
+cdef int element_hash_bucket_resize(ElementHashBucket* bucket) noexcept nogil:
     cdef:
         Element** elements
         size_t new_size
@@ -384,7 +395,7 @@ cdef int element_hash_bucket_resize(ElementHashBucket* bucket) nogil:
     return 0
 
 
-cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element) nogil:
+cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element) noexcept nogil:
     cdef:
         size_t i
         int status
@@ -401,7 +412,7 @@ cdef int element_hash_bucket_insert(ElementHashBucket* bucket, Element* element)
     return 0
 
 
-cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Element** out) nogil:
+cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Element** out) noexcept nogil:
     cdef:
         size_t i
     for i in range(bucket.used):
@@ -411,13 +422,13 @@ cdef int element_hash_bucket_find(ElementHashBucket* bucket, char* symbol, Eleme
     return -1
 
 
-cdef void free_element_hash_bucket(ElementHashBucket* bucket) nogil:
+cdef void free_element_hash_bucket(ElementHashBucket* bucket) noexcept nogil:
     free(bucket.elements)
     free(bucket)
 
 
 @cython.cdivision(True)
-cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element** out) nogil:
+cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element** out) noexcept nogil:
     cdef:
         size_t hash_value
         size_t position
@@ -432,7 +443,7 @@ cdef int element_hash_table_get(ElementHashTable* table, char* symbol, Element**
 
 
 @cython.cdivision(True)
-cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil:
+cdef int element_hash_table_put(ElementHashTable* table, Element* element) noexcept nogil:
     cdef:
         size_t hash_value
         size_t position
@@ -447,7 +458,7 @@ cdef int element_hash_table_put(ElementHashTable* table, Element* element) nogil
     return status
 
 
-cdef size_t free_element_hash_table(ElementHashTable* table) nogil:
+cdef size_t free_element_hash_table(ElementHashTable* table) noexcept nogil:
     cdef:
         size_t i
 
@@ -483,11 +494,11 @@ cdef ElementHashTable* make_element_hash_table_populated(size_t size):
 _ElementTable = make_element_hash_table_populated(256)
 
 
-cdef ElementHashTable* get_system_element_hash_table() nogil:
+cdef ElementHashTable* get_system_element_hash_table() noexcept nogil:
     return _ElementTable
 
 
-cdef int set_system_element_hash_table(ElementHashTable* table) nogil:
+cdef int set_system_element_hash_table(ElementHashTable* table) noexcept nogil:
     _ElementTable[0] = table[0]
 
 
@@ -506,7 +517,7 @@ def show_element(str element):
 # -----------------------------------------------------------------------------
 # Composition Methods
 
-cdef Composition* make_composition() nogil:
+cdef Composition* make_composition() noexcept nogil:
     """
     Create a new, empty Composition struct
     """
@@ -520,7 +531,7 @@ cdef Composition* make_composition() nogil:
     composition.max_variants = 0
     return composition
 
-cdef int composition_eq(Composition* composition_1, Composition* composition_2) nogil:
+cdef int composition_eq(Composition* composition_1, Composition* composition_2) noexcept nogil:
     """
     Test two Composition instances for element-wise equality
     """
@@ -547,7 +558,7 @@ cdef int composition_eq(Composition* composition_1, Composition* composition_2) 
 
     return 1
 
-cdef Composition* copy_composition(Composition* composition) nogil:
+cdef Composition* copy_composition(Composition* composition) noexcept nogil:
     """
     Create a new Composition instance whose element counts are copied from
     `composition`
@@ -569,7 +580,7 @@ cdef Composition* copy_composition(Composition* composition) nogil:
     return result
 
 
-cdef int fill_composition_from_composition(Composition* result, Composition* composition) nogil:
+cdef int fill_composition_from_composition(Composition* result, Composition* composition) noexcept nogil:
     cdef:
         int status
         size_t i
@@ -586,7 +597,7 @@ cdef int fill_composition_from_composition(Composition* result, Composition* com
 
 
 
-cdef void print_composition(Composition* composition) nogil:
+cdef void print_composition(Composition* composition) noexcept nogil:
     cdef:
         size_t i
         int status
@@ -599,7 +610,7 @@ cdef void print_composition(Composition* composition) nogil:
         i += 1
     printf("}\n\n")
 
-cdef int composition_set_element_count(Composition* composition, char* element, count_type count) nogil:
+cdef int composition_set_element_count(Composition* composition, char* element, count_type count) noexcept nogil:
     """
     Set the count for `element` in `composition`
 
@@ -632,7 +643,7 @@ cdef int composition_set_element_count(Composition* composition, char* element, 
         return 0
     return 1
 
-cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) nogil:
+cdef int composition_get_element_count(Composition* composition, char* element, count_type* count) noexcept nogil:
     """
     Get the count of `element` in `composition`. The count is 0 if `element` is not in `composition`
 
@@ -657,7 +668,7 @@ cdef int composition_get_element_count(Composition* composition, char* element, 
         count[0] = 0
     return 1
 
-cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) nogil:
+cdef int composition_inc_element_count(Composition* composition, char* element, count_type increment) noexcept nogil:
     """
     Increase the count for `element` in `composition` by `increment`.
 
@@ -690,7 +701,7 @@ cdef int composition_inc_element_count(Composition* composition, char* element, 
         return 0
     return 1
 
-cdef int composition_resize(Composition* composition) nogil:
+cdef int composition_resize(Composition* composition) noexcept nogil:
     """
     Increases the size of the parallel arrays in `composition`, doubling them in length
 
@@ -705,7 +716,7 @@ cdef int composition_resize(Composition* composition) nogil:
         return -1
     return 0
 
-cdef int composition_resize_to(Composition* composition, size_t size) nogil:
+cdef int composition_resize_to(Composition* composition, size_t size) noexcept nogil:
     """
     Increases the size of the parallel arrays in `composition`, doubling them in length
 
@@ -720,7 +731,7 @@ cdef int composition_resize_to(Composition* composition, size_t size) nogil:
         return -1
     return 0
 
-cdef double composition_mass(Composition* composition) nogil:
+cdef double composition_mass(Composition* composition) noexcept nogil:
     """
     Calculates the monoisotopic mass of `composition`
     """
@@ -748,12 +759,12 @@ cdef double composition_mass(Composition* composition) nogil:
 
     return mass
 
-cdef void free_composition(Composition* composition) nogil:
+cdef void free_composition(Composition* composition) noexcept nogil:
     free(composition.elements)
     free(composition.counts)
     free(composition)
 
-cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) nogil:
+cdef Composition* composition_add(Composition* composition_1, Composition* composition_2, int sign) noexcept nogil:
     cdef:
         Composition* result
         count_type value
@@ -773,7 +784,7 @@ cdef Composition* composition_add(Composition* composition_1, Composition* compo
         status = composition_inc_element_count(result, symbol, sign * value)
     return result
 
-cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) nogil:
+cdef int composition_iadd(Composition* composition_1, Composition* composition_2, int sign) noexcept nogil:
     cdef:
         char* symbol
         count_type value
@@ -792,7 +803,7 @@ cdef int composition_iadd(Composition* composition_1, Composition* composition_2
             pass
     return status
 
-cdef Composition* composition_mul(Composition* composition, long scale) nogil:
+cdef Composition* composition_mul(Composition* composition, long scale) noexcept nogil:
     cdef:
         Composition* result
         size_t i
@@ -804,7 +815,7 @@ cdef Composition* composition_mul(Composition* composition, long scale) nogil:
         i += 1
     return result
 
-cdef void composition_imul(Composition* composition, long scale) nogil:
+cdef void composition_imul(Composition* composition, long scale) noexcept nogil:
     cdef:
         size_t i
 
@@ -1377,8 +1388,8 @@ MutableMapping.register(PyComposition)
 
 
 cdef extern from "<stdlib.h>" nogil:
-    int isdigit(int ch) nogil;
-    int isuppser(int ch) nogil;
+    int isdigit(int ch) noexcept nogil;
+    int isuppser(int ch) noexcept nogil;
 
 
 cdef enum:
@@ -1388,7 +1399,7 @@ cdef enum:
       COUNT
 
 
-cdef int initialize_composition_from_formula(char* formula, ssize_t n, Composition* composition) nogil:
+cdef int initialize_composition_from_formula(char* formula, ssize_t n, Composition* composition) noexcept nogil:
     cdef:
         ssize_t i
         ssize_t elstart, elend

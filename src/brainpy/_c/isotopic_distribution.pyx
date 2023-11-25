@@ -55,7 +55,7 @@ cdef struct ElementPolynomialMap:
     size_t used
     size_t size
 
-cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:
+cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) noexcept nogil:
     cdef ElementPolynomialMap* result
     result = <ElementPolynomialMap*>malloc(sizeof(ElementPolynomialMap))
     result.elements = <char**>malloc(sizeof(char*) * sizehint)
@@ -65,7 +65,7 @@ cdef ElementPolynomialMap* make_element_polynomial_map(size_t sizehint) nogil:
 
     return result
 
-cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) nogil:
+cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element, dvec* polynomial) noexcept nogil:
     cdef:
         size_t i
         int status
@@ -89,7 +89,7 @@ cdef int element_polynomial_map_set(ElementPolynomialMap* ep_map, char* element,
         return 0
     return 1
 
-cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) nogil:
+cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element, dvec** polynomial) noexcept nogil:
     cdef:
         size_t i
         int status
@@ -104,7 +104,7 @@ cdef int element_polynomial_map_get(ElementPolynomialMap* ep_map, char* element,
         i += 1
     return 1
 
-cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:
+cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) noexcept nogil:
     cdef:
         size_t i
     i = 0
@@ -119,11 +119,11 @@ cdef void free_element_polynomial_map(ElementPolynomialMap* ep_map) nogil:
 # -----------------------------------------------------------------------------
 # Peak Methods
 
-cdef void print_peak(Peak* peak) nogil:
+cdef void print_peak(Peak* peak) noexcept nogil:
     printf("Peak: %f, %f, %d\n", peak.mz, peak.intensity, peak.charge)
 
 
-cdef Peak* make_peak(double mz, double intensity, int charge) nogil:
+cdef Peak* make_peak(double mz, double intensity, int charge) noexcept nogil:
     cdef Peak* peak
     peak = <Peak*>malloc(sizeof(Peak))
     peak.mz = mz
@@ -134,7 +134,7 @@ cdef Peak* make_peak(double mz, double intensity, int charge) nogil:
 # -----------------------------------------------------------------------------
 # PeakList Methods
 
-cdef PeakList* make_peak_list() nogil:
+cdef PeakList* make_peak_list() noexcept nogil:
     cdef PeakList* result
 
     result = <PeakList*>malloc(sizeof(PeakList))
@@ -144,11 +144,11 @@ cdef PeakList* make_peak_list() nogil:
 
     return result
 
-cdef void free_peak_list(PeakList* peaklist) nogil:
+cdef void free_peak_list(PeakList* peaklist) noexcept nogil:
     free(peaklist.peaks)
     free(peaklist)
 
-cdef int resize_peak_list(PeakList* peaklist) nogil:
+cdef int resize_peak_list(PeakList* peaklist) noexcept nogil:
     cdef:
         Peak* peaks
     peaks = <Peak*>realloc(peaklist.peaks, sizeof(Peak) * peaklist.size * 2)
@@ -159,17 +159,17 @@ cdef int resize_peak_list(PeakList* peaklist) nogil:
     peaklist.size *= 2
     return 0
 
-cdef void peak_list_append(PeakList* peaklist, Peak* peak) nogil:
+cdef void peak_list_append(PeakList* peaklist, Peak* peak) noexcept nogil:
     if peaklist.used == peaklist.size:
         resize_peak_list(peaklist)
     peaklist.peaks[peaklist.used] = peak[0]
     peaklist.used += 1
 
-cdef void peak_list_reset(PeakList* peaklist) nogil:
+cdef void peak_list_reset(PeakList* peaklist) noexcept nogil:
     peaklist.used = 0
 
 @cython.cdivision
-cdef PeakList* peak_list_ignore_below(PeakList* peaklist, double ignore_below, PeakList* result) nogil:
+cdef PeakList* peak_list_ignore_below(PeakList* peaklist, double ignore_below, PeakList* result) noexcept nogil:
     cdef:
         double total
         PeakList* kept_tid
@@ -195,7 +195,7 @@ cdef PeakList* peak_list_ignore_below(PeakList* peaklist, double ignore_below, P
     return result
 
 @cython.cdivision
-cdef PeakList* peak_list_truncate_after(PeakList* peaklist, double truncate_after, PeakList* result) nogil:
+cdef PeakList* peak_list_truncate_after(PeakList* peaklist, double truncate_after, PeakList* result) noexcept nogil:
     cdef:
         double cumsum
         Peak peak
@@ -218,7 +218,7 @@ cdef PeakList* peak_list_truncate_after(PeakList* peaklist, double truncate_afte
         result.peaks[i].intensity /= cumsum
     return result
 
-cdef void peak_list_shift(PeakList* peaklist, double shift) nogil:
+cdef void peak_list_shift(PeakList* peaklist, double shift) noexcept nogil:
     cdef:
         size_t i, n
         double delta
@@ -233,7 +233,7 @@ cdef void peak_list_shift(PeakList* peaklist, double shift) nogil:
 # -----------------------------------------------------------------------------
 # ElementCache Methods
 
-cdef ElementCache* make_element_cache(ElementHashTable* source) nogil:
+cdef ElementCache* make_element_cache(ElementHashTable* source) noexcept nogil:
     cdef:
         ElementCache* cache
     cache = <ElementCache*>malloc(sizeof(ElementCache))
@@ -244,12 +244,12 @@ cdef ElementCache* make_element_cache(ElementHashTable* source) nogil:
     return cache
 
 
-cdef void free_element_cache(ElementCache* cache) nogil:
+cdef void free_element_cache(ElementCache* cache) noexcept nogil:
     free(cache.elements)
     free(cache)
 
 
-cdef int resize_element_cache(ElementCache* cache) nogil:
+cdef int resize_element_cache(ElementCache* cache) noexcept nogil:
     cdef:
         Element** values
         size_t new_size
@@ -263,7 +263,7 @@ cdef int resize_element_cache(ElementCache* cache) nogil:
     return 0
 
 
-cdef int element_cache_put(ElementCache* cache, Element** element) nogil:
+cdef int element_cache_put(ElementCache* cache, Element** element) noexcept nogil:
     cdef:
         size_t i
     if (cache.used + 1) == cache.size:
@@ -273,7 +273,7 @@ cdef int element_cache_put(ElementCache* cache, Element** element) nogil:
     return 0
 
 
-cdef int element_cache_get(ElementCache* cache, char* symbol, Element** out) nogil:
+cdef int element_cache_get(ElementCache* cache, char* symbol, Element** out) noexcept nogil:
     cdef:
         size_t i
         Element* element
@@ -294,7 +294,7 @@ cdef int element_cache_get(ElementCache* cache, char* symbol, Element** out) nog
 # -----------------------------------------------------------------------------
 # Support Functions
 
-cdef int max_variants(Composition* composition, ElementCache* cache) nogil:
+cdef int max_variants(Composition* composition, ElementCache* cache) noexcept nogil:
     cdef:
         size_t i
         int max_variants
@@ -318,7 +318,7 @@ cdef int max_variants(Composition* composition, ElementCache* cache) nogil:
     return max_variants
 
 
-cdef int validate_composition(Composition* composition) nogil:
+cdef int validate_composition(Composition* composition) noexcept nogil:
     cdef:
         size_t i
         char* element_symbol
@@ -355,7 +355,7 @@ cdef int validate_composition(Composition* composition) nogil:
 # -----------------------------------------------------------------------------
 # IsotopicDistribution Methods
 
-cdef void isotopic_distribution_update_isotopic_constants(IsotopicDistribution* distribution) nogil:
+cdef void isotopic_distribution_update_isotopic_constants(IsotopicDistribution* distribution) noexcept nogil:
     cdef:
         size_t i
         Composition* composition
@@ -372,7 +372,7 @@ cdef void isotopic_distribution_update_isotopic_constants(IsotopicDistribution* 
     isotopic_constants_update_coefficients(isotopes)
 
 
-cdef void isotopic_distribution_update_order(IsotopicDistribution* distribution, int order) nogil:
+cdef void isotopic_distribution_update_order(IsotopicDistribution* distribution, int order) noexcept nogil:
     cdef:
         int possible_variants
 
@@ -385,7 +385,7 @@ cdef void isotopic_distribution_update_order(IsotopicDistribution* distribution,
     isotopic_distribution_update_isotopic_constants(distribution)
 
 
-cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* distribution) nogil:
+cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* distribution) noexcept nogil:
     cdef:
         Peak* peak
         size_t i
@@ -406,7 +406,7 @@ cdef Peak* isotopic_distribution_make_monoisotopic_peak(IsotopicDistribution* di
     return peak
 
 
-cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order, ElementCache* cache=NULL) nogil:
+cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, int order, ElementCache* cache=NULL) noexcept nogil:
     cdef:
         IsotopicDistribution* result
     if cache == NULL:
@@ -422,7 +422,7 @@ cdef IsotopicDistribution* make_isotopic_distribution(Composition* composition, 
     return result
 
 
-cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:
+cdef void free_isotopic_distribution(IsotopicDistribution* distribution) noexcept nogil:
     free(distribution.monoisotopic_peak)
     free_isotopic_constants(distribution._isotopic_constants)
     if distribution.cache != NULL:
@@ -430,7 +430,7 @@ cdef void free_isotopic_distribution(IsotopicDistribution* distribution)  nogil:
     free(distribution)
 
 
-cdef dvec* id_phi_values(IsotopicDistribution* distribution) nogil:
+cdef dvec* id_phi_values(IsotopicDistribution* distribution) noexcept nogil:
     cdef:
         dvec* power_sum
         size_t i
@@ -441,7 +441,7 @@ cdef dvec* id_phi_values(IsotopicDistribution* distribution) nogil:
     return power_sum
 
 
-cdef double _id_phi_value(IsotopicDistribution* distribution, int order) nogil:
+cdef double _id_phi_value(IsotopicDistribution* distribution, int order) noexcept nogil:
     cdef:
         double phi
         char* element
@@ -459,7 +459,7 @@ cdef double _id_phi_value(IsotopicDistribution* distribution, int order) nogil:
     return phi
 
 
-cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element, dvec* power_sum) nogil:
+cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* element, dvec* power_sum) noexcept nogil:
     cdef:
         size_t i
 
@@ -470,7 +470,7 @@ cdef dvec* id_modified_phi_values(IsotopicDistribution* distribution, char* elem
     return power_sum
 
 
-cdef double _id_modified_phi_value(IsotopicDistribution* distribution, char* symbol, int order) nogil:
+cdef double _id_modified_phi_value(IsotopicDistribution* distribution, char* symbol, int order) noexcept nogil:
     cdef:
         double phi
         char* element
@@ -499,7 +499,7 @@ cdef double _id_modified_phi_value(IsotopicDistribution* distribution, char* sym
     return phi
 
 
-cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
+cdef dvec* id_probability_vector(IsotopicDistribution* distribution) noexcept nogil:
     cdef:
         dvec* phi_values
         int max_variant_count
@@ -522,7 +522,7 @@ cdef dvec* id_probability_vector(IsotopicDistribution* distribution) nogil:
 
 
 @cython.cdivision
-cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* probability_vector) nogil:
+cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* probability_vector) noexcept nogil:
     cdef:
         dvec* mass_vector
         dvec* power_sum
@@ -583,7 +583,7 @@ cdef dvec* id_center_mass_vector(IsotopicDistribution* distribution, dvec* proba
 
 
 @cython.cdivision
-cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distribution, int charge, double charge_carrier) nogil:
+cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distribution, int charge, double charge_carrier) noexcept nogil:
     cdef:
         dvec* probability_vector
         dvec* center_mass_vector
@@ -637,7 +637,7 @@ cdef PeakList* id_aggregated_isotopic_variants(IsotopicDistribution* distributio
     sort_by_mz(peak_set)
     return peak_set
 
-cdef void sort_by_mz(PeakList* peaklist) nogil:
+cdef void sort_by_mz(PeakList* peaklist) noexcept nogil:
     qsort(peaklist.peaks, peaklist.used, sizeof(Peak), compare_by_mz)
 
 cdef int compare_by_mz(const void * a, const void * b) noexcept nogil:
@@ -663,7 +663,7 @@ cpdef bint check_composition_non_negative(dict composition):
     return negative_element
 
 
-cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks, ElementCache* cache=NULL) nogil:
+cdef int guess_npeaks(Composition* composition_struct, size_t max_npeaks, ElementCache* cache=NULL) noexcept nogil:
     cdef:
         int max_n_variants, npeaks
     max_n_variants = max_variants(composition_struct, cache)
@@ -753,7 +753,7 @@ cpdef list _isotopic_variants(object composition, object npeaks=None, int charge
     return peaklist
 
 
-cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=0, double charge_carrier=PROTON) nogil:
+cdef PeakList* isotopic_variants(Composition* composition, int npeaks, int charge=0, double charge_carrier=PROTON) noexcept nogil:
     cdef:
         IsotopicDistribution* dist
         PeakList* peaklist
@@ -888,7 +888,7 @@ def test(object composition, int max_npeaks=300):
 
 
 cdef size_t max_variants_approx(double mass, double lambda_factor=1800.0, size_t maxiter=255,
-                                double threshold=0.9999) nogil:
+                                double threshold=0.9999) noexcept nogil:
     """Approximate the maximum number of isotopic peaks to include in an isotopic distribution
     approximation for biomolecules using the Poisson distribution, using the method described
     in Bellew et al [1].
