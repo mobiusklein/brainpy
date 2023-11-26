@@ -215,7 +215,7 @@ cdef void _isotopes_of(char* element_symbol, IsotopeMap** isotope_frequencies):
 
     for i, mass_freqs in element_data.items():
         if i == 0:
-            if isinstance(mass_freqs, int):
+            if isinstance(mass_freqs[0], int):
                 mono_neutrons = PyInt_AsLong(mass_freqs[0])
             continue
         if mass_freqs[1] > 0:
