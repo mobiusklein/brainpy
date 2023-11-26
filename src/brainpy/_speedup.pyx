@@ -236,13 +236,21 @@ cpdef Element make_fixed_isotope_element(Element element, int neutrons):
 
 def _isotopes_of(element):
     freqs = dict()
-    for i, mass_freqs in nist_mass[element].items():
+    mono_neutrons = None
+    element_data = nist_mass[element]
+    for i, mass_freqs in element_data.items():
         if i == 0:
+            if isinstance(mass_freqs[0], int):
+                mono_neutrons = mass_freqs[0]
             continue
         if mass_freqs[1] > 0:
             freqs[i] = mass_freqs
     if len(freqs) == 0:
-        return dict()
+        if mono_neutrons is not None and mono_neutrons in element_data:
+            freqs = [
+                (0, Isotope(*element_data[mono_neutrons], neutron_shift=0, neutrons=mono_neutrons))
+            ]
+        return dict(freqs)
     mono_neutrons = max(freqs.items(), key=lambda x: x[1][1])[0]
     freqs = list(sorted(
         [(k - mono_neutrons, Isotope(*v, neutron_shift=k - mono_neutrons, neutrons=k))

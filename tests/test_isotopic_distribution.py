@@ -21,6 +21,11 @@ class TestIsotopicDistribution(unittest.TestCase):
             self.assertAlmostEqual(inst.mz, ref.mz, 3)
             self.assertAlmostEqual(inst.intensity, ref.intensity, 3)
 
+    def test_bad_isotopic_specification(self):
+        comp = {"Cm": 1}
+        dist = isotopic_variants(comp)
+        assert len(dist) == 1
+
     if _has_c:
         def test_pure_python(self):
             hexnac = {'H': 13, 'C': 8, 'O': 5, 'N': 1}
