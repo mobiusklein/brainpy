@@ -2,7 +2,6 @@
 # cython: profile=False
 
 from cpython.list cimport PyList_GET_ITEM, PyList_GET_SIZE, PyList_Append
-from cpython.int cimport PyInt_FromLong
 from cpython.float cimport PyFloat_FromDouble, PyFloat_AsDouble
 from cpython.dict cimport PyDict_GetItem, PyDict_SetItem, PyDict_Keys, PyDict_Next
 from cpython.object cimport PyObject
